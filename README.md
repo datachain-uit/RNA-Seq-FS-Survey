@@ -127,5 +127,7 @@ python scripts/run_classical_ml.py
 python scripts/run_classification_dl.py
 ```
 
-## 📜 License
-MIT License
+## Contributors
+
+- **Leader**: M.Sc. IT. Thu Nguyen
+- **Members**: Luan Nguyen
