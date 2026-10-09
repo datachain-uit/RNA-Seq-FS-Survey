@@ -1,133 +1,39 @@
-# RNA-SEQ Feature Selection & Deep Learning Benchmark
-### Comprehensive Benchmarking of FS Algorithms and Classifiers on Lung Cancer RNA-Seq (GSE131907)
+# RNA-Seq FS Survey – Feature selection & extraction benchmark on lung cancer expression data
 
-This repository provides a complete, reproducible pipeline for:
-- Preprocessing RNA-Seq gene expression data  
-- Running multiple feature selection (FS) algorithms  
-- Measuring time complexity, memory, energy, and carbon emission  
-- Training classical ML and deep learning classifiers  
-- Logging metrics & experiment results  
-- Producing a full benchmarking framework for scientific analysis
+Notebooks for comparing feature-selection (FS) and feature-extraction (FE) methods, followed by a classifier grid search, on three lung cancer datasets: **GSE68465**, **TCGA-LUAD** and **TCGA-LUSC**.
 
-The project follows a **clean, data-science oriented structure**, separating configs, scripts, modules, and results for maximum clarity and reproducibility.
+All compute runs on Kaggle/Colab. The notebooks read the prepared h5 data from the Kaggle dataset `lfreedom2750/experiment-dataset`, with one folder `h5/<dataset>/` per dataset. Each folder holds 5 folds, and each fold has `train/val/test.h5` (a pandas table with key `"data"`, index = sample_id, gene columns + `label`). The expression values are raw log2 with no scaling.
 
----
-
-## 🔧 1. Project Structure
+## Structure
 
 ```
-RNA-SEQ-FS-SURVEY/
-│
+RNA-Seq-FS-Survey/
 ├── notebooks/
-│   └── prepare_data.ipynb
-│
-├── scripts/
-│   ├── prepare_dataset.py
-│   ├── run_chi_square.py
-│   ├── run_mutual_info.py
-│   ├── run_fcbf.py
-│   ├── run_mrmr.py
-│   ├── run_lasso.py
-│   ├── run_svm_rfe.py
-│   ├── run_ga_svm.py
-│   ├── run_pso_svm.py
-│   ├── run_classical_ml.py
-│   ├── run_classification_dl.py
-│   └── sync_to_sheets.py
-│
-├── fs/
-│   ├── chi2.py
-│   ├── mutual_info.py
-│   ├── fcbf.py
-│   ├── mrmr.py
-│   ├── lasso_fs.py
-│   ├── svm_rfe.py
-│   ├── ga_svm.py
-│   ├── pso_svm.py
-│   └── utils_fs.py
-│
-├── deep/
-│   ├── mlp.py
-│   ├── lstm.py
-│   ├── gru.py
-│   ├── cnn1d.py
-│   ├── transformer.py
-│   ├── vae.py
-│   ├── gan.py
-│   ├── train_dl.py
-│   └── utils_dl.py
-│
-├── models/
-│   └── saved_weights/
-│
-├── data/
-│   ├── raw/
-│   ├── processed/
-│   └── splits/
-│
-├── results/
-│   ├── fs_masks/
-│   ├── fs_metrics/
-│   ├── classification_metrics/
-│   ├── dl_logs/
-│   └── figures/
-│
-├── configs/
-│   ├── paths.py
-│   ├── fs_config.py
-│   ├── model_config.py
-│   └── sheet_config.py
-│
-├── toolkit/
-│   └── metric_toolkit.py
-│
-└── README.md
+│   ├── 00_data/                 download GEO/TCGA, map probes -> gene symbols, assign labels, split 5 folds, write h5
+│   ├── 01_feature_selection/
+│   │   ├── filter/              f_classif, mrmr, multisurf, mutual_info, relieff
+│   │   ├── wrapper/             bpso, ga, gwo_pso, ibabc_cgo, sga
+│   │   ├── embedded/            lasso, random_forest, ridge, scfsnn, svm_rfe, wsbnn
+│   │   ├── extraction/          pca, kpca, chnmf, autoencoder
+│   │   └── fs_quicktest_rf.ipynb
+│   ├── 02_classification/       classifier grid search on the FS gene sets / FE data / all genes / BulkFormer embeddings
+│   └── 04_analysis/             permutation test by stage, plots
+└── scripts/
+    ├── aggregate_5fold_results.py   5-fold means for FS and classification
+    └── stage_split_metrics.py
 ```
 
----
+## Pipeline
 
-## 🚀 2. Installation
+1. **Data** (`00_data`): produces `h5/<dataset>/fold_1..5/{train,val,test}.h5`.
+2. **FS / FE** (`01_feature_selection`): each `fs_<method>.ipynb` / `fe_<method>.ipynb` notebook runs on a single dataset with `N_FEATURES ∈ {50, 100, 200, 500}`, and outputs `fs_<method>_<dataset>.zip` / `fe_<method>_<dataset>.zip`.
+   - FS: `selected_genes/fold_k.csv` (`fold, rank, gene, score`), `metrics_per_fold.csv`, `config.json`.
+   - FE: the transformed data, `features/fold_k/{train,val,test}.h5`, in the same format as the original h5.
+   - Note: PCA uses at most `n_train` components and KPCA at most `n_train − 1`. With N = 500, every dataset has fewer training samples than that, so the number of dimensions varies by fold.
+3. **Classification** (`02_classification`): 11 models (decision_tree, gaussian_nb, knn, lightgbm, linear_svm, logistic_regression, mlp, random_forest, rbf_svm, stacking, xgboost). Hyperparameters are tuned on val and evaluated on test, for each fold. Output: `results_<group>.csv` (one row per fold × model) and `summary_<group>.csv`.
+   - `clf_gridsearch_fs_group.ipynb`: set `FS_DIR` to the folder of gene lists for one `<N>/<group>`.
+   - `clf_gridsearch_fe.ipynb`: set `DATA_DIR` to the dimension-reduced data and use all of its columns.
+   - `clf_gridsearch_no_fs.ipynb`: all genes (baseline).
+4. **Analysis** (`04_analysis`, `scripts/`): 5-fold means, permutation test, plots.
 
-```bash
-pip install -r requirements.txt
-```
-
----
-
-## 🧬 3. Data Preparation
-
-```bash
-python scripts/prepare_dataset.py
-```
-
----
-
-## ⚙️ 4. Run Feature Selection
-
-```bash
-python scripts/run_chi_square.py
-python scripts/run_lasso.py
-python scripts/run_svm_rfe.py
-python scripts/run_ga_svm.py
-```
-
----
-
-## 🤖 5. Train Classical ML Models
-
-```bash
-python scripts/run_classical_ml.py
-```
-
----
-
-## 🧠 6. Train Deep Learning Models
-
-```bash
-python scripts/run_classification_dl.py
-```
-
-## Contributors
-
-- **Leader**: M.Sc. IT. Thu Nguyen
-- **Members**: Luan Nguyen
+`scripts/aggregate_5fold_results.py` still has a hard-coded path to the original machine (`CLF_ROOT`), so update it before running.
