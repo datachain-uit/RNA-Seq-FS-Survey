@@ -1,13 +1,15 @@
-# Môi trường cho scripts/ và tests/ (chạy trên máy).
+# Môi trường cho scripts/ và tests/ (chạy trên máy). Python 3.14.6.
+# Phiên bản lấy từ provenance của lần chạy RQ0′ ngày 24/10/2026 tại commit 01c0867
+# (D:\KLTN\results\phase 1\rq0_prime\config.json).
 # Notebook chạy trên Kaggle/Colab dùng môi trường của nền tảng; phiên bản thực tế được ghi
 # trong config.json/provenance.json của từng lần chạy (scripts/provenance.py).
-# Khi chốt môi trường (task 3.2): pip freeze > requirements-lock.txt rồi commit tệp đó.
-numpy>=1.26
-pandas>=2.2
-scipy>=1.11
-scikit-learn>=1.5
-tables>=3.9          # PyTables, đọc/ghi .h5
-openpyxl>=3.1        # build_rq0_prime_workbook.py
+numpy==2.5.0
+pandas==3.0.3
+scipy==1.18.1
+scikit-learn==1.9.0
+tables==3.11.1       # PyTables, đọc/ghi .h5
+openpyxl==3.1.5      # build_rq0_prime_workbook.py
+requests==2.34.2     # patch_v2_tcga_stage.py (GDC API)
+# Chưa ghi nhận phiên bản cụ thể — chốt bằng: pip show python-docx pytest
 python-docx>=1.1     # build_review_documents.py
-requests>=2.31       # patch_v2_tcga_stage.py (GDC API)
 pytest>=8
