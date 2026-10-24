@@ -11,6 +11,13 @@ import json
 import subprocess
 from pathlib import Path
 
+try:  # import khi chạy test (scripts.<x>) hoặc chạy trực tiếp (python scripts/<x>.py)
+    from scripts.provenance import DATA_ROOT
+except ImportError:
+    import sys as _sys
+    _sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from provenance import DATA_ROOT
+
 
 RUNS = {
     "GSE68465": "perm_test_v2_gse68465",
@@ -134,7 +141,7 @@ Các dataset dùng cho permutation được đặt tại `experiment-data-perm/`
 
 
 def main() -> None:
-    root = Path(__file__).resolve().parents[1]
+    root = DATA_ROOT  # thư mục dữ liệu/kết quả (KLTN_DATA_ROOT)
     rows = collect_phase0_manifest(root)
     write_phase0_manifest(root, rows)
     write_official_data_card(root)

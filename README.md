@@ -1,39 +1,60 @@
-# RNA-Seq FS Survey – Feature selection & extraction benchmark on lung cancer expression data
+# RNA-Seq FS Survey – chọn gen có ràng buộc ngân sách cho dữ liệu biểu hiện gen ung thư phổi
 
-Notebooks for comparing feature-selection (FS) and feature-extraction (FE) methods, followed by a classifier grid search, on three lung cancer datasets: **GSE68465**, **TCGA-LUAD** and **TCGA-LUSC**.
+Mã nguồn khóa luận: chọn/trích xuất đặc trưng, phân loại, permutation test (bài toán phụ: giai đoạn sớm/muộn) và RQ0′–RQ4 (bài toán chính: LUAD vs LUSC, chuyển giao TCGA → cohort GEO).
 
-All compute runs on Kaggle/Colab. The notebooks read the prepared h5 data from the Kaggle dataset `lfreedom2750/experiment-dataset`, with one folder `h5/<dataset>/` per dataset. Each folder holds 5 folds, and each fold has `train/val/test.h5` (a pandas table with key `"data"`, index = sample_id, gene columns + `label`). The expression values are raw log2 with no scaling.
+**Kho này là nơi duy nhất chứa code.** Dữ liệu và kết quả nằm ở thư mục dữ liệu riêng (vd. `D:\KLTN`), không đưa lên Git. Mọi kết quả phải sinh từ một commit đã push, để commit hash ghi trong `config.json` kiểm chứng được trên GitHub (Review 20/10/2026, O3, §7.7).
 
-## Structure
+## Cấu trúc
 
 ```
 RNA-Seq-FS-Survey/
+├── scripts/                     code chạy trên máy (Python)
+│   ├── provenance.py            ghi nguồn gốc mỗi lần chạy; dừng nếu không truy vết được
+│   ├── run_rq0_prime.py         RQ0′: trần hiệu năng trên 4 cohort GEO (CV 5×5)
+│   ├── build_rq0_prime_workbook.py
+│   ├── rebuild_gse30219_r5.py   dựng lại GSE30219 sau khi sửa nhãn (R5): 85 LUAD / 61 LUSC
+│   ├── build_perm_test_data.py  dữ liệu cho permutation test v3
+│   ├── patch_v2_tcga_stage.py   vá nhãn giai đoạn TCGA v2 từ GDC
+│   ├── aggregate_phase0_v3.py, aggregate_phase1_results.py, stage_split_metrics.py, organize_fs_phase1.py
+│   ├── build_review_completion_artifacts.py, build_review_documents.py
+│   ├── PHASE1_REPRODUCTION.md
+│   └── _archive/                script cũ, không dùng
+├── tests/                       python -m pytest tests
 ├── notebooks/
-│   ├── 00_data/                 download GEO/TCGA, map probes -> gene symbols, assign labels, split 5 folds, write h5
-│   ├── 01_feature_selection/
-│   │   ├── filter/              f_classif, mrmr, multisurf, mutual_info, relieff
-│   │   ├── wrapper/             bpso, ga, gwo_pso, ibabc_cgo, sga
-│   │   ├── embedded/            lasso, random_forest, ridge, scfsnn, svm_rfe, wsbnn
-│   │   ├── extraction/          pca, kpca, chnmf, autoencoder
-│   │   └── fs_quicktest_rf.ipynb
-│   ├── 02_classification/       classifier grid search on the FS gene sets / FE data / all genes / BulkFormer embeddings
-│   └── 04_analysis/             permutation test by stage, plots
-└── scripts/
-    ├── aggregate_5fold_results.py   5-fold means for FS and classification
-    └── stage_split_metrics.py
+│   ├── phase_0/                 dữ liệu v1/v2/GEO, FS/FE và phân loại Phase 0, permutation v3, B0 v3
+│   ├── phase_1/                 benchmark Phase 1 (LUAD vs LUSC) – ĐÓNG BĂNG (O13)
+│   └── _archive/                notebook cũ, không dùng
+└── docs/notebook_manifest.md    trạng thái từng notebook: đang dùng / đóng băng / cũ
 ```
 
-## Pipeline
+## Cài đặt
 
-1. **Data** (`00_data`): produces `h5/<dataset>/fold_1..5/{train,val,test}.h5`.
-2. **FS / FE** (`01_feature_selection`): each `fs_<method>.ipynb` / `fe_<method>.ipynb` notebook runs on a single dataset with `N_FEATURES ∈ {50, 100, 200, 500}`, and outputs `fs_<method>_<dataset>.zip` / `fe_<method>_<dataset>.zip`.
-   - FS: `selected_genes/fold_k.csv` (`fold, rank, gene, score`), `metrics_per_fold.csv`, `config.json`.
-   - FE: the transformed data, `features/fold_k/{train,val,test}.h5`, in the same format as the original h5.
-   - Note: PCA uses at most `n_train` components and KPCA at most `n_train − 1`. With N = 500, every dataset has fewer training samples than that, so the number of dimensions varies by fold.
-3. **Classification** (`02_classification`): 11 models (decision_tree, gaussian_nb, knn, lightgbm, linear_svm, logistic_regression, mlp, random_forest, rbf_svm, stacking, xgboost). Hyperparameters are tuned on val and evaluated on test, for each fold. Output: `results_<group>.csv` (one row per fold × model) and `summary_<group>.csv`.
-   - `clf_gridsearch_fs_group.ipynb`: set `FS_DIR` to the folder of gene lists for one `<N>/<group>`.
-   - `clf_gridsearch_fe.ipynb`: set `DATA_DIR` to the dimension-reduced data and use all of its columns.
-   - `clf_gridsearch_no_fs.ipynb`: all genes (baseline).
-4. **Analysis** (`04_analysis`, `scripts/`): 5-fold means, permutation test, plots.
+```powershell
+git clone https://github.com/datachain-uit/RNA-Seq-FS-Survey.git
+cd RNA-Seq-FS-Survey
+pip install -r requirements.txt
+$env:KLTN_DATA_ROOT = "D:\KLTN"     # thư mục chứa experiment-data*/, results/ ...
+```
 
-`scripts/aggregate_5fold_results.py` still has a hard-coded path to the original machine (`CLF_ROOT`), so update it before running.
+`KLTN_DATA_ROOT` cho script biết dữ liệu ở đâu. Thiếu biến này, script tìm dữ liệu ngay trong thư mục kho.
+
+## Quy trình mỗi lần chạy
+
+1. Sửa code trong kho → `git commit` → `git push`.
+2. Chạy script từ thư mục kho, ví dụ `python scripts/run_rq0_prime.py`.
+3. Script gọi `provenance()` trước khi tính toán:
+   - **dừng** nếu thư mục không phải git clone hoặc còn file đã theo dõi bị sửa mà chưa commit;
+   - ghi vào `config.json`/`provenance.json` cạnh kết quả: commit hash, script và tham số, phiên bản thư viện, máy, SHA-256 của dữ liệu đầu vào.
+
+Chỉ trong trường hợp bất khả kháng mới chạy với `$env:KLTN_ALLOW_UNTRACKED = "1"`; kết quả khi đó ghi `commit_hash: null` và không được trích vào survey hay luận văn.
+
+Notebook chạy trên Kaggle/Colab: clone kho ở đúng commit rồi dùng `scripts/provenance.py` (ô mẫu ở `docs/notebook_manifest.md`, mục 4).
+
+## Dữ liệu (ở `KLTN_DATA_ROOT`, không có trong kho)
+
+| Thư mục | Nội dung |
+|---|---|
+| `experiment-data-v2/` | TCGA LUAD/LUSC (1.018 bệnh nhân), GSE68465 chỉ mẫu u, sanity Normal vs u; có `DATA_CARD.md` |
+| `experiment-data-geo-target/` | cohort đích GSE10245, GSE30219 (`gse30219_r5_fixed`), GSE37745, GSE42127 |
+| `experiment-data-perm/` | dữ liệu permutation test v3 |
+| `results/` | kết quả theo phase |

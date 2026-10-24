@@ -6,7 +6,7 @@ import unittest
 from pathlib import Path
 
 from scripts.build_review_completion_artifacts import collect_phase0_manifest
-from scripts.run_rq0_prime import sample_balanced_training_indices
+from scripts.run_rq0_prime import cohort_data_dir, sample_balanced_training_indices
 
 
 class Phase0ManifestTests(unittest.TestCase):
@@ -37,6 +37,18 @@ class Phase0ManifestTests(unittest.TestCase):
 
 
 class Rq0PrimeTests(unittest.TestCase):
+    def test_gse30219_uses_the_r5_fixed_dataset_directory(self):
+        root = Path("D:/temporary-rq0-root")
+
+        self.assertEqual(
+            root / "experiment-data-geo-target" / "gse30219_r5_fixed",
+            cohort_data_dir(root, "gse30219"),
+        )
+        self.assertEqual(
+            root / "experiment-data-geo-target" / "gse37745",
+            cohort_data_dir(root, "gse37745"),
+        )
+
     def test_balanced_training_sample_uses_exactly_five_per_class(self):
         indices = sample_balanced_training_indices([0] * 9 + [1] * 7, 5, seed=42)
         labels = ([0] * 9 + [1] * 7)

@@ -1,0 +1,48 @@
+# Dữ liệu và kết quả lớn nằm ở thư mục dữ liệu (KLTN_DATA_ROOT, vd. D:\KLTN), không đưa lên Git.
+# Kết quả nhỏ (< 50 MB) nếu cần commit thì thêm bằng: git add -f <đường dẫn>
+experiment-data*/
+Dataset/
+dataset*/
+reduced-dimension-data*/
+selected_features*/
+geo_target_work/
+results/
+outputs/
+paper/
+review-9-10/
+Nop-GVHD-*/
+
+# Định dạng dữ liệu/nhị phân
+*.h5
+*.hdf5
+*.zip
+*.gz
+*.tar
+*.pkl
+*.npy
+*.npz
+*.parquet
+*.csv.gz
+*.inspect.ndjson
+
+# Python / Jupyter
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ipynb_checkpoints/
+.venv/
+venv/
+*.egg-info/
+
+# Công cụ, tệp tạm, khóa Office
+node_modules/
+.artifact_node_modules/
+.claude/
+tmp*/
+.tmp*/
+artifact_build_*/
+~$*
+*.tmp
+.DS_Store
+Thumbs.db
+desktop.ini
