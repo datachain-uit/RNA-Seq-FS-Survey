@@ -1,0 +1,13 @@
+# Môi trường cho scripts/ và tests/ (chạy trên máy).
+# Notebook chạy trên Kaggle/Colab dùng môi trường của nền tảng; phiên bản thực tế được ghi
+# trong config.json/provenance.json của từng lần chạy (scripts/provenance.py).
+# Khi chốt môi trường (task 3.2): pip freeze > requirements-lock.txt rồi commit tệp đó.
+numpy>=1.26
+pandas>=2.2
+scipy>=1.11
+scikit-learn>=1.5
+tables>=3.9          # PyTables, đọc/ghi .h5
+openpyxl>=3.1        # build_rq0_prime_workbook.py
+python-docx>=1.1     # build_review_documents.py
+requests>=2.31       # patch_v2_tcga_stage.py (GDC API)
+pytest>=8

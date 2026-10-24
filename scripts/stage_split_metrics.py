@@ -15,8 +15,15 @@ import zipfile
 import numpy as np
 import pandas as pd
 
+try:  # import khi chạy test (scripts.<x>) hoặc chạy trực tiếp (python scripts/<x>.py)
+    from scripts.provenance import DATA_ROOT, require, save_provenance
+except ImportError:
+    import sys as _sys
+    _sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from provenance import DATA_ROOT, require, save_provenance
 
-ROOT = Path(__file__).resolve().parents[1]
+
+ROOT = DATA_ROOT  # thư mục dữ liệu/kết quả (KLTN_DATA_ROOT)
 CLF_ROOT = ROOT / "results" / "clf"
 OUTPUT_DIR = ROOT / "results" / "stage_split"
 
@@ -128,6 +135,7 @@ def summarise(configs: pd.DataFrame, by: list[str]) -> pd.DataFrame:
 
 
 def main() -> None:
+    prov = require(__file__)
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     results = read_all_results()
     split = results["confusion_matrix_test"].apply(split_metrics)
@@ -159,6 +167,7 @@ def main() -> None:
     }
     for name, table in tables.items():
         table.to_csv(OUTPUT_DIR / f"summary_{name}.csv", index=False)
+    save_provenance(OUTPUT_DIR, prov, outputs=sorted(OUTPUT_DIR.glob("*.csv")))
 
     coverage = per_fold.groupby(["n_features", "fs_group"]).agg(
         rows=("fold", "size"), datasets=("dataset", "nunique"),
