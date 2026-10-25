@@ -2,6 +2,8 @@
 
 from pathlib import Path
 
+import json
+
 from survey_v2 import runlog
 
 
@@ -26,3 +28,16 @@ def test_is_tracked_rejects_path_outside_repository(tmp_path):
     outside = tmp_path / "other" / "run.py"
 
     assert not runlog.is_tracked(outside, repo=repo)
+
+
+def test_write_config_exposes_traceability_at_top_level(tmp_path):
+    path = runlog.write_config(
+        tmp_path,
+        {"commit_hash": "abc123", "traceable": True, "traceable_errors": []},
+        {"experiment": "test"},
+    )
+
+    saved = json.loads(path.read_text(encoding="utf-8"))
+    assert saved["traceable"] is True
+    assert saved["traceable_errors"] == []
+    assert saved["provenance"]["traceable"] is True
