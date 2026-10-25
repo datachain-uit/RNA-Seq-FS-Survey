@@ -28,7 +28,7 @@ python scripts/run_e1_wrappers_all_cohorts.py
 python scripts/run_e1_classification.py --selection-root /kaggle/working/kltn_data/results/survey_v2/E1_wrapper_feature_selection --methods ga bpso
 ```
 
-Phase A writes panels, selection time/CPU/RSS, selector diagnostics, stability
+Phase A writes panels, selection time/CPU/RSS/CodeCarbon emissions, selector diagnostics, stability
 (pairwise Jaccard), and gene frequency. Phase B writes per-fold and aggregated
 classification metrics, confusion matrices, tuning/train/inference timing, and
 the best classifier per fixed panel. Legacy `run_survey_e1.py` remains the

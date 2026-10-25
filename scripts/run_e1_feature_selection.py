@@ -37,6 +37,8 @@ def parse_args(argv=None):
     ap.add_argument("--out", default="E1_feature_selection")
     ap.add_argument("--pop", type=int, default=C.WRAPPER_POP)
     ap.add_argument("--generations", type=int, default=C.WRAPPER_GENERATIONS)
+    ap.add_argument("--no-track-emissions", dest="track_emissions", action="store_false")
+    ap.set_defaults(track_emissions=True)
     return ap.parse_args(argv)
 
 
@@ -63,6 +65,19 @@ def jaccard(a, b):
     return len(a & b) / len(a | b) if a | b else float("nan")
 
 
+def start_emissions_tracker(enabled):
+    if not enabled:
+        return None
+    try:
+        from codecarbon import OfflineEmissionsTracker
+        tracker = OfflineEmissionsTracker(project_name="e1_feature_selection", country_iso_code="VNM", save_to_file=False, log_level="error")
+        tracker.start()
+        return tracker
+    except Exception as exc:
+        print(f"[emissions] unavailable: {exc}", flush=True)
+        return None
+
+
 def main(argv=None, script=__file__):
     args = parse_args(argv)
     prov = start_run(script, params={k: str(v) if isinstance(v, Path) else v for k, v in vars(args).items()})
@@ -85,9 +100,11 @@ def main(argv=None, script=__file__):
                 method_id = (C.FILTER_METHODS + C.EMBEDDED_METHODS + C.WRAPPER_METHODS).index(method)
                 seed = C.seed_for(list(C.DATASETS).index(name), int(run.seed), int(run.fold), method_id)
                 rss_before, cpu_before, t0 = process.memory_info().rss, time.process_time(), time.perf_counter()
+                tracker = start_emissions_tracker(args.track_emissions)
                 with threadpool_limits(1):
                     selected = select(method, ds.X[tr][:, pre], ds.y[tr], args.k, seed=seed, n_jobs=1,
                                       wrapper_kwargs={"pop": args.pop, "generations": args.generations})
+                emissions_kg = tracker.stop() if tracker else float("nan")
                 elapsed, cpu_s = time.perf_counter() - t0, time.process_time() - cpu_before
                 for k in args.k:
                     panel = selected.panels[int(k)]
@@ -100,7 +117,8 @@ def main(argv=None, script=__file__):
                                  "n_eval": info.get("n_eval", {}).get(int(k)),
                                  "best_fitness": info.get("best_fitness", {}).get(int(k)),
                                  "selection_time_s": elapsed, "cpu_time_s": cpu_s,
-                                 "rss_delta_mb": (process.memory_info().rss - rss_before) / 2**20})
+                                 "rss_delta_mb": (process.memory_info().rss - rss_before) / 2**20,
+                                 "emissions_kg_co2": emissions_kg})
                     genes.extend({"cohort": name, "repeat": run.repeat, "fold": run.fold, "method": method,
                                   "k": int(k), "rank": rank, "gene": ds.genes[pre[col]]}
                                  for rank, col in enumerate(panel, 1))
@@ -120,7 +138,7 @@ def main(argv=None, script=__file__):
         cfg = {"experiment": "E1_feature_selection", "dataset": name, "protocol":
                "precomputed patient-grouped repeated 5x5 outer train/test; selection and variance prefilter use outer train only",
                "split_file": str(path), "split_sha256": sha256(path), "methods": args.methods, "k_grid": args.k,
-               "prefilter_p0": args.prefilter, "metrics": ["n_selected", "exact_k", "n_filled", "selection_time_s", "cpu_time_s", "rss_delta_mb", "n_eval", "best_fitness", "pairwise_jaccard"],
+               "prefilter_p0": args.prefilter, "metrics": ["n_selected", "exact_k", "n_filled", "selection_time_s", "cpu_time_s", "rss_delta_mb", "emissions_kg_co2", "n_eval", "best_fitness", "pairwise_jaccard"],
                "versions": all_versions()}
         write_config(out, prov, cfg, data_files=[ds.data_dir / "expression.h5", ds.data_dir / "metadata.csv", path])
 
