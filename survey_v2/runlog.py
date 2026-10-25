@@ -31,10 +31,19 @@ def _git(*args, cwd):
 
 
 def is_tracked(path, repo=REPO) -> bool:
+    """Return whether *path* is tracked by the repository at *repo*.
+
+    ``git ls-files`` is evaluated from ``repo`` and expects a repository-relative
+    pathspec.  Supplying an absolute path happens to work in some Windows Git
+    installations, but fails on Linux (including Kaggle), incorrectly marking
+    an otherwise clean, pushed run as non-traceable.
+    """
     try:
-        _git("ls-files", "--error-unmatch", str(Path(path).resolve()), cwd=repo)
+        repo = Path(repo).resolve()
+        relative_path = Path(path).resolve().relative_to(repo).as_posix()
+        _git("ls-files", "--error-unmatch", relative_path, cwd=repo)
         return True
-    except subprocess.CalledProcessError:
+    except (subprocess.CalledProcessError, OSError, ValueError):
         return False
 
 
