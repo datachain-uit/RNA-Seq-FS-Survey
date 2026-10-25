@@ -11,9 +11,13 @@ from __future__ import annotations
 
 import os
 import platform
-import resource
 import time
 import tracemalloc
+
+try:
+    import resource
+except ImportError:  # Windows does not provide the POSIX resource module.
+    resource = None
 
 import numpy as np
 import pandas as pd
@@ -53,6 +57,12 @@ def machine_info() -> dict:
 
 
 def _maxrss_mb() -> float:
+    if resource is None:
+        try:
+            import psutil
+            return psutil.Process().memory_info().rss / 2**20
+        except Exception:
+            return float("nan")
     v = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
     return v / 2**20 if platform.system() == "Darwin" else v / 1024.0
 
