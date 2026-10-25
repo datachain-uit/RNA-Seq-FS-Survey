@@ -106,7 +106,8 @@ def write_config(out_dir: Path, prov: dict, config: dict, data_files=()) -> Path
 def all_versions() -> dict:
     from importlib import metadata
     out = {}
-    for p in ("numpy", "pandas", "scipy", "scikit-learn", "tables", "skrebate", "joblib", "threadpoolctl", "psutil"):
+    for p in ("numpy", "pandas", "scipy", "scikit-learn", "tables", "skrebate", "joblib", "threadpoolctl", "psutil",
+              "xgboost", "lightgbm", "codecarbon"):
         try:
             out[p] = metadata.version(p)
         except metadata.PackageNotFoundError:
