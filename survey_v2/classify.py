@@ -1,0 +1,98 @@
+"""Bộ phân loại sau chọn gen và chỉ số (Bảng 10, Review 24/10/2026; KBTN 5.2).
+
+* LR-L2 (chính): StandardScaler + LogisticRegression(class_weight = balanced); C ∈ C_GRID chọn bằng
+  CV 3 fold phân tầng BÊN TRONG phần train theo AUROC; ngưỡng cho BAcc/MCC chọn để tối đa BAcc trên dự
+  đoán out-of-fold của CV nội bộ (không chọn trên test); fit lại trên toàn bộ phần train.
+* RF và SVM tuyến tính (phụ, chỉ k ∈ {50, 200}): cùng quy trình chọn ngưỡng.
+* B0: cùng LR-L2 trên toàn bộ gen (không lọc sơ bộ).
+"""
+
+from __future__ import annotations
+
+import warnings
+from dataclasses import dataclass
+
+import numpy as np
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import balanced_accuracy_score, matthews_corrcoef, roc_auc_score
+from sklearn.model_selection import StratifiedKFold
+from sklearn.preprocessing import StandardScaler
+from sklearn.svm import LinearSVC
+
+from . import config as C
+
+CLASSIFIERS = ("lr_l2", "rf", "svm_linear")
+
+
+@dataclass
+class EvalResult:
+    classifier: str
+    auroc: float
+    bacc: float
+    mcc: float
+    threshold: float
+    hyperparam: float | None
+    scores_test: np.ndarray
+
+
+def _make(classifier: str, c: float | None, seed: int, n_jobs: int):
+    if classifier == "lr_l2":
+        return ("scale", LogisticRegression(C=c, class_weight="balanced", solver="liblinear", max_iter=5000,
+                                            random_state=seed))
+    if classifier == "svm_linear":
+        return ("scale", LinearSVC(C=c, class_weight="balanced", dual="auto", max_iter=10000))
+    if classifier == "rf":
+        return (None, RandomForestClassifier(n_estimators=C.RF_N_TREES, class_weight="balanced_subsample",
+                                             random_state=seed, n_jobs=n_jobs))
+    raise ValueError(classifier)
+
+
+def _fit_predict(classifier, c, seed, n_jobs, Xtr, ytr, Xte):
+    scale, model = _make(classifier, c, seed, n_jobs)
+    if scale:
+        sc = StandardScaler().fit(Xtr)
+        Xtr, Xte = sc.transform(Xtr), sc.transform(Xte)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        model.fit(Xtr, ytr)
+    if hasattr(model, "predict_proba"):
+        return model.predict_proba(Xte)[:, 1]
+    return model.decision_function(Xte)
+
+
+def _best_threshold(y: np.ndarray, s: np.ndarray) -> float:
+    """Ngưỡng tối đa BAcc trên điểm out-of-fold (xét trung điểm giữa các điểm số đã sắp)."""
+    order = np.sort(np.unique(s))
+    if len(order) == 1:
+        return float(order[0])
+    cands = (order[:-1] + order[1:]) / 2.0
+    best_t, best_b = cands[0], -1.0
+    for t in cands:
+        b = balanced_accuracy_score(y, (s >= t).astype(int))
+        if b > best_b:
+            best_t, best_b = float(t), b
+    return best_t
+
+
+def evaluate_panel(Xtr: np.ndarray, ytr: np.ndarray, Xte: np.ndarray, yte: np.ndarray,
+                   classifier: str = "lr_l2", seed: int = 0, c_grid=C.C_GRID,
+                   inner_folds: int = C.INNER_CV_FOLDS, n_jobs: int = 1) -> EvalResult:
+    """Huấn luyện trên (Xtr, ytr) với CV nội bộ chọn C và ngưỡng; đánh giá trên (Xte, yte)."""
+    inner = list(StratifiedKFold(n_splits=inner_folds, shuffle=True, random_state=seed)
+                 .split(np.zeros(len(ytr)), ytr))
+    grid = list(c_grid) if classifier in ("lr_l2", "svm_linear") else [None]
+    best_c, best_auc, best_oof = None, -np.inf, None
+    for c in grid:
+        oof = np.zeros(len(ytr))
+        for tr, va in inner:
+            oof[va] = _fit_predict(classifier, c, seed, n_jobs, Xtr[tr], ytr[tr], Xtr[va])
+        auc = roc_auc_score(ytr, oof)
+        if auc > best_auc:
+            best_c, best_auc, best_oof = c, auc, oof
+    thr = _best_threshold(ytr, best_oof)
+    s_te = _fit_predict(classifier, best_c, seed, n_jobs, Xtr, ytr, Xte)
+    pred = (s_te >= thr).astype(int)
+    return EvalResult(classifier=classifier, auroc=float(roc_auc_score(yte, s_te)),
+                      bacc=float(balanced_accuracy_score(yte, pred)), mcc=float(matthews_corrcoef(yte, pred)),
+                      threshold=thr, hyperparam=best_c, scores_test=s_te)

@@ -17,14 +17,19 @@ RNA-Seq-FS-Survey/
 │   ├── patch_v2_tcga_stage.py   vá nhãn giai đoạn TCGA v2 từ GDC
 │   ├── aggregate_phase0_v3.py, aggregate_phase1_results.py, stage_split_metrics.py, organize_fs_phase1.py
 │   ├── build_review_completion_artifacts.py, build_review_documents.py
+│   ├── run_survey_e1.py, run_survey_e1_wrappers.py, run_survey_e2_e3_timing.py, run_survey_e4_e5_stability.py
+│   ├── make_survey_tables.py, run_p0_perm_v3.py, aggregate_p0_decision.py, run_sanity_auroc.py
+│   ├── smoke_test_survey_v2.py  chạy thử toàn bộ chuỗi survey trên dữ liệu giả
 │   ├── PHASE1_REPRODUCTION.md
 │   └── _archive/                script cũ, không dùng
+├── survey_v2/                   gói Python của bộ thực nghiệm survey v2 (E1–E6, P0, sanity) — xem docs/survey_v2/
 ├── tests/                       python -m pytest tests
 ├── notebooks/
 │   ├── phase_0/                 dữ liệu v1/v2/GEO, FS/FE và phân loại Phase 0, permutation v3, B0 v3
 │   ├── phase_1/                 benchmark Phase 1 (LUAD vs LUSC) – ĐÓNG BĂNG (O13)
 │   └── _archive/                notebook cũ, không dùng
-└── docs/notebook_manifest.md    trạng thái từng notebook: đang dùng / đóng băng / cũ
+├── docs/notebook_manifest.md    trạng thái từng notebook: đang dùng / đóng băng / cũ
+└── docs/survey_v2/HUONG-DAN-DOI-CODE.md   hướng dẫn đội code cho survey v2 (thiết kế, lệnh, tiêu chí chấp nhận)
 ```
 
 ## Cài đặt
@@ -58,3 +63,25 @@ Notebook chạy trên Kaggle/Colab: clone kho ở đúng commit rồi dùng `scr
 | `experiment-data-geo-target/` | cohort đích GSE10245, GSE30219 (`gse30219_r5_fixed`), GSE37745, GSE42127 |
 | `experiment-data-perm/` | dữ liệu permutation test v3 |
 | `results/` | kết quả theo phase |
+
+## Survey v2 (E1–E6, P0, sanity) — 25/10/2026
+
+Bộ thực nghiệm cho bản survey viết lại (Review 24/10, Bảng 10–12) nằm trong `survey_v2/` và `scripts/run_survey_*.py`;
+hướng dẫn đầy đủ (mục đích từng thí nghiệm, lệnh, đầu ra, tiêu chí chấp nhận, bàn giao) ở
+[`docs/survey_v2/HUONG-DAN-DOI-CODE.md`](docs/survey_v2/HUONG-DAN-DOI-CODE.md).
+
+```powershell
+python -m pytest tests -q                      # kiểm tra đơn vị + chạy đầu-cuối trên dữ liệu giả
+python scripts/smoke_test_survey_v2.py         # chạy thử toàn bộ chuỗi (≈ 5–15 phút, dữ liệu giả)
+python scripts/run_sanity_auroc.py             # Y10: đối chứng dương
+python scripts/run_p0_perm_v3.py               # P0 chạy lại có provenance (3 bộ giai đoạn)
+python scripts/aggregate_p0_decision.py --summaries "$env:KLTN_DATA_ROOT/results/survey_v2/P0/perm_test_v3/*/summary.csv"
+python scripts/run_survey_e1.py --secondary    # E1 filter + embedded + B0 + random-k (3 bộ)
+python scripts/run_survey_e1_wrappers.py       # E1 GA + BPSO (GSE68465, 3×5)
+python scripts/run_survey_e2_e3_timing.py --wrappers   # E2 + E3 (một máy cố định)
+python scripts/run_survey_e4_e5_stability.py   # E4 + E5
+python scripts/make_survey_tables.py           # bảng, hình, E6, manifest truy vết
+```
+
+Kết quả vào `$KLTN_DATA_ROOT/results/survey_v2/<E>/...`, mỗi thư mục có `config.json` (commit hash, SHA-256 dữ liệu,
+`traceable`). Script dừng nếu chưa commit + push (Y13); `KLTN_ALLOW_UNPUSHED=1` chỉ để chạy thử.
