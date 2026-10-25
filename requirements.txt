@@ -20,3 +20,6 @@ threadpoolctl>=3.1   # giới hạn BLAS 1 luồng/fold (E1–E4) và khi đo th
 skrebate>=0.8        # ReliefF (Urbanowicz et al. 2018); nếu lỗi trên Python 3.14: pip install --no-deps skrebate
 psutil>=5.9          # machine_config.json của E2–E3
 matplotlib>=3.8      # make_survey_tables.py (hình E1, E3, E4, E5c, E6)
+xgboost>=2.1         # classifier E1 phase B
+lightgbm>=4.5        # classifier E1 phase B
+codecarbon>=2.8      # optional energy/carbon collection for selection benchmarks
