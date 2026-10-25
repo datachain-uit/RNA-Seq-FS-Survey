@@ -94,6 +94,10 @@ def write_config(out_dir: Path, prov: dict, config: dict, data_files=()) -> Path
     config = dict(config)
     config["generated_at"] = datetime.now().astimezone().isoformat(timespec="seconds")
     stamp(config, prov)
+    # The Kaggle acceptance gate reads these fields at the top level.  Keep the
+    # full provenance record as well, but do not make callers know its nesting.
+    config["traceable"] = bool(prov.get("traceable", False))
+    config["traceable_errors"] = list(prov.get("traceable_errors", []))
     path = Path(out_dir) / "config.json"
     path.write_text(json.dumps(config, ensure_ascii=False, indent=2, default=str) + "\n", encoding="utf-8")
     return path
