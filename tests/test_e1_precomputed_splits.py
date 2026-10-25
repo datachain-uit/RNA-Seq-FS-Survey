@@ -2,8 +2,11 @@
 
 import numpy as np
 import pandas as pd
+import pytest
+from types import SimpleNamespace
 
 from survey_v2.e1_splits import build_repeated_split_manifest, validate_repeated_split_manifest
+from scripts.run_e1_feature_selection import split_indices
 
 
 def test_precomputed_manifest_has_25_leak_free_outer_splits():
@@ -31,3 +34,16 @@ def test_manifest_validator_reports_patient_leakage():
     errors = validate_repeated_split_manifest(manifest)
 
     assert any("patient overlap" in error for error in errors)
+
+
+def test_split_indices_rejects_manifest_label_mismatch():
+    ds = SimpleNamespace(sample_ids=np.array(["s1", "s2", "s3", "s4"]),
+                         groups=np.array(["p1", "p2", "p3", "p4"]), y=np.array([0, 0, 1, 1]), name="tiny")
+    manifest = pd.DataFrame({
+        "repeat": [0] * 4, "seed": [42] * 4, "fold": [0] * 4,
+        "sample_id": ["s1", "s2", "s3", "s4"], "patient_id": ["p1", "p2", "p3", "p4"],
+        "label": [1, 0, 1, 1], "role": ["train", "train", "test", "test"],
+    })
+
+    with pytest.raises(ValueError, match="label does not match"):
+        split_indices(ds, manifest, 0, 0)
