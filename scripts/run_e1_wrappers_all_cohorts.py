@@ -6,6 +6,7 @@ saved panels rather than re-running a stochastic selector.
 """
 from __future__ import annotations
 
+import argparse
 import sys
 from pathlib import Path
 
@@ -15,4 +16,10 @@ from scripts.run_e1_feature_selection import main
 
 
 if __name__ == "__main__":
-    main(["--methods", "ga", "bpso", "--out", "E1_wrapper_feature_selection"])
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--splits-root")
+    args = parser.parse_args()
+    argv = ["--methods", "ga", "bpso", "--out", "E1_wrapper_feature_selection"]
+    if args.splits_root:
+        argv += ["--splits-root", args.splits_root]
+    main(argv)
