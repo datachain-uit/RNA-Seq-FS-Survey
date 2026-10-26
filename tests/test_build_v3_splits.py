@@ -4,7 +4,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from scripts.build_v3_splits import build_fewshot_split_manifest, validate_fewshot_split_manifest
+from scripts.build_v3_splits import FEWSHOT_N, build_fewshot_split_manifest, validate_fewshot_split_manifest
 
 
 def test_split_builder_cli_loads_from_the_repository_root():
@@ -18,6 +18,10 @@ def test_split_builder_cli_loads_from_the_repository_root():
     )
 
     assert completed.returncode == 0, completed.stderr
+
+
+def test_gse42127_fewshot_omits_infeasible_40_per_class_level():
+    assert FEWSHOT_N["gse42127"] == (5, 10, 20)
 
 
 def test_fewshot_manifest_has_nested_balanced_training_sets_and_fixed_test_per_split():
