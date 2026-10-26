@@ -68,6 +68,19 @@ def jaccard(a, b):
 def start_emissions_tracker(enabled):
     if not enabled:
         return None
+
+
+def checkpoint_paths(out: Path, repeat: int, fold: int, method: str) -> tuple[Path, Path]:
+    """Two complete files are the atomic completion marker for one selection unit."""
+    base = out / "checkpoints" / f"repeat_{repeat}_fold_{fold}_{method}"
+    return base.with_suffix(".metrics.csv"), base.with_suffix(".genes.csv")
+
+
+def write_csv_atomic(frame: pd.DataFrame, path: Path) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temp = path.with_suffix(path.suffix + ".tmp")
+    frame.to_csv(temp, index=False)
+    temp.replace(path)
     try:
         from codecarbon import OfflineEmissionsTracker
         tracker = OfflineEmissionsTracker(project_name="e1_feature_selection", country_iso_code="VNM", save_to_file=False, log_level="error")
@@ -88,7 +101,6 @@ def main(argv=None, script=__file__):
         errors = validate_repeated_split_manifest(manifest, n_folds=C.N_FOLDS)
         if errors:
             raise ValueError(f"{name}: invalid repeated_splits.csv: {'; '.join(errors)}")
-        rows, genes = [], []
         process = psutil.Process()
         runs = manifest[["repeat", "seed", "fold"]].drop_duplicates().sort_values(["repeat", "fold"])
         for run in runs.itertuples(index=False):
@@ -97,6 +109,10 @@ def main(argv=None, script=__file__):
             tr, _ = split_indices(ds, manifest, run.repeat, run.fold)
             pre = variance_prefilter(ds.X[tr], args.prefilter)
             for method in args.methods:
+                metrics_path, genes_path = checkpoint_paths(out, int(run.repeat), int(run.fold), method)
+                if metrics_path.is_file() and genes_path.is_file():
+                    print(f"[{name}] repeat {run.repeat} fold {run.fold} {method}: checkpoint exists, skip", flush=True)
+                    continue
                 method_id = (C.FILTER_METHODS + C.EMBEDDED_METHODS + C.WRAPPER_METHODS).index(method)
                 seed = C.seed_for(list(C.DATASETS).index(name), int(run.seed), int(run.fold), method_id)
                 rss_before, cpu_before, t0 = process.memory_info().rss, time.process_time(), time.perf_counter()
@@ -106,10 +122,11 @@ def main(argv=None, script=__file__):
                                       wrapper_kwargs={"pop": args.pop, "generations": args.generations})
                 emissions_kg = tracker.stop() if tracker else float("nan")
                 elapsed, cpu_s = time.perf_counter() - t0, time.process_time() - cpu_before
+                fold_rows, fold_genes = [], []
                 for k in args.k:
                     panel = selected.panels[int(k)]
                     info = selected.info
-                    rows.append({"cohort": name, "repeat": run.repeat, "seed": run.seed, "fold": run.fold,
+                    fold_rows.append({"cohort": name, "repeat": run.repeat, "seed": run.seed, "fold": run.fold,
                                  "method": method, "k": int(k), "n_train": len(tr), "p0": len(pre),
                                  "n_selected": len(panel), "exact_k": info.get("exact", {}).get(int(k), True),
                                  "n_filled": info.get("n_filled", {}).get(int(k), 0),
@@ -119,11 +136,15 @@ def main(argv=None, script=__file__):
                                  "selection_time_s": elapsed, "cpu_time_s": cpu_s,
                                  "rss_delta_mb": (process.memory_info().rss - rss_before) / 2**20,
                                  "emissions_kg_co2": emissions_kg})
-                    genes.extend({"cohort": name, "repeat": run.repeat, "fold": run.fold, "method": method,
+                    fold_genes.extend({"cohort": name, "repeat": run.repeat, "fold": run.fold, "method": method,
                                   "k": int(k), "rank": rank, "gene": ds.genes[pre[col]]}
                                  for rank, col in enumerate(panel, 1))
-                print(f"[{name}] repeat {run.repeat} fold {run.fold} {method}: done", flush=True)
-        run_df, gene_df = pd.DataFrame(rows), pd.DataFrame(genes)
+                write_csv_atomic(pd.DataFrame(fold_rows), metrics_path)
+                write_csv_atomic(pd.DataFrame(fold_genes), genes_path)
+                print(f"[{name}] repeat {run.repeat} fold {run.fold} {method}: checkpoint saved", flush=True)
+        checkpoint_dir = out / "checkpoints"
+        run_df = pd.concat([pd.read_csv(p) for p in checkpoint_dir.glob("*.metrics.csv")], ignore_index=True)
+        gene_df = pd.concat([pd.read_csv(p) for p in checkpoint_dir.glob("*.genes.csv")], ignore_index=True)
         run_df.to_csv(out / "selection_per_fold.csv", index=False)
         gene_df.to_csv(out / "selected_genes.csv", index=False)
         stability = []
