@@ -68,6 +68,14 @@ def jaccard(a, b):
 def start_emissions_tracker(enabled):
     if not enabled:
         return None
+    try:
+        from codecarbon import OfflineEmissionsTracker
+        tracker = OfflineEmissionsTracker(project_name="e1_feature_selection", country_iso_code="VNM", save_to_file=False, log_level="error")
+        tracker.start()
+        return tracker
+    except Exception as exc:
+        print(f"[emissions] unavailable: {exc}", flush=True)
+        return None
 
 
 def checkpoint_paths(out: Path, repeat: int, fold: int, method: str) -> tuple[Path, Path]:
@@ -81,14 +89,6 @@ def write_csv_atomic(frame: pd.DataFrame, path: Path) -> None:
     temp = path.with_suffix(path.suffix + ".tmp")
     frame.to_csv(temp, index=False)
     temp.replace(path)
-    try:
-        from codecarbon import OfflineEmissionsTracker
-        tracker = OfflineEmissionsTracker(project_name="e1_feature_selection", country_iso_code="VNM", save_to_file=False, log_level="error")
-        tracker.start()
-        return tracker
-    except Exception as exc:
-        print(f"[emissions] unavailable: {exc}", flush=True)
-        return None
 
 
 def main(argv=None, script=__file__):
