@@ -71,7 +71,7 @@ def main(argv=None, script=__file__):
             for model in args.models:
                 with threadpool_limits(1):
                     result = tune_and_evaluate(model, ds.X[tr][:, columns], ds.y[tr], ds.X[te][:, columns], ds.y[te],
-                                               seed=C.seed_for(list(C.DATASETS).index(name), seed, fold, len(columns)), quick=args.quick)
+                                               seed=C.seed_for(C.dataset_seed_id(name), seed, fold, len(columns)), quick=args.quick)
                 rows.append({"cohort": name, "repeat": repeat, "seed": seed, "fold": fold, "method": method,
                              "k": k, "n_features": len(columns), **result})
                 print(f"[{name}] repeat {repeat} fold {fold} {method} k={k} {model}: AUROC={result['test_roc_auc']:.3f}", flush=True)

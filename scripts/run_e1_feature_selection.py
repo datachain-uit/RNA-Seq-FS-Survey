@@ -114,7 +114,7 @@ def main(argv=None, script=__file__):
                     print(f"[{name}] repeat {run.repeat} fold {run.fold} {method}: checkpoint exists, skip", flush=True)
                     continue
                 method_id = (C.FILTER_METHODS + C.EMBEDDED_METHODS + C.WRAPPER_METHODS).index(method)
-                seed = C.seed_for(list(C.DATASETS).index(name), int(run.seed), int(run.fold), method_id)
+                seed = C.seed_for(C.dataset_seed_id(name), int(run.seed), int(run.fold), method_id)
                 rss_before, cpu_before, t0 = process.memory_info().rss, time.process_time(), time.perf_counter()
                 tracker = start_emissions_tracker(args.track_emissions)
                 with threadpool_limits(1):
