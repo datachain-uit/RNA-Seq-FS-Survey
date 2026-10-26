@@ -28,6 +28,21 @@ V3_DATASET_DIRS = {
     "gse37745": ("experiment-data-geo-target", "gse37745"),
     "gse42127": ("experiment-data-geo-target", "gse42127"),
 }
+V3_EXPERIMENT_DATASETS = (
+    "tcga_luad_lusc_primary_tumor", "gse10245", "gse30219", "gse37745", "gse42127",
+)
+DATASET_SEED_IDS = {
+    **{name: i for i, name in enumerate(DATASETS)},
+    **{name: 100 + i for i, name in enumerate(V3_EXPERIMENT_DATASETS)},
+}
+
+
+def dataset_seed_id(name: str) -> int:
+    """Stable cohort namespace for random seeds across legacy and v3 runners."""
+    try:
+        return DATASET_SEED_IDS[name]
+    except KeyError as exc:
+        raise ValueError(f"unknown dataset for deterministic seed: {name}") from exc
 
 # --- Giao thức -------------------------------------------------------------------------
 REPEAT_SEEDS = (42, 43, 44, 45, 46)             # CV 5×5; mọi phương pháp dùng chung lần chia
