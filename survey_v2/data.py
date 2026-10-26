@@ -45,9 +45,17 @@ class Dataset:
         return self.X.shape[1]
 
 
+def dataset_path(root: Path, name: str) -> Path:
+    """Resolve a dataset below either the direct Kaggle v3 mount or the legacy layout."""
+    try:
+        return Path(root).joinpath(*C.V3_DATASET_DIRS[name])
+    except KeyError:
+        return Path(root) / C.PERM_DATA_DIR / name
+
+
 def load_dataset(root: Path, name: str) -> Dataset:
     """Đọc một bộ dữ liệu bài toán phụ; kiểm tra khớp index, nhãn nhị phân, không NaN."""
-    d = Path(root) / C.PERM_DATA_DIR / name
+    d = dataset_path(root, name)
     x_df = pd.read_hdf(d / "expression.h5", key="expression")
     meta = pd.read_csv(d / "metadata.csv", index_col=0)
     x_df.index = x_df.index.astype(str)

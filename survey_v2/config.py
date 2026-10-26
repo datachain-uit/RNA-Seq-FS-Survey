@@ -17,6 +17,18 @@ TIMING_DATASET = "tcga_luad_stage_early_late"    # E2–E3: dải p rộng nhấ
 PERM_DATA_DIR = "experiment-data-perm"
 RESULT_DIR = ("results", "survey_v2")           # $KLTN_DATA_ROOT/results/survey_v2/<E>
 
+# --- Survey v3: layout mounted directly by Kaggle -----------------------------------------------
+# ``$KLTN_DATA_ROOT`` is the directory shown in the Kaggle input browser.  It contains these two
+# folders directly; do not add another ``experiment-data-v3`` component when resolving datasets.
+V3_DATASET_DIRS = {
+    "tcga_luad_lusc_primary_tumor": ("experiment-data-perm", "tcga_luad_lusc_primary_tumor"),
+    "tcga_normal_vs_tumor_sanity": ("experiment-data-perm", "tcga_normal_vs_tumor_sanity"),
+    "gse10245": ("experiment-data-geo-target", "gse10245"),
+    "gse30219": ("experiment-data-geo-target", "gse30219"),
+    "gse37745": ("experiment-data-geo-target", "gse37745"),
+    "gse42127": ("experiment-data-geo-target", "gse42127"),
+}
+
 # --- Giao thức -------------------------------------------------------------------------
 REPEAT_SEEDS = (42, 43, 44, 45, 46)             # CV 5×5; mọi phương pháp dùng chung lần chia
 N_FOLDS = 5
