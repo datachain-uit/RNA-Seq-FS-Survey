@@ -27,7 +27,7 @@ from survey_v2.e1_splits import build_repeated_split_manifest, validate_repeated
 REPEAT_SEEDS = (42, 43, 44, 45, 46)
 PRIMARY_DATASETS = ("tcga_luad_lusc_primary_tumor", "gse10245", "gse30219", "gse37745", "gse42127")
 GEO_DATASETS = ("gse10245", "gse30219", "gse37745", "gse42127")
-FEWSHOT_N = {"gse10245": (5, 10), "gse30219": (5, 10, 20, 40), "gse37745": (5, 10, 20, 40), "gse42127": (5, 10, 20, 40)}
+FEWSHOT_N = {"gse10245": (5, 10), "gse30219": (5, 10, 20, 40), "gse37745": (5, 10, 20, 40), "gse42127": (5, 10, 20)}
 FEWSHOT_COLUMNS = ("split", "seed", "n_target", "sample_id", "patient_id", "label", "role")
 
 
