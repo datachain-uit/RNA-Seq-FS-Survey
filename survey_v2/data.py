@@ -1,13 +1,19 @@
 """Đọc dữ liệu, chia CV theo bệnh nhân, lọc sơ bộ không dùng nhãn, lấy mẫu con, bản sao tương quan.
 
-Định dạng bộ dữ liệu (experiment-data-perm/<bộ>/): ``expression.h5`` (key ``expression``, mẫu × gen,
-index = sample_id), ``metadata.csv`` (index sample_id; cột patient_id, class, label ∈ {0, 1}).
+Hai định dạng được chấp nhận (survey v3, QĐ15):
+* ``experiment-data-perm/<bộ>/``: ``expression.h5`` (key ``expression``, mẫu × gen, index = sample_id),
+  ``metadata.csv`` (index sample_id; cột patient_id, class, label ∈ {0, 1}) — bộ TCGA v2 và bộ sanity.
+* ``experiment-data-geo-target/<thư mục>/``: ``expression.h5`` (một node duy nhất) và ``metadata.csv`` có cột
+  ``sample_id``, ``label`` (0 = LUAD, 1 = LUSC), ``class``; nếu thiếu ``patient_id`` thì patient_id = sample_id và
+  config ghi ``patient_id_assumed_from_sample_id = true`` (O15: phải xác minh bằng kiểm tra mẫu trùng).
+Không gian gen của cohort GEO = giao với TCGA (B8) khi gọi ``load_dataset(..., gene_space="reference")``.
 """
 
 from __future__ import annotations
 
 import hashlib
-from dataclasses import dataclass
+import os
+from dataclasses import dataclass, field
 from pathlib import Path
 
 import numpy as np
@@ -29,12 +35,13 @@ def sha256(path: str | Path) -> str:
 class Dataset:
     name: str
     X: np.ndarray          # mẫu × gen, float64, log2 gốc (KHÔNG chuẩn hóa)
-    y: np.ndarray          # 0 = sớm (I), 1 = muộn (II–IV)
+    y: np.ndarray          # 0 = LUAD, 1 = LUSC (bài toán chính); sanity: 0 = normal, 1 = tumor
     groups: np.ndarray     # patient_id
     genes: np.ndarray      # tên gen (str)
     sample_ids: np.ndarray
     files_sha256: dict
     data_dir: Path
+    notes: dict = field(default_factory=dict)   # patient_id_assumed_from_sample_id, gene_space, n_genes_dropped...
 
     @property
     def n(self) -> int:
@@ -45,33 +52,134 @@ class Dataset:
         return self.X.shape[1]
 
 
-def dataset_path(root: Path, name: str) -> Path:
-    """Resolve a dataset below either the direct Kaggle v3 mount or the legacy layout."""
+def _read_expression(path: Path) -> pd.DataFrame:
     try:
-        return Path(root).joinpath(*C.V3_DATASET_DIRS[name])
-    except KeyError:
-        return Path(root) / C.PERM_DATA_DIR / name
+        return pd.read_hdf(path, key="expression")
+    except (KeyError, TypeError, ValueError):
+        return pd.read_hdf(path)
 
 
-def load_dataset(root: Path, name: str) -> Dataset:
-    """Đọc một bộ dữ liệu bài toán phụ; kiểm tra khớp index, nhãn nhị phân, không NaN."""
-    d = dataset_path(root, name)
-    x_df = pd.read_hdf(d / "expression.h5", key="expression")
-    meta = pd.read_csv(d / "metadata.csv", index_col=0)
+def _read_metadata(path: Path) -> tuple[pd.DataFrame, bool]:
+    """Trả về (metadata có index sample_id, patient_id_assumed)."""
+    meta = pd.read_csv(path)
+    if "sample_id" in meta.columns:
+        meta = meta.set_index("sample_id")
+    else:
+        meta = pd.read_csv(path, index_col=0)
+    assumed = False
+    if "patient_id" not in meta.columns:
+        meta["patient_id"] = meta.index.astype(str)
+        assumed = True
+    return meta, assumed
+
+
+def resolve_dataset_dir(root: Path, name: str) -> Path:
+    """Thư mục của một bộ dưới KLTN_DATA_ROOT: thư mục đầu tiên tồn tại trong C.dataset_dir_candidates(name);
+    nếu chưa có thư mục nào thì trả về thư mục chính (để script tạo dữ liệu/ghi split dùng được)."""
+    root = Path(root)
+    candidates = [root / rel for rel in C.dataset_dir_candidates(name)]
+    for d in candidates:
+        if (d / "expression.h5").exists() or d.is_dir():
+            return d
+    return candidates[0]
+
+
+def dataset_path(root: Path, name: str) -> Path:
+    """Tên giữ cho đội code (commit 3059ce5): như resolve_dataset_dir()."""
+    return resolve_dataset_dir(root, name)
+
+
+def read_gene_list(root: Path, name: str) -> np.ndarray:
+    """Danh sách gen của một bộ mà không nạp toàn bộ ma trận vào bộ nhớ lâu dài."""
+    d = resolve_dataset_dir(root, name)
+    x_df = _read_expression(d / "expression.h5")
+    return x_df.columns.to_numpy().astype(str)
+
+
+def _strict_n_enabled(strict_n: bool | None) -> bool:
+    if strict_n is not None:
+        return bool(strict_n)
+    return os.environ.get("KLTN_STRICT_N", "").strip().lower() in {"1", "true", "yes"}
+
+
+def load_dataset(root: Path, name: str, gene_space: str | None = "reference", data_dir: str | Path | None = None,
+                 strict_n: bool | None = None) -> Dataset:
+    """Đọc một bộ dữ liệu; kiểm tra khớp index, nhãn nhị phân, không NaN.
+
+    gene_space = "reference": cohort khác GENE_SPACE_REFERENCE chỉ giữ gen có trong bộ tham chiếu (TCGA);
+    gene_space = None: giữ nguyên. Thứ tự gen của bộ được giữ (lọc theo mặt nạ).
+    strict_n (mặc định: biến môi trường KLTN_STRICT_N): dừng nếu số mẫu mỗi lớp khác C.DATASET_EXPECTED_N
+    (v3.1: chặn chạy nhầm bản dữ liệu, vd. GSE30219 chưa sửa R5); luôn ghi notes["n_per_class_expected"].
+    """
+    d = Path(data_dir) if data_dir is not None else resolve_dataset_dir(root, name)
+    x_df = _read_expression(d / "expression.h5")
+    meta, assumed = _read_metadata(d / "metadata.csv")
     x_df.index = x_df.index.astype(str)
     meta.index = meta.index.astype(str)
     if list(x_df.index) != list(meta.index):
-        raise ValueError(f"{name}: expression.h5 và metadata.csv không cùng thứ tự sample_id")
+        if set(x_df.index) == set(meta.index):
+            meta = meta.loc[x_df.index]
+        else:
+            raise ValueError(f"{name}: expression.h5 và metadata.csv không cùng tập sample_id")
     y = meta["label"].to_numpy(dtype=int)
     if set(np.unique(y)) != {0, 1}:
         raise ValueError(f"{name}: nhãn phải là 0/1, gặp {np.unique(y)}")
+    genes = x_df.columns.to_numpy().astype(str)
+    if len(set(genes)) != len(genes):
+        raise ValueError(f"{name}: tên gen trùng lặp trong expression.h5")
     X = np.ascontiguousarray(x_df.to_numpy(dtype=np.float64))
     if np.isnan(X).any():
         raise ValueError(f"{name}: có NaN trong biểu hiện")
+    notes = {"patient_id_assumed_from_sample_id": assumed, "gene_space": "all", "n_genes_before_gene_space": int(X.shape[1]),
+             "data_dir": str(d)}
+    n_per_class = (int((y == 0).sum()), int((y == 1).sum()))
+    expected = C.DATASET_EXPECTED_N.get(name)
+    notes.update({"n_per_class": list(n_per_class), "n_per_class_expected": list(expected) if expected else None,
+                  "n_matches_expected": (tuple(expected) == n_per_class) if expected else None})
+    if expected and tuple(expected) != n_per_class:
+        msg = f"{name}: số mẫu mỗi lớp {n_per_class} khác kỳ vọng {tuple(expected)} (C.DATASET_EXPECTED_N; {d})"
+        if _strict_n_enabled(strict_n):
+            raise ValueError(msg + " — KLTN_STRICT_N=1: dừng")
+        print("[data] CẢNH BÁO " + msg, flush=True)
+    if gene_space == "reference" and name != C.GENE_SPACE_REFERENCE and name != C.SANITY_DATASET:
+        ref_dir = resolve_dataset_dir(root, C.GENE_SPACE_REFERENCE)
+        if (ref_dir / "expression.h5").exists():
+            ref_genes = set(read_gene_list(root, C.GENE_SPACE_REFERENCE))
+            keep = np.array([g in ref_genes for g in genes], dtype=bool)
+            if keep.sum() == 0:
+                raise ValueError(f"{name}: không có gen chung với {C.GENE_SPACE_REFERENCE}")
+            X, genes = np.ascontiguousarray(X[:, keep]), genes[keep]
+            notes.update({"gene_space": f"intersection with {C.GENE_SPACE_REFERENCE}",
+                          "n_genes_dropped": int((~keep).sum())})
+        else:
+            notes["gene_space"] = f"all (reference {C.GENE_SPACE_REFERENCE} not found, intersection NOT applied)"
     groups = meta["patient_id"].astype(str).to_numpy()
-    return Dataset(name=name, X=X, y=y, groups=groups, genes=x_df.columns.to_numpy().astype(str),
-                   sample_ids=meta.index.to_numpy(), data_dir=d,
-                   files_sha256={f: sha256(d / f) for f in ("expression.h5", "metadata.csv")})
+    return Dataset(name=name, X=X, y=y, groups=groups, genes=genes, sample_ids=meta.index.to_numpy(), data_dir=d,
+                   files_sha256={f: sha256(d / f) for f in ("expression.h5", "metadata.csv")}, notes=notes)
+
+
+def drop_genes(ds: Dataset, genes) -> Dataset:
+    """Bản sao của ds không có các gen trong `genes` (ablation loại 4 gen IHC — RQ1/RQ2 của khoá luận)."""
+    drop = set(str(g) for g in genes)
+    keep = np.array([g not in drop for g in ds.genes], dtype=bool)
+    out = Dataset(name=ds.name, X=np.ascontiguousarray(ds.X[:, keep]), y=ds.y, groups=ds.groups, genes=ds.genes[keep],
+                  sample_ids=ds.sample_ids, files_sha256=ds.files_sha256, data_dir=ds.data_dir, notes=dict(ds.notes))
+    out.notes["excluded_genes"] = sorted(drop & set(ds.genes.tolist()))
+    out.notes["excluded_genes_not_found"] = sorted(drop - set(ds.genes.tolist()))
+    return out
+
+
+def common_genes(a: Dataset, b: Dataset) -> np.ndarray:
+    """Gen chung của hai bộ, theo thứ tự của bộ a."""
+    sb = set(b.genes.tolist())
+    return np.array([g for g in a.genes if g in sb])
+
+
+def align_to_genes(ds: Dataset, genes) -> np.ndarray:
+    """Ma trận của ds theo đúng thứ tự `genes` (mọi gen phải có trong ds)."""
+    index = {g: j for j, g in enumerate(ds.genes)}
+    cols = [index[g] for g in genes]
+    return np.ascontiguousarray(ds.X[:, cols])
 
 
 # ---------------------------------------------------------------------------------------------------

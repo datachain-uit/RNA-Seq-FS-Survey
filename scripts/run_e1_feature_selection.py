@@ -1,8 +1,12 @@
-"""E1 phase A: select feature panels only, using precomputed 5x5 outer splits.
+"""E1 phase A (survey v3 = RQ1): select feature panels only, using precomputed 5x5 outer splits.
 
-Each selection call receives only its manifest's outer-train samples.  The
-resulting panels are deliberately stored separately from classifier metrics so
-that Phase B can evaluate several classifiers without selecting features again.
+Each selection call receives only its manifest's outer-train samples.  The resulting panels are stored separately
+from classifier metrics so that Phase B evaluates the approved classifiers without selecting features again.
+
+v3 (QĐ15, 26/10/2026): 13 selectors (11 non-wrapper by default; GA/BPSO via --methods ga bpso, WRAPPER_DATASETS,
+--repeats 0 1 2, --k from WRAPPER_K) + fixed knowledge panels (ihc_2, ihc_4, panel_<name> from
+survey_v2/panels/published_panels.csv); k grid {1,2,3,4,5,10,25,50}; gene space = intersection with TCGA for GEO
+cohorts (loader); k-TSP only at even k (odd k -> n_selected = 0, no genes); emissions tracking OFF by default (Y16).
 """
 from __future__ import annotations
 
@@ -19,16 +23,21 @@ from threadpoolctl import threadpool_limits
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO))
 from survey_v2 import config as C  # noqa: E402
-from survey_v2.data import load_dataset, sha256, variance_prefilter  # noqa: E402
+from survey_v2.data import drop_genes, load_dataset, sha256, variance_prefilter  # noqa: E402
 from survey_v2.e1_splits import validate_repeated_split_manifest  # noqa: E402
 from survey_v2.methods import select  # noqa: E402
+from survey_v2.panels import all_fixed_panels, panel_indices  # noqa: E402
 from survey_v2.runlog import DATA_ROOT, all_versions, results_dir, start_run, write_config  # noqa: E402
+
+FIXED_PANELS = all_fixed_panels()
+DEFAULT_METHODS = list(C.NON_WRAPPER_METHODS) + list(FIXED_PANELS)
 
 
 def parse_args(argv=None):
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--datasets", nargs="+", default=list(C.DATASETS))
-    ap.add_argument("--methods", nargs="+", default=list(C.FILTER_METHODS + C.EMBEDDED_METHODS))
+    ap.add_argument("--methods", nargs="+", default=DEFAULT_METHODS,
+                    help=f"selectors {C.ALL_SELECTORS} and fixed panels {tuple(FIXED_PANELS)}")
     ap.add_argument("--k", nargs="+", type=int, default=list(C.K_GRID))
     ap.add_argument("--repeats", nargs="+", type=int, default=list(range(len(C.REPEAT_SEEDS))))
     ap.add_argument("--prefilter", type=int, default=C.PREFILTER_P0)
@@ -37,8 +46,11 @@ def parse_args(argv=None):
     ap.add_argument("--out", default="E1_feature_selection")
     ap.add_argument("--pop", type=int, default=C.WRAPPER_POP)
     ap.add_argument("--generations", type=int, default=C.WRAPPER_GENERATIONS)
-    ap.add_argument("--no-track-emissions", dest="track_emissions", action="store_false")
-    ap.set_defaults(track_emissions=True)
+    ap.add_argument("--exclude-genes", nargs="+", default=None,
+                    help="ablation: loại các gen này khỏi không gian gen trước khi lọc/chọn (vd. NKX2-1 TP63 NAPSA KRT5); dùng --out riêng")
+    ap.add_argument("--track-emissions", dest="track_emissions", action="store_true",
+                    help="CodeCarbon estimate (optional, descriptive only; OFF by default — Y16)")
+    ap.set_defaults(track_emissions=False)
     return ap.parse_args(argv)
 
 
@@ -84,11 +96,23 @@ def checkpoint_paths(out: Path, repeat: int, fold: int, method: str) -> tuple[Pa
     return base.with_suffix(".metrics.csv"), base.with_suffix(".genes.csv")
 
 
-def write_csv_atomic(frame: pd.DataFrame, path: Path) -> None:
+GENE_COLUMNS = ["cohort", "repeat", "fold", "method", "k", "rank", "gene"]
+
+
+def write_csv_atomic(frame: pd.DataFrame, path: Path, columns=None) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
+    if frame.empty and columns is not None:
+        frame = pd.DataFrame(columns=columns)
     temp = path.with_suffix(path.suffix + ".tmp")
     frame.to_csv(temp, index=False)
     temp.replace(path)
+
+
+def read_csv_safe(path: Path) -> pd.DataFrame:
+    try:
+        return pd.read_csv(path)
+    except pd.errors.EmptyDataError:
+        return pd.DataFrame()
 
 
 def main(argv=None, script=__file__):
@@ -96,12 +120,16 @@ def main(argv=None, script=__file__):
     prov = start_run(script, params={k: str(v) if isinstance(v, Path) else v for k, v in vars(args).items()})
     for name in args.datasets:
         ds, out = load_dataset(DATA_ROOT, name), results_dir(args.out, name)
+        if args.exclude_genes:
+            ds = drop_genes(ds, args.exclude_genes)
+            print(f"[{name}] ablation: loại {ds.notes['excluded_genes']} (không có: {ds.notes['excluded_genes_not_found']})", flush=True)
         path = split_path(ds, args.splits_root)
         manifest = pd.read_csv(path)
         errors = validate_repeated_split_manifest(manifest, n_folds=C.N_FOLDS)
         if errors:
             raise ValueError(f"{name}: invalid repeated_splits.csv: {'; '.join(errors)}")
         process = psutil.Process()
+        skipped: set[str] = set()
         runs = manifest[["repeat", "seed", "fold"]].drop_duplicates().sort_values(["repeat", "fold"])
         for run in runs.itertuples(index=False):
             if run.repeat not in args.repeats:
@@ -113,38 +141,66 @@ def main(argv=None, script=__file__):
                 if metrics_path.is_file() and genes_path.is_file():
                     print(f"[{name}] repeat {run.repeat} fold {run.fold} {method}: checkpoint exists, skip", flush=True)
                     continue
-                method_id = (C.FILTER_METHODS + C.EMBEDDED_METHODS + C.WRAPPER_METHODS).index(method)
-                seed = C.seed_for(C.dataset_seed_id(name), int(run.seed), int(run.fold), method_id)
+                fold_rows, fold_genes = [], []
+                if method in FIXED_PANELS:
+                    # panel tri thức / panel công bố: cố định, không phụ thuộc dữ liệu; gen thiếu được ghi lại
+                    cols, missing = panel_indices(ds.genes, FIXED_PANELS[method])
+                    k_panel = len(FIXED_PANELS[method])
+                    fold_rows.append({"cohort": name, "repeat": run.repeat, "seed": run.seed, "fold": run.fold,
+                                      "method": method, "k": int(k_panel), "n_train": len(tr), "p0": len(pre),
+                                      "n_selected": len(cols), "exact_k": len(missing) == 0, "n_filled": 0,
+                                      "selector_param": None, "n_eval": None, "best_fitness": None,
+                                      "selection_time_s": 0.0, "cpu_time_s": 0.0, "rss_delta_mb": 0.0,
+                                      "emissions_kg_co2": float("nan"), "missing_genes": ";".join(missing)})
+                    fold_genes.extend({"cohort": name, "repeat": run.repeat, "fold": run.fold, "method": method,
+                                       "k": int(k_panel), "rank": rank, "gene": ds.genes[col]}
+                                      for rank, col in enumerate(cols, 1))
+                    write_csv_atomic(pd.DataFrame(fold_rows), metrics_path)
+                    write_csv_atomic(pd.DataFrame(fold_genes), genes_path, columns=GENE_COLUMNS)
+                    continue
+                method_id = C.METHOD_ID[method]
+                seed = C.seed_for(C.cohort_id(name), int(run.seed), int(run.fold), method_id)
                 rss_before, cpu_before, t0 = process.memory_info().rss, time.process_time(), time.perf_counter()
                 tracker = start_emissions_tracker(args.track_emissions)
-                with threadpool_limits(1):
-                    selected = select(method, ds.X[tr][:, pre], ds.y[tr], args.k, seed=seed, n_jobs=1,
-                                      wrapper_kwargs={"pop": args.pop, "generations": args.generations})
+                try:
+                    with threadpool_limits(1):
+                        selected = select(method, ds.X[tr][:, pre], ds.y[tr], args.k, seed=seed, n_jobs=1,
+                                          wrapper_kwargs={"pop": args.pop, "generations": args.generations})
+                except ImportError as exc:          # abess không cài được: ghi nhận, không dừng cả đợt
+                    print(f"[{name}] {method}: BỎ QUA ({exc})", flush=True)
+                    skipped.add(method)
+                    if tracker:
+                        tracker.stop()
+                    continue
                 emissions_kg = tracker.stop() if tracker else float("nan")
                 elapsed, cpu_s = time.perf_counter() - t0, time.process_time() - cpu_before
-                fold_rows, fold_genes = [], []
                 for k in args.k:
-                    panel = selected.panels[int(k)]
+                    panel = selected.panels.get(int(k))
                     info = selected.info
+                    n_sel = 0 if panel is None else len(panel)
                     fold_rows.append({"cohort": name, "repeat": run.repeat, "seed": run.seed, "fold": run.fold,
                                  "method": method, "k": int(k), "n_train": len(tr), "p0": len(pre),
-                                 "n_selected": len(panel), "exact_k": info.get("exact", {}).get(int(k), True),
+                                 "n_selected": n_sel, "exact_k": info.get("exact", {}).get(int(k), True) if panel is not None else False,
                                  "n_filled": info.get("n_filled", {}).get(int(k), 0),
                                  "selector_param": info.get("C", {}).get(int(k)),
                                  "n_eval": info.get("n_eval", {}).get(int(k)),
                                  "best_fitness": info.get("best_fitness", {}).get(int(k)),
                                  "selection_time_s": elapsed, "cpu_time_s": cpu_s,
                                  "rss_delta_mb": (process.memory_info().rss - rss_before) / 2**20,
-                                 "emissions_kg_co2": emissions_kg})
-                    fold_genes.extend({"cohort": name, "repeat": run.repeat, "fold": run.fold, "method": method,
-                                  "k": int(k), "rank": rank, "gene": ds.genes[pre[col]]}
-                                 for rank, col in enumerate(panel, 1))
+                                 "emissions_kg_co2": emissions_kg,
+                                 "missing_genes": "" if panel is not None else "ktsp: k must be even"})
+                    if panel is not None:
+                        fold_genes.extend({"cohort": name, "repeat": run.repeat, "fold": run.fold, "method": method,
+                                      "k": int(k), "rank": rank, "gene": ds.genes[pre[col]]}
+                                     for rank, col in enumerate(panel, 1))
                 write_csv_atomic(pd.DataFrame(fold_rows), metrics_path)
-                write_csv_atomic(pd.DataFrame(fold_genes), genes_path)
+                write_csv_atomic(pd.DataFrame(fold_genes), genes_path, columns=GENE_COLUMNS)
                 print(f"[{name}] repeat {run.repeat} fold {run.fold} {method}: checkpoint saved", flush=True)
         checkpoint_dir = out / "checkpoints"
-        run_df = pd.concat([pd.read_csv(p) for p in checkpoint_dir.glob("*.metrics.csv")], ignore_index=True)
-        gene_df = pd.concat([pd.read_csv(p) for p in checkpoint_dir.glob("*.genes.csv")], ignore_index=True)
+        run_df = pd.concat([read_csv_safe(p) for p in checkpoint_dir.glob("*.metrics.csv")], ignore_index=True)
+        gene_frames = [read_csv_safe(p) for p in checkpoint_dir.glob("*.genes.csv")]
+        gene_frames = [g for g in gene_frames if len(g)]
+        gene_df = pd.concat(gene_frames, ignore_index=True) if gene_frames else pd.DataFrame(columns=GENE_COLUMNS)
         run_df.to_csv(out / "selection_per_fold.csv", index=False)
         gene_df.to_csv(out / "selected_genes.csv", index=False)
         stability = []
@@ -156,10 +212,13 @@ def main(argv=None, script=__file__):
         pd.DataFrame(stability).to_csv(out / "selection_stability.csv", index=False)
         gene_df.groupby(["cohort", "method", "k", "gene"], as_index=False).size().rename(
             columns={"size": "selected_in_outer_folds"}).to_csv(out / "selection_gene_frequency.csv", index=False)
-        cfg = {"experiment": "E1_feature_selection", "dataset": name, "protocol":
-               "precomputed patient-grouped repeated 5x5 outer train/test; selection and variance prefilter use outer train only",
-               "split_file": str(path), "split_sha256": sha256(path), "methods": args.methods, "k_grid": args.k,
-               "prefilter_p0": args.prefilter, "metrics": ["n_selected", "exact_k", "n_filled", "selection_time_s", "cpu_time_s", "rss_delta_mb", "emissions_kg_co2", "n_eval", "best_fitness", "pairwise_jaccard"],
+        cfg = {"experiment": "E1_feature_selection", "dataset": name, "role": C.DATASETS.get(name), "protocol":
+               "precomputed patient-grouped repeated 5x5 outer train/test; selection and label-free variance prefilter use outer train only",
+               "split_file": str(path), "split_sha256": sha256(path), "methods": args.methods, "methods_skipped": sorted(skipped),
+               "fixed_panels": {m: FIXED_PANELS[m] for m in args.methods if m in FIXED_PANELS}, "k_grid": args.k,
+               "prefilter_p0": args.prefilter, "gene_space": ds.notes, "n_samples": ds.n, "n_genes": ds.p,
+               "metrics": ["n_selected", "exact_k", "n_filled", "selection_time_s (descriptive, not E2)", "cpu_time_s", "rss_delta_mb (descriptive)",
+                           "emissions_kg_co2 (optional estimate)", "n_eval", "best_fitness", "pairwise_jaccard (descriptive; E4 is the CI version)"],
                "versions": all_versions()}
         write_config(out, prov, cfg, data_files=[ds.data_dir / "expression.h5", ds.data_dir / "metadata.csv", path])
 

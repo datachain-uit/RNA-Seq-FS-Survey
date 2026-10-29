@@ -1,64 +1,120 @@
-# Hướng dẫn đội code — Thực nghiệm survey v2 (P0, E1–E6, sanity)
+# Hướng dẫn đội code — Thực nghiệm survey v3.1 (E0–E7, dùng chung với RQ1 khoá luận)
 
-Phiên bản 25/10/2026 · Áp dụng cho gói `survey_v2/` + `scripts/run_survey_*.py`, `scripts/run_p0_perm_v3.py`,
-`scripts/aggregate_p0_decision.py`, `scripts/run_sanity_auroc.py`, `scripts/make_survey_tables.py`.
-Người nhận: đội code (LuanNT). Người viết bài: GVHD. Mọi thắc mắc về *thiết kế* hỏi GVHD trước khi đổi code.
+Phiên bản 29/10/2026 (v3.1 = bản v3 của Review 26/10 ghép lên HEAD `2508a2a` của đội code, QĐ18–QĐ20 của Review 29/10).
+Áp dụng cho gói `survey_v2/` + `scripts/` trên nhánh `survey-v2-code`. Người nhận: đội code (LuanNT). Người viết bài: GVHD.
+Mọi thắc mắc về *thiết kế* hỏi GVHD trước khi đổi code.
+
+---
+
+## v3.1 — điều gì khác bản v3 (26/10) và phải làm gì trước (đọc trước mọi mục khác)
+
+**Vì sao có v3.1.** Gói v3 (patch trên `570bace`) chưa được áp; từ 26 đến 27/10 đội code commit thêm 6 commit (`511cbf2` → `2508a2a`)
+sửa `config.py`, `data.py`, hai script E1 và thêm `build_v3_splits.py` + 3 tệp test. v3.1 là gói v3 ghép lên `2508a2a` để không mất
+việc đã làm, đã chạy `pytest` (89 test, kể cả 3 tệp test của đội code) và smoke test đầu-cuối trên dữ liệu giả.
+
+**Những gì v3.1 giữ của đội code** (không phải sửa notebook/test đang có):
+- `survey_v2.data.dataset_path(root, name)` và `config.dataset_seed_id(name)` (= 100 + thứ tự cohort; `cohort_id()` của v3 nay
+  trả về cùng giá trị) — seed của pha A trên TCGA vì thế **không đổi** so với lần chạy 26–28/10, đủ điều kiện làm kiểm tra bằng nhau (QĐ19).
+- Thư mục dữ liệu theo layout Kaggle Input `experiment-data-v3` của DATA_AUDIT 27/10: `experiment-data-geo-target/gse30219`
+  (bản R5, 146 mẫu). Tên `gse30219_r5_fixed` của layout RQ0′ vẫn được nhận (`DATASET_DIR_ALTERNATIVES`).
+- `scripts/build_v3_splits.py` (một lệnh cho cả 5×5 và few-shot) và `--selection-root` của `run_e1_classification.py`.
+
+**Những gì v3.1 sửa trong phần của đội code:**
+- `build_v3_splits.py`: phần few-shot nay ghi đúng giao thức KBTN Mục 6 qua `survey_v2.fewshot` (5 split × **4 tập con lồng nhau**
+  mỗi n_T, cột `subset`). Bản cũ (commit `ad75caa`) chỉ có **một** tập con mỗi n_T (O23, Review 29/10) nên không ước lượng được
+  phương sai giữa tập con. Tệp `fewshot_splits.csv` sinh trước 29/10 **phải sinh lại** (`--force`); tệp 5×5 `repeated_splits.csv`
+  không đổi (cùng generator, cùng seed), chỉ cần kiểm tra lại SHA-256.
+- `load_dataset()` ghi `n_per_class` vào notes và, khi `KLTN_STRICT_N=1` (runner Kaggle đặt sẵn), **dừng** nếu số mẫu mỗi lớp khác
+  `config.DATASET_EXPECTED_N` (517/501, 40/18, 85/61, 106/66, 133/43).
+- Notebook `kaggle_e1_feature_selection_v3_runner.ipynb`: không truyền `--k` nữa (K_GRID lấy từ config — M18), thêm nhóm
+  `RUN_CONSTRAINED` (abess, stability_selection, ktsp) và `RUN_PANELS`, wrapper chạy qua `run_e1_wrappers_all_cohorts.py`,
+  cổng 3 kiểm tra `traceable == true` và `commit_hash == HEAD` trong từng `config.json`.
+
+**Áp gói (10 phút).** Trên nhánh `survey-v2-code` tại `2508a2a` (nếu đã có commit sau `2508a2a`, báo GVHD trước khi áp):
+```bash
+git checkout survey-v2-code && git pull
+git am --3way survey-v3.1-code_<hash>.patch        # patch đã được tạo từ 2508a2a; nếu xung đột: git am --abort, báo GVHD
+python -m pytest tests -q                            # 89 passed (1 skipped) — không có FAILED
+python scripts/smoke_test_survey_v2.py --n-jobs 4    # ≈ 10 phút, dữ liệu giả, kết thúc bằng "Sanity: ĐẠT"
+git push                                              # mọi kết quả chỉ được trích khi chạy từ commit đã push
+```
+Commit bằng danh tính UIT của sinh viên (`git config user.name/user.email` trước khi `git am`; `git am` giữ tác giả của patch,
+nên nếu muốn một tác giả duy nhất dùng `git am --3way --no-gpg-sign` rồi `git commit --amend --reset-author`).
+
+**Quy ước mới (Review 29/10):**
+- **QĐ18 — E2/E3 trên Kaggle có hiệu chuẩn.** Chạy chính thức bằng `scripts/run_survey_e2_e3_timing.py` đã commit (không dùng
+  notebook tự viết). Script tự đo 3 phương pháp mốc (`CALIBRATION_METHODS` = l1_lr, svm_rfe, rf_importance; ≈ 2,5 phút) ở điểm E2
+  (n = 814, p = 5.000, k = 10) và ghi `calibration.csv`; phiên thứ hai trở đi chạy với `--calibration-reference <calibration.csv của
+  phiên đầu>`: script DỪNG nếu một mốc lệch ≥ 10 % (`CALIBRATION_MAX_DRIFT`); `calibration_check.json` và `config.json` ghi độ lệch.
+  Thêm `--isolate-memory` để bộ nhớ đỉnh đo trong tiến trình con mới cho từng (phương pháp, k) (cột `maxrss_isolated_mb`, Y19).
+  Phiên đầu (tham chiếu) và mọi phiên sau phải cùng loại máy Kaggle (CPU 4 nhân, BLAS 1 luồng); `machine_config.json` ghi CPU/RAM từng phiên.
+  Lệnh chuẩn: `python scripts/run_survey_e2_e3_timing.py --wrappers --isolate-memory [--calibration-reference ...]`.
+- **QĐ19 — tái dùng.** Chỉ panel pha A trên **TCGA** (10 phương pháp filter/embedded) chạy 26–28/10 được tái dùng, và chỉ khi
+  chạy lại **một** lần lặp (repeat 0) với v3.1 cho danh sách gen **giống hệt** (`scripts/compare_panels.py`, Phụ lục A Review 29/10).
+  Mọi thứ khác (GEO pha A + B, pha B TCGA, B0/random-k, E1b, E2/E3, E4) chạy lại bằng script v3.1. Kết quả wrapper 5 cohort × 25 fold
+  × 8 k và E4 trên 5 cohort (ngoài phạm vi QĐ16) không dùng.
+- **M18 — logic thí nghiệm chỉ nằm trong script đã commit**; notebook chỉ gọi script. `traceable` được tính từ provenance, không gán tay.
+- **M19 — kết quả 26–28/10 chỉ dùng để ước lượng chi phí**, không trích vào bài.
+- Hạn: đợt 1 **03/11** (E0, E1 không wrapper, E2); được dời sang 04/11 nếu báo GVHD trước 02/11. Đợt 2: 06/11 (E1b, E3, E4+E5), 08/11 (wrapper, E7).
 
 ---
 
 ## 0. Tóm tắt một trang
 
-**Bài survey làm lại nói điều gì?** Bản v1 bị loại vì phần thực nghiệm không đứng được (S1–S4, mục 1). Bản v2
-giữ phần tổng quan, thay toàn bộ thực nghiệm bằng một **bộ đánh giá có kiểm soát** trên bài toán phụ *giai đoạn sớm
-(I) vs muộn (II–IV), chỉ mẫu u*, với ba bộ dữ liệu `gse68465_stage_early_late`, `tcga_luad_stage_early_late`,
-`tcga_lusc_stage_early_late`. Thông điệp dự kiến (chỉ được viết sau khi E1–E6 xác nhận): *tín hiệu giai đoạn trong
-transcriptome khối u yếu; chọn gen chỉ hơn chọn ngẫu nhiên một mức nhỏ và chỉ bền trên GSE68465; khi tín hiệu yếu,
-giao thức đánh giá (chia theo bệnh nhân, mốc random-k, kiểm định hoán vị, độ ổn định có CI) quan trọng hơn việc
-chọn phương pháp nào.*
+**Điều gì đổi so với bản 25/10?** Bài survey chuyển sang **cùng bài toán với khoá luận**: LUAD (0) vs LUSC (1) — nguồn TCGA
+(RNA-seq, `tcga_luad_lusc_primary_tumor`) và 4 cohort GEO đích (`gse10245`, `gse30219` = `gse30219_r5_fixed`, `gse37745`,
+`gse42127`). Bài toán giai đoạn (GSE68465, P0, "tín hiệu yếu") **không còn thuộc survey**. Ngân sách k ∈ {1, 2, 3, 4, 5, 10, 25, 50}.
+**E1 của survey ≡ RQ1 của khoá luận**: chạy MỘT lần, một bộ kết quả, một đường mã (hai pha A/B của đội code, giữ nguyên).
+Thêm: 3 phương pháp (abess, stability selection, k-TSP), panel IHC-2/IHC-4 và panel công bố, E0 (kiểm tra tín hiệu),
+E1b (đường cong học few-shot = nhánh target-only của RQ2), E7 (3 chiến lược chuyển giao đơn giản = baseline D3 của RQ2),
+k* gộp theo QĐ11 cho mọi phương pháp. Bộ 11 bộ phân loại của pha B **không dùng để xếp hạng** (chỉ `--models-extended`, phụ lục).
 
-**Đội code phải giao gì?** Kết quả của 8 việc, mỗi việc là một thư mục có `config.json` (commit hash, SHA-256 dữ liệu):
+**Đội code phải giao gì?** Kết quả của 10 việc, mỗi việc là một thư mục có `config.json` (commit hash, SHA-256 dữ liệu và bản chia):
 
-| # | Việc | Script | Trả lời | Hạn (Review 24/10, Bảng 17) |
+| # | Việc | Script | Trả lời | Hạn (Review 26/10) |
 |---|---|---|---|---|
-| 1 | Sanity Y10 (đối chứng dương) | `run_sanity_auroc.py` | pipeline có hỏng không | 27/10 |
-| 2 | P0 chạy lại có provenance | `run_p0_perm_v3.py` + `aggregate_p0_decision.py` | có tín hiệu / có ích / bền | 27/10 |
-| 3 | E1 filter + embedded (3 bộ) | `run_survey_e1.py` | RQ1: hiệu năng theo ngân sách k | 03/11 |
-| 4 | E2 chi phí tại một điểm; E3 đường cong theo n, p | `run_survey_e2_e3_timing.py` | RQ2: chi phí, số mũ thực nghiệm | 03/11 (E2), 06/11 (E3) |
-| 5 | E1 wrapper (GA, BPSO, GSE68465, 3×5) | `run_survey_e1_wrappers.py` | RQ1 cho wrapper | 08/11 |
-| 6 | E4 ổn định theo cỡ mẫu; E5 dư thừa, seed, chồng lấn | `run_survey_e4_e5_stability.py` | RQ3 | 06/11 |
-| 7 | Bảng, hình, manifest (E6 ghép E1+E2+E4) | `make_survey_tables.py` | tất cả | sau mỗi đợt |
-| 8 | Data card cho 3 bộ giai đoạn + bản chia 5×5 (`cv_splits.csv`) | (E1 tự ghi `cv_splits.csv`) | điều kiện 7 | 27/10 |
+| 1 | Cổng 1′: data card 5 bộ, nhãn kiểm tra chéo, mẫu trùng, G | (tay + `rebuild_gse30219_r5.py`, đoạn code J) | điều kiện 2, 3 | 28/10 |
+| 2 | Bản chia 5×5 (5 bộ) và few-shot (4 cohort) | `build_e1_repeated_splits.py`, `build_fewshot_splits.py` | giao thức | 28/10 |
+| 3 | Sanity Y10 | `run_sanity_auroc.py` | pipeline có hỏng không | 28/10 |
+| 4 | E0 kiểm tra tín hiệu (5 bộ) | `run_survey_e0_signal_check.py` | bước 1 khung quyết định | 03/11 |
+| 5 | E1 pha A + pha B (11 phương pháp + panel; B0; random-k; 5 bộ) | `run_e1_feature_selection.py`, `run_e1_classification.py --secondary` | RQ1 (= H1 khoá luận) | 03/11 (bàn giao 1), 06/11 |
+| 6 | E1 wrapper (GA, BPSO; 3 cohort GPL570; 3×5; k ∈ {5, 10, 50}) | `run_e1_wrappers_all_cohorts.py` rồi pha B `--methods ga bpso` | RQ1 cho wrapper | 08/11 |
+| 7 | E1b đường cong học (4 cohort) | `run_survey_e1b_learning_curve.py` | RQ4 (và ổn định few-shot) | 06/11 |
+| 8 | E2 + E3 chi phí (TCGA, máy cố định) | `run_survey_e2_e3_timing.py --wrappers` | RQ2 | 03/11 (E2), 06/11 (E3) |
+| 9 | E4 + E5 ổn định (TCGA, GSE37745) | `run_survey_e4_e5_stability.py` | RQ3 | 06/11 |
+| 10 | E7 chuyển giao đơn giản (ưu tiên 2) | `run_survey_e7_transfer_naive.py` | RQ4 | 08/11 (nếu không kịp: báo) |
+| — | Bảng, hình, manifest (E6 ghép) | `make_survey_tables.py` | tất cả | sau mỗi đợt |
 
 **Ba quy tắc không được vi phạm**
 
-1. *Không chạm vào test*: mọi bước (lọc phương sai, chọn gen, chuẩn hóa, chọn C, chọn ngưỡng, fitness của wrapper)
-   chỉ dùng phần train của fold. Code đã bố trí như vậy; không "tối ưu" lại.
-2. *Không sửa hằng số đặt trước* trong `survey_v2/config.py` (k, seed, M, số hoán vị, lưới C...) nếu chưa được GVHD
-   duyệt bằng văn bản. Nếu buộc phải sửa để chạy nổi, ghi lý do vào commit message và báo ngay.
-3. *Mọi kết quả phải truy vết*: script chạy phải đã `git commit` + `git push`; `config.json` phải có `commit_hash`
-   và `traceable = true`. Kết quả chạy với `KLTN_ALLOW_UNPUSHED=1` chỉ để thử, **không gửi**.
+1. *Không chạm vào test*: mọi bước (lọc phương sai, chọn gen, chuẩn hoá, chọn C, chọn ngưỡng, fitness của wrapper) chỉ dùng
+   phần train của fold hoặc L_T. Pha B **không** được chọn "best classifier" theo AUROC test (O19) — code đã bỏ tệp đó.
+2. *Không sửa hằng số đặt trước* trong `survey_v2/config.py` (k, n_T, seed, M, số hoán vị, lưới C, danh sách cohort cho wrapper…)
+   nếu chưa được GVHD duyệt bằng văn bản. Nếu buộc phải sửa để chạy nổi, ghi lý do vào commit message và báo ngay.
+3. *Mọi kết quả phải truy vết*: script chạy phải đã `git commit` + `git push`; `config.json` phải có `commit_hash` và
+   `traceable = true`. Kết quả chạy với `KLTN_ALLOW_UNPUSHED=1` chỉ để thử, **không gửi**. Commit bằng danh tính sinh viên
+   (tên, email UIT) — không dùng danh tính khác (Y17).
 
 ---
 
-## 1. Bối cảnh: vì sao phải làm lại và làm lại cái gì
+## 1. Bối cảnh: vì sao đổi và đổi cái gì
 
-Review 11/10 (Bảng 4) chỉ ra bốn lỗi của thực nghiệm v1:
+Review 26/10 (QĐ15): survey thống nhất với đề tài khoá luận *"Giảm chiều thông qua chọn lọc gen có ràng buộc ngân sách kết hợp
+học chuyển giao để phân loại dữ liệu biểu hiện gen nhiều chiều, ít mẫu trong chẩn đoán bệnh"*. Hệ quả cho code:
 
-- **S1** — đơn vị mẫu là tế bào (single-cell GSE131907), nhãn ở mức bệnh nhân, không chia theo bệnh nhân → mô hình
-  học "bệnh nhân/lô"; F1 ≈ 0,85 không phản ánh khả năng phân giai đoạn cho bệnh nhân mới.
-- **S2** — lọc MI *theo nhãn* trên toàn bộ dữ liệu trước khi chọn gen (selection bias); độ ổn định 1,0000 ở cỡ
-  20.000 gen → vô nghĩa.
-- **S3** — một lần chạy, không SD/CI, không kiểm định, nhưng kết luận "mRMR is the most robust".
-- **S4** — thời gian đo trên phần cứng không cố định; tiêu đề "RNA-Seq" trong khi GSE68465 là microarray.
+| Thành phần | Bản 25/10 | Bản v3 (26/10) |
+|---|---|---|
+| Dữ liệu | 3 bộ giai đoạn (perm/) | TCGA LUAD+LUSC (perm/) + 4 cohort GEO (geo-target/, định dạng của RQ0′) |
+| Không gian gen | toàn bộ | cohort GEO: giao với TCGA (loader tự làm; `config.json` ghi `gene_space`) |
+| k | {10, 50, 100, 200, 500} | {1, 2, 3, 4, 5, 10, 25, 50}; few-shot {2, 3, 4, 5, 10}; wrapper {5, 10, 50} |
+| Phương pháp | 10 | 13 (+ abess, stability selection, k-TSP) + panel IHC-2/4 + panel công bố (CSV) |
+| Bộ phân loại | LR-L2; RF, SVM ở k ∈ {50, 200} | LR-L2; RF, SVM ở k ∈ {5, 25}; thêm log-loss, Brier; M5 cho n_T ≤ 10 |
+| Mới | — | E0, E1b, E7, k* gộp (QĐ11), few-shot splits |
+| Bỏ | P0, bài toán giai đoạn, bộ 11 mô hình để xếp hạng, CodeCarbon mặc định | — |
 
-Bảy điều kiện để kết quả mới được dùng (Review 11/10 Mục 5, điều chỉnh bởi QĐ6): (1) pipeline bulk chia theo bệnh
-nhân, mọi bước trong fold; (2) GSE68465 bỏ 19 mẫu RNA tham chiếu, chỉ mẫu u; (3) P0 quyết định khung bài: ba bộ đạt
-theo quy tắc đặt trước, chỉ GSE68465 đạt bền → khung "tín hiệu yếu"; (4) CV lặp theo bệnh nhân 5×5, mean ± SD, CI 95%,
-kiểm định cặp Nadeau–Bengio + Holm; (5) thời gian/bộ nhớ trên một máy cố định, lặp ≥ 3, trung vị, đường cong theo n
-và p; (6) ổn định bằng Nogueira có CI qua các lần lấy mẫu lại bệnh nhân, so ở cùng k; (7) mọi con số truy về một tệp
-và một commit hash.
-
-Từng thí nghiệm E1–E6 là một câu trả lời cho một điều kiện ở trên; mục 6 nêu "để chứng minh điều gì" cho từng cái.
+Bảy điều kiện để kết quả được dùng (Review 26/10, `05_decisions_and_design.md` Mục 3) nằm ở từng script: chia theo bệnh nhân,
+lọc không nhãn trong fold, G = giao với TCGA, nhãn kiểm tra chéo, CV lặp + Nadeau–Bengio + k* gộp, máy cố định cho E2–E3,
+Nogueira có CI trên M = 30 tập con độc lập, truy vết commit.
 
 ---
 
@@ -67,302 +123,241 @@ Từng thí nghiệm E1–E6 là một câu trả lời cho một điều kiện
 ```bash
 git clone https://github.com/datachain-uit/RNA-Seq-FS-Survey.git
 cd RNA-Seq-FS-Survey
-python -m venv .venv && source .venv/bin/activate        # Windows: .venv\Scripts\activate
+git checkout survey-v2-code                               # áp patch v3 lên đây (xem README-GOI-CODE)
+python -m venv .venv && source .venv/bin/activate         # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
-# Thư mục dữ liệu (chứa experiment-data-perm/ và results/), KHÔNG nằm trong kho Git
-export KLTN_DATA_ROOT=/path/to/KLTN                       # Windows PowerShell: $env:KLTN_DATA_ROOT = "D:\KLTN"
+pip install abess                                          # L0 (tuỳ chọn; nếu không cài được trên Python 3.14: ghi vào HANDOVER, method abess bị bỏ qua tự động)
+export KLTN_DATA_ROOT=/path/to/KLTN                        # Windows PowerShell: $env:KLTN_DATA_ROOT = "D:\KLTN"
 
-python -m pytest tests -q -m "not slow"                   # ~10 s: kiểm tra đơn vị
-python -m pytest tests -q                                 # ~1 phút: thêm chạy đầu-cuối trên dữ liệu giả
-python scripts/smoke_test_survey_v2.py                    # ~5–15 phút: chạy toàn bộ chuỗi trên dữ liệu giả
+python -m pytest tests -q -m "not slow"                   # ~15 s: 75 test đơn vị
+python -m pytest tests -q                                 # ~4 phút: thêm 7 test đầu-cuối trên dữ liệu giả
+python scripts/smoke_test_survey_v2.py --n-jobs 4          # ~10–20 phút: toàn bộ chuỗi E0–E7 trên dữ liệu giả
 ```
 
-Dữ liệu cần có trong `$KLTN_DATA_ROOT/experiment-data-perm/<bộ>/`: `expression.h5` (key `expression`, mẫu × gen,
-log2 gốc), `metadata.csv` (`sample_id`, `patient_id`, `class`, `label` ∈ {0,1}), và cho P0 thêm `perm_folds.csv`,
-`folds/fold_<r>/{train,val,test}.h5` (do `scripts/build_perm_test_data.py` tạo). Bộ sanity: `tcga_normal_vs_tumor_sanity`.
+Dữ liệu cần có trong `$KLTN_DATA_ROOT/`:
 
-Gói mới cần thêm: `skrebate` (ReliefF), `threadpoolctl`, `joblib`, `psutil`, `matplotlib` (đã thêm vào
-`requirements.txt`). Nếu `pip install skrebate` lỗi trên Python 3.14, thử `pip install --no-deps skrebate` (skrebate
-chỉ cần numpy/scipy/scikit-learn).
+```
+experiment-data-perm/tcga_luad_lusc_primary_tumor/   expression.h5 (key "expression"), metadata.csv (index sample_id; patient_id, class, label)
+experiment-data-perm/tcga_normal_vs_tumor_sanity/    như trên + perm_folds.csv, folds/ (Y10)
+experiment-data-geo-target/gse10245/                 expression.h5, metadata.csv (cột sample_id, label, class[, patient_id])
+experiment-data-geo-target/gse30219_r5_fixed/        (bản R5 chuẩn, một bản duy nhất — Y12)
+experiment-data-geo-target/gse37745/
+experiment-data-geo-target/gse42127/
+```
 
-Kiểm tra nhanh cấu hình máy chạy E2–E3 (ghi vào biên bản): `python -c "from survey_v2.timing import machine_info; print(machine_info())"`.
+Nếu `metadata.csv` của cohort GEO không có `patient_id`, loader đặt patient_id = sample_id và ghi
+`patient_id_assumed_from_sample_id = true` vào `config.json` — **chỉ chấp nhận khi kiểm tra mẫu trùng (O15) đã làm và ghi vào data card**.
+
+Kiểm tra nhanh cấu hình máy chạy E2–E3: `python -c "from survey_v2.timing import machine_info; print(machine_info())"`.
 
 ---
 
-## 3. Quy tắc truy vết (provenance) — đọc kỹ
+## 3. Quy tắc truy vết (provenance) — không đổi
 
-Mọi script survey gọi `survey_v2.runlog.start_run(__file__, params)` ở đầu `main()`:
-
-1. `scripts/provenance.py::provenance()` dừng nếu thư mục không phải git clone, hoặc có file **đã theo dõi** bị sửa
-   chưa commit (file mới chưa `git add` không tính).
-2. `check_traceable()` (đoạn code E2 của Review 24/10, sửa Y13): script đang chạy phải nằm trong Git index và commit
-   HEAD phải có trên remote (`git branch -r --contains HEAD`). Nếu không → dừng với mã 2 và in lý do.
-3. Mỗi thư mục kết quả có `config.json` với `commit_hash`, `dirty = false`, `traceable = true`, SHA-256 của
-   `expression.h5`/`metadata.csv`, phiên bản thư viện, tham số dòng lệnh.
-
-Quy trình đúng mỗi lần chạy thật:
-
-```bash
-git status                 # sạch
-git pull --rebase
-git log -1 --oneline       # ghi lại commit này vào biên bản
-python scripts/run_survey_e1.py ...
-```
-
-`KLTN_ALLOW_UNPUSHED=1` chỉ dùng khi chạy thử; khi đó `config.json` ghi `traceable = false` và kết quả không được
-trích. Vì sao chặt như vậy: kết quả P0 nhận ngày 24/10 ghi `commit_hash = "unknown"` nên **không trích được vào bài**
-(nguyên tắc 7), phải chạy lại — đây là việc #2.
+`survey_v2.runlog.start_run(__file__, params)` ở đầu mỗi script: dừng nếu kho không sạch, script chưa được theo dõi hoặc HEAD chưa
+push (Y13). `config.json` có `commit_hash`, `dirty = false`, `traceable = true`, SHA-256 của dữ liệu **và của tệp bản chia**, phiên bản
+thư viện, tham số dòng lệnh. Trên Kaggle: clone đúng nhánh đã push (runner của đội code đã làm đúng).
 
 ---
 
-## 4. Cấu trúc code và luồng dữ liệu
+## 4. Cấu trúc code và luồng dữ liệu (v3)
 
 ```
 survey_v2/
-  config.py      hằng số đặt trước (seed 42–46, k ∈ {10,50,100,200,500}, p0 = 5000, M = 30, quần thể 30 × 50 thế hệ...)
-  data.py        đọc bộ dữ liệu; chia CV 5×5 theo bệnh nhân; lọc phương sai TRONG fold; lấy mẫu con; bản sao tương quan
-  methods.py     10 phương pháp chọn gen + random-k; giao diện chung select(method, X_train, y_train, k_list)
-  mrmr.py        mRMR theo Peng 2005 (rời rạc hóa 3 mức, MID/MIQ), vector hóa bằng einsum
-  wrappers.py    GA, BPSO mã hóa đúng k; fitness = AUROC CV 3 fold của LR-L2 trong phần train; đếm n_eval
-  classify.py    LR-L2 (chính), RF, SVM tuyến tính; C và ngưỡng chọn bằng CV nội bộ; AUROC, BAcc, MCC
-  stats.py       t-test Nadeau–Bengio, Holm, Bayesian correlated t-test (ROPE), CI
-  stability.py   Nogueira (+ CI), Kuncheva, Jaccard, ma trận chồng lấn giữa phương pháp
-  timing.py      đo wall/CPU/bộ nhớ đỉnh; số mũ log–log; thông tin máy
-  runlog.py      provenance + check_traceable + thư mục kết quả + config.json
-  synthetic.py   dữ liệu giả đúng định dạng (chỉ để test)
+  config.py      registry 5 bộ (DATASETS, DATASET_DIRS), k, n_T, 13 phương pháp, panel IHC, E0–E7, thống kê (k*: KSTAR_*)
+  data.py        loader hai layout; không gian gen G = giao với TCGA; CV 5×5 theo bệnh nhân; lọc phương sai; tập con; bản sao
+  methods.py     13 phương pháp + random-k: f_test, mutual_info, mrmr, relieff; l1_lr, elastic_net, rf_importance, svm_rfe (tới k = 1);
+                 abess (L0), stability_selection, ktsp (k chẵn); ga, bpso
+  panels.py      IHC-2/IHC-4 + panel công bố (panels/published_panels.csv — ĐỘI CODE ĐIỀN Girard 2016, Wilkerson 2013)
+  classify.py    LR-L2 (chính), RF, SVM tuyến tính; C và ngưỡng bằng CV nội bộ; log-loss, Brier; M5 (n_T ≤ 10: C = 1, ngưỡng 0,5)
+  fewshot.py     bản chia few-shot (5 split × 4 tập con lồng nhau × n_T) + kiểm tra
+  transfer.py    φ chuẩn hoá mức panel; source_only / select_on_source / pooled / target_only (E7)
+  kstar.py       k* gộp QĐ11 (đoạn code G) + k* từng cohort
+  e1_splits.py, e1_classification.py (đội code; bộ 11 mô hình chỉ cho --models-extended)
+  stats.py, stability.py, timing.py, wrappers.py, mrmr.py, runlog.py, synthetic.py (dữ liệu giả hai layout)
 scripts/
-  run_survey_e1.py, run_survey_e1_wrappers.py, run_survey_e2_e3_timing.py, run_survey_e4_e5_stability.py,
-  make_survey_tables.py, run_p0_perm_v3.py, aggregate_p0_decision.py, run_sanity_auroc.py, smoke_test_survey_v2.py
-tests/
-  test_survey_v2_methods.py, test_survey_v2_stats_stability.py, test_survey_v2_scripts_e2e.py (slow)
+  build_e1_repeated_splits.py, build_fewshot_splits.py
+  run_survey_e0_signal_check.py
+  run_e1_feature_selection.py (pha A), run_e1_wrappers_all_cohorts.py (pha A wrapper), run_e1_classification.py (pha B)
+  run_survey_e1b_learning_curve.py, run_survey_e7_transfer_naive.py
+  run_survey_e2_e3_timing.py, run_survey_e4_e5_stability.py, make_survey_tables.py, run_sanity_auroc.py, smoke_test_survey_v2.py
+  run_survey_e1.py, run_survey_e1_wrappers.py  (ĐÃ THAY THẾ: chỉ in hướng dẫn rồi dừng)
+tests/   test_survey_v3_units.py (15), test_survey_v2_scripts_e2e.py (7, slow), + test của bản v2 và của đội code
 ```
 
-Luồng của một fold trong E1 (giống nhau cho mọi phương pháp):
+Luồng E1 (= RQ1):
 
 ```
-(train_idx, test_idx) theo bệnh nhân, seed r ∈ {42..46}, fold f ∈ {0..4}
+repeated_splits.csv (5×5 theo bệnh nhân, seed 42–46; kiểm tra không trùng bệnh nhân)
    │
-   ├─ B0: LR-L2 trên TOÀN BỘ gen (không lọc) ─────────────────────────────► AUROC_B0(r,f)
+   ├─ PHA A (run_e1_feature_selection.py): trên outer-train của fold
+   │     lọc phương sai KHÔNG nhãn → p0 = 5.000 gen (trong G)
+   │     ├─ xếp hạng (f_test, mutual_info, mrmr, relieff, rf_importance, svm_rfe, stability_selection): một lần, tiền tố theo k
+   │     ├─ đúng k (l1_lr, elastic_net, abess): dò C / support_size = k; bão hoà → bổ sung F-test, ghi n_filled
+   │     ├─ ktsp: cặp gen rời nhau; chỉ k chẵn (k lẻ: n_selected = 0, không có gen)
+   │     ├─ ga, bpso (run_e1_wrappers_all_cohorts.py): đúng k, fitness CV 3 fold LR-L2 trong train; 3 cohort GPL570, repeats 0–2, k ∈ {5,10,50}
+   │     └─ ihc_2, ihc_4, panel_<tên>: cố định, không phụ thuộc dữ liệu; gen thiếu ghi vào missing_genes
+   │     → selection_per_fold.csv, selected_genes.csv, selection_stability.csv (Jaccard mô tả), checkpoints/
    │
-   ├─ lọc phương sai KHÔNG nhãn trên train → p0 = 5000 gen (chỉ số cột `pre`)
-   │
-   ├─ random-k: 100 lần rút k gen trong p0, seed [cohort, r, f, k, draw] → LR-L2 ──► AUROC_rand(r,f,k,draw)
-   │
-   └─ method ∈ 10 phương pháp: select(method, X_train[:, pre], y_train, k_list)
-        ├─ xếp hạng (F-test, MI, mRMR, ReliefF, RF importance, SVM-RFE): một lần, tập k = k gen đầu (lồng nhau)
-        ├─ theo k (L1-LR, Elastic Net): đúng k hệ số khác 0 (tinh chỉnh C), bão hòa → bổ sung F-test, ghi n_filled
-        └─ wrapper (GA, BPSO): tìm tập đúng k gen, fitness CV nội bộ trên train
-        → với từng k: LR-L2 (C bằng CV nội bộ 3 fold, ngưỡng BAcc trên OOF) fit train → đo test ──► AUROC(r,f,k)
-          (k ∈ {50, 200} thêm RF, SVM tuyến tính nếu --secondary)
+   └─ PHA B (run_e1_classification.py): trên cùng fold
+         b0 = LR-L2 trên TOÀN BỘ G; random_k = 100 lần rút trong p0 (seed [cohort, seed, fold, k, draw])
+         mọi panel pha A → LR-L2 (C bằng CV nội bộ 3 fold theo AUROC; ngưỡng BAcc trên OOF; --secondary: RF, SVM ở k ∈ {5, 25})
+         → classification_per_fold.csv (auroc, bacc, mcc, logloss, brier, C), classification_summary.csv, e1_random_k.csv
 ```
-
-Kết quả: `results/survey_v2/E1/<bộ>/e1_per_fold.csv` (một dòng = một (r, f, method, k, classifier)),
-`e1_selected_genes.csv` (gen đã chọn, có rank), `e1_random_k.csv`, `e1_scores.csv` (điểm từng mẫu test), `cv_splits.csv`,
-`config.json`. `make_survey_tables.py` đọc các tệp này.
 
 ---
 
 ## 5. Giao thức chung — "vì sao" cho từng lựa chọn
 
-| Lựa chọn | Làm gì trong code | Vì sao (để giải thích khi được hỏi) |
+| Lựa chọn | Làm gì trong code | Vì sao |
 |---|---|---|
-| CV 5×5 phân tầng theo **bệnh nhân**, seed 42–46 | `data.repeated_patient_splits` (`StratifiedKFold` khi 1 mẫu/bệnh nhân, `StratifiedGroupKFold` khi nhiều) + assert không trùng bệnh nhân | Sửa S1. Lặp 5 lần để có SD/CI; cùng lần chia cho mọi phương pháp → so sánh cặp. |
-| Lọc sơ bộ 5.000 gen **phương sai lớn nhất, trên train, không dùng nhãn** | `data.variance_prefilter` gọi trong fold | Sửa S2: lọc theo nhãn trên toàn bộ dữ liệu = rò rỉ. Lọc không nhãn chỉ giảm chi phí, không "nhìn" test. |
-| Mốc **random-k** (100 lần rút/fold) | `methods.random_panel`, seed `[cohort, seed, fold, k, draw]` (Y14) | Câu hỏi thật là "chọn gen có hơn chọn bừa k gen không"; tín hiệu yếu thì mốc này quan trọng hơn mốc "không chọn". |
-| Mốc **B0** (toàn bộ gen, không lọc) | `evaluate_panel(X_full)` | Cho biết chọn gen có *mất* thông tin so với dùng tất cả không. |
-| Bộ phân loại chính LR-L2, C ∈ {0,01; 0,1; 1; 10} bằng CV nội bộ 3 fold theo AUROC; ngưỡng chọn trên OOF | `classify.evaluate_panel` | Tách bạch "chất lượng tập gen" khỏi "sức mạnh bộ phân loại"; ngưỡng không chọn trên test để BAcc/MCC không lạc quan. |
-| RF, SVM tuyến tính chỉ ở k ∈ {50, 200} | `--secondary` | Kiểm tra kết luận có phụ thuộc bộ phân loại không, với chi phí vừa phải. |
-| AUROC chính; BAcc, MCC phụ | `classify` | AUROC không phụ thuộc ngưỡng, hợp với lớp lệch; BAcc để so với P0 (dùng BAcc). |
-| Chuẩn hóa z-score **fit trên train** trước L1-LR, Elastic Net, SVM-RFE (M7) | `methods.select` | Phương pháp phạt hệ số phụ thuộc thang đo; fit trên test là rò rỉ. |
-| Cùng tập gen cho mọi k của phương pháp xếp hạng (tiền tố) | `methods.prefix_panels` (assert lồng nhau) | Đúng định nghĩa "ngân sách k" cho filter; tránh chạy lại không cần thiết. |
-| Wrapper chỉ GSE68465, 3 lần lặp đầu (3×5), quần thể 30 × 50 thế hệ | `run_survey_e1_wrappers.py` | Chi phí; GSE68465 là bộ duy nhất được xếp hạng phương pháp (QĐ6). Ghép cặp với các phương pháp khác trên đúng 15 fold đó. |
+| G = gen cohort ∩ gen TCGA | `data.load_dataset(gene_space="reference")` | Định nghĩa bài toán (Review 11/10 Mục 8.2.1): panel phải đo được ở cả hai nền tảng; B8 checklist. |
+| Lọc sơ bộ 5.000 gen phương sai lớn nhất, không nhãn, trong fold (GVHD chốt 26/10, KBTN M14; thay F-test 2.000 gen của KBTN v2) | `data.variance_prefilter` | Không "F-test hoá" mọi phương pháp; không rò rỉ (Ambroise & McLachlan 2002). [Giả định, chờ GVHD chốt câu 2] |
+| CV 5×5 tính trước, seed 42–46 | `e1_splits.py` (đội code) | Trùng RQ0′; mọi phương pháp cùng lần chia → so sánh cặp; wrapper 3 lần lặp đầu. |
+| Few-shot: 5 split test_T/pool_T 1/3:2/3; 4 tập con lồng nhau; n_T ∈ {5,10,20,40,pool} mỗi lớp | `fewshot.py` | KBTN v2 Mục 6 (RQ2); lồng nhau để đường cong học ghép cặp theo n_T; GSE10245 chỉ {5, 10}. |
+| M5: n_T ≤ 10 → C = 1, ngưỡng 0,5; n_T ≥ 20 → CV nội bộ | `classify.evaluate_panel(small_n=...)` | CV 3 fold trong 10 mẫu không khả thi (Review 24/10 M5). |
+| random-k, B0 trong pha B | `run_e1_classification.py` | Mốc sàn/trần phải cùng bộ phân loại, cùng fold với các phương pháp (bản của đội code để chúng ở script cũ). |
+| IHC-2/IHC-4 là mốc tri thức | `panels.py` | QĐ2, QĐ12: so "không thua kém", không phải baseline phải vượt. |
+| k* gộp (IVW + bằng nhau, chuỗi 50→1) cho mọi phương pháp | `kstar.py` | QĐ8 + QĐ11; survey báo k* như một chỉ số của phương pháp. |
+| Không chọn "best classifier" theo test | pha B | O19: chọn trên test là R3 tái diễn. |
+| Wrapper chỉ 3 cohort GPL570, 3×5, k ∈ {5,10,50} | `run_e1_wrappers_all_cohorts.py` | Chi phí (O20); vùng chính k ≤ 10 + một điểm k = 50. |
+| CodeCarbon tắt mặc định | `--track-emissions` | Y16: Kaggle không phải máy cố định; năng lượng chỉ là ước lượng, nếu báo thì ghi "ước lượng". |
 
 ---
 
-## 6. Mười phương pháp — cài đặt, tham số, điều cần để ý
+## 6. Mười ba phương pháp — điểm mới so với bản 25/10
 
-Ký hiệu: n mẫu train, p gen (sau lọc 5.000), k ngân sách. Hàm trong `survey_v2/methods.py` trừ khi ghi khác.
+Giữ nguyên mục 6 của bản 25/10 cho 10 phương pháp cũ (F-test, MI, mRMR, ReliefF, L1-LR, Elastic Net, RF importance, SVM-RFE, GA, BPSO) với hai thay đổi:
+SVM-RFE loại dần tới k_min = 1 (để có k = 1, 2, 3); mRMR chỉ xếp tới k_max = 50 (rẻ hơn nhiều).
 
-**Filter**
+11. **abess (L0, Zhu et al. 2020, 2022)** — `select_abess`: `abess.LogisticRegression(support_size=k)` trên dữ liệu z-score; đúng k hệ số khác 0
+    (nếu thừa: lấy |β| lớn nhất; thiếu: bổ sung F-test, ghi `n_filled`). Nếu `import abess` lỗi: phương pháp bị bỏ qua, ghi `methods_skipped`
+    trong `config.json` — **ghi vào HANDOVER**.
+12. **Stability selection (Meinshausen & Bühlmann 2010)** — `rank_stability_selection`: chọn C trên toàn bộ train sao cho ≈ 2·k_max hệ số
+    khác 0 (q), rồi 100 tập con phân tầng 50 % → tần suất π_j; xếp hạng theo π_j (hoà: |β| trung bình); tiền tố theo k. Ghi `C`, `q_target`.
+13. **k-TSP (Tan et al. 2005)** — `rank_ktsp`: điểm cặp Δ_ij = |P(x_i < x_j | 0) − P(x_i < x_j | 1)| tính chính xác cho mọi cặp trong p0 gen
+    (O(n p0²), theo khối; `KTSP_MAX_P = 5000`), cặp rời nhau, tham lam; panel k = 2m gen = m cặp đầu → **chỉ k chẵn**; k lẻ ghi
+    `n_selected = 0`. Bộ phân loại chính là LR-L2 trên gen của panel (để so cùng bộ phân loại); luật bỏ phiếu k-TSP (`ktsp_vote_scores`)
+    là phụ, bổ sung sau nếu kịp.
 
-1. **F-test (ANOVA)** — `rank_f_test`: `sklearn.feature_selection.f_classif`, xếp giảm dần F (NaN xuống cuối).
-   O(np). Không có tham số. Là mốc "rẻ nhất" và là thứ tự dự phòng khi L1 bão hòa.
-2. **Mutual information** — `rank_mutual_info`: `mutual_info_classif(n_neighbors=3, random_state=seed)` (ước lượng
-   KNN của Kraskov/Ross). Chậm hơn F-test đáng kể (vòng lặp theo gen); seed cố định vì ước lượng có nhiễu.
-3. **mRMR (Peng, Long & Ding 2005)** — `mrmr.mrmr_ranking`: rời rạc hóa từng gen thành 3 mức theo μ ± σ/2 *tính trên
-   train*; MI từ bảng tần suất; chọn tham lam theo **MID** (`I(X;Y) − mean I(X;X_s)`) — tiêu chí MIQ có sẵn
-   (`config.MRMR_CRITERION`). Chỉ xếp k_max = 500 gen đầu (đủ cho mọi k); chi phí O(k·n·p) nhờ einsum one-hot.
-   *Lưu ý:* Bảng 5 của bài ghi O(p²n) cho mRMR; cài đặt tham lam k gen là O(k n p), nên số mũ theo p đo được kỳ vọng ≈ 1.
-   Đây là điểm người viết sẽ bàn ở E3, không phải lỗi.
-4. **ReliefF (Kononenko 1994; skrebate)** — `rank_relieff`: `skrebate.ReliefF(n_neighbors=10, n_jobs=1)`, lấy
-   `feature_importances_`. O(n²p) — chậm nhất trong nhóm filter; với n ≈ 350, p = 5.000 ước chừng vài phút mỗi fold.
-
-**Embedded**
-
-5. **L1-LR (Lasso logistic)** — `select_sparse_exact_k(kind="l1_lr")`: `LogisticRegression(penalty="l1",
-   solver="liblinear", class_weight="balanced")`. Fit đường hệ số trên lưới 26 giá trị C (log 10⁻³…10²), tìm C cho
-   **đúng k** hệ số khác 0 (tinh chỉnh nhị phân 6 bước giữa hai điểm lưới; nếu không hit đúng, lấy k hệ số |β| lớn nhất
-   của nghiệm có ≥ k hệ số, ghi `exact_k = False`). Khi L1 **bão hòa** (số hệ số khác 0 tối đa < k, thường vì k > n), bổ
-   sung theo F-test và ghi `n_filled` (KBTN 5.1). Người viết sẽ báo cáo `n_filled` — không được giấu.
-6. **Elastic Net (logistic, l1_ratio = 0,5)** — như trên với `solver="saga"`, `max_iter=3000`, `tol=1e-3`. Chậm hơn L1
-   (saga trên 350 × 5.000); nếu quá chậm, báo trước khi đổi `tol`.
-7. **RF importance (Breiman 2001)** — `rank_rf_importance`: `RandomForestClassifier(n_estimators=500,
-   class_weight="balanced_subsample", random_state=seed)`, xếp theo Gini importance. Ngẫu nhiên theo seed → được đo
-   trong E5b.
-8. **SVM-RFE (Guyon 2002)** — `rank_svm_rfe`: `LinearSVC(C=1, class_weight="balanced")` trên dữ liệu z-score; mỗi vòng
-   loại 10 % gen có w² nhỏ nhất cho đến còn k_min = 10; **thứ tự loại là xếp hạng** (gen bị loại sau = quan trọng hơn),
-   nên tập k gen là tiền tố và lồng nhau. Khác với P0 (loại một nửa mỗi vòng, dừng đúng tại từng k): survey cần xếp hạng
-   chặt để so cùng k với các phương pháp khác.
-
-**Wrapper** (`survey_v2/wrappers.py`; sửa O4 của Review 04/10)
-
-9. **GA (Siedlecki & Sklansky 1989)** — mã hóa *tập chỉ số đúng k gen*; quần thể 30, 50 thế hệ, tournament 3, giữ 2
-   cá thể tốt nhất, lai ghép giữ phần giao của cha mẹ rồi bổ sung ngẫu nhiên từ hiệu đối xứng, đột biến đổi gen với xác
-   suất 1/k mỗi gen.
-10. **BPSO (Kennedy & Eberhart 1997)** — vận tốc cập nhật theo pbest/gbest (w giảm 0,9 → 0,4; c1 = c2 = 2; |v| ≤ 6),
-    x_j = 1 với xác suất sigmoid(v_j), rồi **sửa về đúng k gen** (thừa: bỏ gen có sigmoid nhỏ nhất; thiếu: thêm gen có
-    sigmoid lớn nhất).
-
-Fitness của cả hai = AUROC trung bình CV 3 fold phân tầng của LR-L2 (C = 1, có chuẩn hóa) **bên trong phần train**;
-có cache theo tập gen; `n_eval` đếm số lần đánh giá thật (báo cáo chi phí không phụ thuộc phần cứng, O7). Phần test
-không bao giờ được đọc trong tìm kiếm — test `test_fitness_uses_only_training_rows` kiểm điều này.
-
-**Tham chiếu**: `b0` (toàn bộ gen), `random_k` (k gen ngẫu nhiên trong 5.000 gen đã lọc).
+**Panel cố định**: `ihc_2 = (NKX2-1, TP63)`, `ihc_4 = + (NAPSA, KRT5)`; panel công bố đọc từ `survey_v2/panels/published_panels.csv`
+(cột `panel, gene, source`) — **đội code điền từ bài gốc** (Girard et al. 2016 phần AC vs SCC; Wilkerson et al. 2013), ghi DOI.
+Gen thiếu trên nền tảng → `missing_genes` trong `selection_per_fold.csv` và `exact_k = False`.
 
 ---
 
 ## 7. Từng thí nghiệm: mục đích, lệnh, đầu ra, tiêu chí chấp nhận
 
-Mọi lệnh chạy từ thư mục gốc kho, sau khi `export KLTN_DATA_ROOT=...`. Kết quả vào `$KLTN_DATA_ROOT/results/survey_v2/`.
-Các script **tự tiếp tục** (resume) khi chạy lại: phần (repeat, fold, method) đã có được bỏ qua.
+Mọi lệnh chạy từ thư mục gốc kho, sau khi `export KLTN_DATA_ROOT=...`. Kết quả vào `$KLTN_DATA_ROOT/results/survey_v2/`
+(tên thư mục gốc giữ nguyên để runner Kaggle không đổi). Các script **tự tiếp tục** (resume) khi chạy lại.
 
-### 7.1 Sanity Y10 — đối chứng dương (chạy đầu tiên)
-
-- *Chứng minh:* pipeline survey (CV theo bệnh nhân, lọc trong fold, k = 10, LR-L2) phát hiện được tín hiệu mạnh
-  normal vs tumor. Nếu không đạt, mọi kết quả yếu ở bài toán giai đoạn đều đáng ngờ.
-- *Lệnh:* `python scripts/run_sanity_auroc.py`
-- *Đầu ra:* `sanity/sanity_per_fold.csv`, `sanity_summary.csv`, `config.json`; mã thoát 0 nếu đạt.
-- *Chấp nhận:* AUROC trung bình ≥ 0,99 cho cả f_test, l1_lr, rf_importance. Nếu < 0,99: KHÔNG sửa ngưỡng; báo GVHD.
-
-### 7.2 P0 — permutation v3 chạy lại từ kho (việc #2)
-
-- *Chứng minh:* ba bộ giai đoạn có tín hiệu thật (p hoán vị) và chọn gen có hơn random-k (gain ≥ 0,02) hay không;
-  bộ nào "bền". Kết quả quyết định khung bài (QĐ6) nên phải có commit hash.
-- *Lệnh (giữ nguyên thiết kế notebook, chỉ cấu hình chính `balanced`):*
-
-  ```bash
-  python scripts/run_p0_perm_v3.py --n-jobs 8            # 3 bộ giai đoạn, 1000 hoán vị, 1000 random-k
-  python scripts/aggregate_p0_decision.py --summaries "$KLTN_DATA_ROOT"/results/survey_v2/P0/perm_test_v3/*/summary.csv
-  ```
-
-  Thêm `--class-weights balanced none` nếu GVHD yêu cầu lại sensitivity. Script dừng an toàn theo `--time-budget-h`
-  và tiếp tục khi chạy lại.
-- *Đầu ra:* `P0/perm_test_v3/<bộ>/{summary.csv, pvalues_adjusted.csv, decision.csv, null_scores_per_fold.csv,
-  random_k_scores_per_fold.csv, real_*.csv, config.json}`; `P0/{p0_summary_merged.csv, p0_decision.csv, p0_decision.md, config.json}`.
-- *Chấp nhận:* `n_perm = n_random = 1000` ở mọi dòng; `family_complete = true`; `commit_hash` khác null. Đối chiếu
-  với bảng cũ (Review 20/10, Bảng 4): GSE68465 5/15 có tín hiệu, 5/15 có ích, bền; TCGA-LUAD 7/15, 1/15, không bền;
-  TCGA-LUSC 8/15, 1/15, không bền. Vì cùng seed và cùng fold, `bacc_real` phải trùng bản cũ đến sai số làm tròn; nếu
-  khác, báo ngay (khác dữ liệu hoặc khác phiên bản sklearn).
-- *Thời gian:* notebook cũ cần ~10 giờ Kaggle cho cả hai lượt; trên máy 8 nhân ước lượng 3–6 giờ.
-
-### 7.3 E1 — hiệu năng theo ngân sách k (việc #3, #5)
-
-- *Chứng minh (RQ1):* với tín hiệu yếu, phương pháp chọn gen nào hơn random-k và B0 ở mức k nào; khác biệt giữa các
-  phương pháp có ý nghĩa không (chỉ kiểm định trên GSE68465).
-- *Lệnh:*
-
-  ```bash
-  python scripts/run_survey_e1.py --secondary --n-jobs 5                     # 3 bộ, 8 phương pháp, B0, random-k
-  python scripts/run_survey_e1_wrappers.py --n-jobs 5                        # GA + BPSO, GSE68465, repeats 0 1 2
-  ```
-
-  Có thể chia nhỏ: `--datasets ...`, `--methods ...`, `--repeats 0 1`. Chạy lại cùng lệnh để tiếp tục.
-- *Đầu ra:* `E1/<bộ>/{e1_per_fold.csv, e1_selected_genes.csv, e1_random_k.csv, e1_scores.csv, cv_splits.csv, config.json}`.
-- *Chấp nhận:*
-  - `e1_per_fold.csv`: mỗi (repeat, fold, method, k) có đúng 1 dòng `lr_l2` (và `rf`, `svm_linear` ở k ∈ {50, 200});
-    25 fold cho filter/embedded/B0, 15 fold cho GA/BPSO; `n_selected == k`; `auroc ∈ [0, 1]`.
-  - `e1_random_k.csv`: 100 dòng mỗi (repeat, fold, k).
-  - `cv_splits.csv`: không bệnh nhân nào vừa train vừa test trong cùng (repeat, fold) — kiểm bằng
-    `tests/test_survey_v2_scripts_e2e.py` (đã có) hoặc một dòng pandas.
-  - `n_filled > 0` chỉ xuất hiện ở l1_lr/elastic_net khi k lớn hơn số hệ số L1 có thể khác 0; ghi nhận, không xóa.
-  - `config.json`: `traceable = true`, `prefilter_p0 = 5000`, `random_k_draws = 100`.
-- *Thời gian ước lượng* (một luồng/fold, n ≈ 350, p0 = 5.000): F-test < 1 s; mRMR ~ 1–5 s; MI ~ 1 phút; RF ~ 10–20 s;
-  SVM-RFE ~ 1–2 phút; L1 ~ 1–2 phút; Elastic Net ~ 5–10 phút; ReliefF ~ 5–10 phút; random-k 100 × 5 k × LR ≈ 1–2 phút;
-  RF phụ 500 cây ~ vài phút. Khoảng 20–30 phút/fold → 75 fold ≈ 25–35 giờ CPU, chia 5 tiến trình ≈ 5–7 giờ.
-  Wrapper: ~1.500 lần đánh giá fitness × 3 fit LR mỗi (fold, k) → 5–15 phút/(fold, k) → 15 fold × 5 k × 2 ≈ 15–40 giờ
-  CPU, chia 5 tiến trình ≈ 3–8 giờ.
-
-### 7.4 E2 + E3 — chi phí và đường cong độ phức tạp (việc #4)
-
-- *Chứng minh (RQ2):* chi phí thật của từng phương pháp tại một điểm cố định (bảng), và số mũ thực nghiệm theo n và p
-  để đối chiếu với bậc lý thuyết của Bảng 5 (v1 chỉ có lý thuyết). Wrapper: chi phí theo số lần đánh giá (10×20 vs 30×50).
-- *Lệnh (MỘT máy cố định, không chạy gì khác song song, BLAS 1 luồng — script tự đặt biến môi trường):*
-
-  ```bash
-  python scripts/run_survey_e2_e3_timing.py --wrappers
-  ```
-- *Đầu ra:* `E2_E3/{e2_cost_point.csv, e3_scaling_n.csv, e3_scaling_p.csv, e3_wrapper_evals.csv, e3_exponents.csv,
-  machine_config.json, config.json}`.
-- *Chấp nhận:* `repeats = 3` (trung vị); `machine_config.json` có tên CPU, RAM, hệ điều hành, `blas_threads_env` = "1";
-  `wall_spread_max_rel` (dao động giữa 3 lần) < 0,3 cho các phương pháp > 1 s — nếu lớn hơn, máy không ổn định, chạy lại
-  lúc rảnh. Thời gian chỉ gồm bước chọn gen (không gồm bộ phân loại sau chọn).
-- *Thời gian:* 8 phương pháp × (1 + 4 + 5) điểm × 3 lần ≈ 1–3 giờ; thêm wrapper (2 × 2 ngân sách × 3 lần) ≈ 1–2 giờ.
-
-### 7.5 E4 + E5 — độ ổn định (việc #6)
-
-- *Chứng minh (RQ3):* (E4) tập gen có lặp lại được khi lấy mẫu lại bệnh nhân không, và phụ thuộc cỡ mẫu thế nào;
-  random-k cho sàn ≈ 0. (E5a) dư thừa làm phương pháp nào bất ổn (chọn qua lại giữa bản sao); (E5b) GA/BPSO/RF đổi seed
-  thì tập gen và AUROC đổi bao nhiêu; (E5c) các phương pháp có chọn cùng gen không.
-- *Lệnh:*
-
-  ```bash
-  python scripts/run_survey_e4_e5_stability.py --n-jobs 5                    # E4 + E5a + E5b trên 3 bộ, E5c nếu E1 đã có
-  python scripts/run_survey_e4_e5_stability.py --wrappers --n-jobs 5         # (tùy chọn) GA/BPSO trong E4 tại f = 0,7, k = 50
-  ```
-- *Đầu ra:* `E4_E5/<bộ>/{subsamples.csv, e4_selected_genes.csv, e4_stability.csv, e4_select_times.csv,
-  e5a_selected_genes.csv, e5a_redundancy.csv, e5b_seed_runs.csv, e5b_seed_stability.csv, e5c_overlap_k50.csv, config.json}`.
-- *Chấp nhận:* `M = 30` ở mọi dòng `e4_stability.csv`; `nogueira` của `random_k` nhỏ và tăng nhẹ theo k (sàn thực
-  nghiệm: random-k rút trong 5.000 gen đã lọc nhưng ổn định tính trên toàn bộ gen, nên sàn ≈ k/5.000, tức ≈ 0 ở k = 10
-  và ≤ ≈ 0,1 ở k = 500); mọi phương pháp phải cao hơn sàn này rõ rệt (CI không chồng lấn) ở ít nhất một k; `nogueira ∈
-  [−1, 1]`; E5a có đủ ρ ∈ {0,5; 0,8; 0,95}; E5b có 5 seed × (rf_importance ở 5 k; ga, bpso ở k = 50).
-- *Thời gian:* E4 = 3 tỉ lệ × 30 tập con × 8 phương pháp (giống một fold E1 bỏ phần phân loại) ≈ 90 × 10 phút ≈ 15 giờ
-  CPU/bộ → chia 5 tiến trình ≈ 3 giờ/bộ; E5a ≈ E4 ở một tỉ lệ; E5b nhỏ.
-
-### 7.6 Bảng, hình, E6 (việc #7)
+### 7.0 Cổng 1′ và bản chia (việc #1, #2)
 
 ```bash
-python scripts/make_survey_tables.py
+python scripts/build_e1_repeated_splits.py            # <bộ>/repeated_splits.csv cho 5 bộ + e1_repeated_splits_manifest.json
+python scripts/build_fewshot_splits.py                 # <cohort>/fewshot_splits.csv cho 4 cohort + fewshot_splits_manifest.json
+# hoặc một lệnh (v3.1, cùng generator và seed, cùng kết quả): python scripts/build_v3_splits.py --force   # --force: sinh lại few-shot cũ (1 tập con)
 ```
+- *Chấp nhận:* 25 (repeat, fold) mỗi bộ, không trùng bệnh nhân, mỗi mẫu test đúng một lần/lần lặp; few-shot: test_T cố định trong split,
+  tập con lồng nhau theo n_T, đúng n_T mẫu mỗi lớp; GSE10245 chỉ n_T ∈ {5, 10, pool}. SHA-256 của hai tệp ghi vào manifest và data card.
+- Cổng 1′ còn: nhãn 4 cohort kiểm tra chéo theo tập mẫu (đoạn code J), mẫu trùng (đoạn code 7.2.2 Review 20/10), GSE43580 cách ly,
+  data card đủ trường, số gen G mỗi cohort (lấy từ `config.json` của pha A: `gene_space`).
 
-Đọc E1, E2_E3, E4_E5 (phần nào có thì làm), ghi `tables/*.csv|*.tex`, `figures/*.pdf|*.png` và
-`tables/provenance_manifest.json` (SHA-256 + commit hash của từng tệp đầu vào). E6 = ghép AUROC (E1) – Nogueira (E4 ở
-tỉ lệ 0,7) – thời gian (E2, k = 50) và đánh dấu mặt Pareto. Chạy lại sau mỗi đợt kết quả mới; gửi cả thư mục `tables/`
-và `figures/`.
+### 7.1 Sanity Y10 — như bản 25/10 (`python scripts/run_sanity_auroc.py`; AUROC ≥ 0,99 cho 3 pipeline ở k = 10).
 
-### 7.7 Data card và bản chia (việc #8)
+### 7.2 E0 — kiểm tra tín hiệu (việc #4)
 
-Mỗi bộ giai đoạn cần `DATA_CARD.md` (nguồn, lọc, số mẫu/lớp/bệnh nhân, cách gán nhãn sớm/muộn, phiên bản dữ liệu, SHA-256)
-theo mẫu của `experiment-data-v2/datasets/*/DATA_CARD.md`; `cv_splits.csv` do E1 sinh là bản chia 5×5 chính thức.
+- *Chứng minh:* mỗi cohort có tín hiệu LUAD/LUSC thật (hoán vị) và chọn gen hơn random-k; thủ tục cho bước 1 của Fig. 9.
+- *Lệnh:* `python scripts/run_survey_e0_signal_check.py --n-jobs 4` (200 hoán vị + 100 random-k, k = 10, F-test → LR-L2, CV 5 fold).
+- *Đầu ra:* `E0/<bộ>/{e0_signal_check.csv, e0_perm_scores.csv, e0_random_k_scores.csv, config.json}`.
+- *Chấp nhận:* `n_perm = 200`, `n_random = 100`; `p_perm` ≥ 1/201; kỳ vọng `signal_present = True` và `selection_useful = True` ở cả 5 bộ.
+  Nếu một cohort không đạt: KHÔNG sửa ngưỡng, báo GVHD (có thể là lỗi nhãn).
+- *Thời gian:* < 1 giờ.
+
+### 7.3 E1 — pha A, wrapper, pha B (việc #5, #6)
+
+Ablation loại 4 gen IHC (ưu tiên 2, thuộc khoá luận): thêm `--exclude-genes NKX2-1 TP63 NAPSA KRT5` cho cả pha A (với `--out` riêng)
+và pha B (`--selection-roots` trỏ tới thư mục đó, `--out` riêng); B0 và random-k khi đó cũng không chứa 4 gen này.
+
+```bash
+python scripts/run_e1_feature_selection.py                                   # 11 phương pháp + ihc_2, ihc_4 (+ panel_*), 5 bộ, 8 k
+python scripts/run_e1_wrappers_all_cohorts.py                                # GA + BPSO; 3 cohort GPL570; repeats 0 1 2; k 5 10 50
+python scripts/run_e1_classification.py --secondary                          # LR-L2 (+ RF, SVM ở k ∈ {5, 25}); B0; random-k; gộp panel wrapper
+```
+Có thể chia nhỏ theo `--datasets`, `--methods`, `--repeats`, `--k`; Kaggle: một Save Version = một bộ (pha A) — xem notebook
+`kaggle_e1_separated_5x5_runner.ipynb` (đã cập nhật COHORTS, K_GRID, wrapper) hoặc `kaggle_e1_feature_selection_v3_runner.ipynb` (v3.1).
+
+*Kiểm tra bằng nhau để tái dùng panel TCGA (QĐ19, làm trước khi chạy pha A TCGA đầy đủ):*
+```bash
+python scripts/run_e1_feature_selection.py --datasets tcga_luad_lusc_primary_tumor --repeats 0 \
+    --methods f_test mutual_info mrmr relieff l1_lr elastic_net rf_importance svm_rfe --out E1_feature_selection_eqcheck
+python scripts/compare_panels.py --old <thư mục E1_feature_selection chạy 26–28/10> \
+    --new $KLTN_DATA_ROOT/results/survey_v2/E1_feature_selection_eqcheck --repeats 0
+```
+`panel_equality_summary.csv`: phương pháp có `verdict = REUSE` (mọi fold × k của repeat 0 giống hệt) được chép panel cũ của TCGA vào
+`E1_feature_selection/tcga_luad_lusc_primary_tumor/` (kèm `config.json` cũ và ghi chú trong HANDOVER); phương pháp `RERUN` chạy lại
+đủ 5 lần lặp bằng v3.1. GEO: luôn chạy lại (gene space G và bản chia few-shot đã đổi).
+
+*Cặp mẫu nghi trùng (Y22):* `python scripts/check_duplicate_pair.py --dataset gse37745 --samples GSM1019246 GSM1019247` — so gen giới tính
+(XIST; RPS4Y1, DDX3Y, KDM5D, UTY) với metadata; khác metadata → cách ly cả hai mẫu (excluded_samples_gse37745.csv) trước khi sinh lại bản chia.
+
+- *Đầu ra:* `E1_feature_selection/<bộ>/{selection_per_fold.csv, selected_genes.csv, selection_stability.csv, selection_gene_frequency.csv, config.json}`;
+  `E1_wrapper_feature_selection/<cohort GPL570>/...`; `E1_classification/<bộ>/{classification_per_fold.csv, classification_summary.csv, e1_random_k.csv, config.json}`.
+- *Chấp nhận:*
+  - pha A: mỗi (repeat, fold, method, k) đúng 1 dòng; `n_selected == k` trừ ktsp ở k lẻ (= 0) và panel cố định thiếu gen; `n_filled > 0` chỉ ở
+    l1_lr / elastic_net / abess khi bão hoà (ghi nhận, không xoá); `config.json`: `traceable = true`, `prefilter_p0 = 5000`, `gene_space` ghi
+    `intersection with tcga_luad_lusc_primary_tumor` ở 4 cohort GEO, `methods_skipped` rỗng (hoặc chỉ `abess` kèm lý do trong HANDOVER).
+  - wrapper: 15 fold × 3 k × 2 wrapper × 3 cohort; `n_eval > 0`.
+  - pha B: mỗi (repeat, fold, method, k) có đúng 1 dòng `lr_l2` (+ `rf`, `svm_linear` ở k ∈ {5, 25}); có `b0` (k = |G|) và `random_k`
+    (100 lần/fold trong `e1_random_k.csv`); `brier`, `logloss` không NaN ở lr_l2/rf; **không có** tệp `best_classifier_by_panel.csv`.
+- *Thời gian ước lượng* (một luồng/fold; GEO n ≈ 120–140, TCGA n ≈ 814; p0 = 5.000): pha A GEO ≈ 5–12 phút/fold (Elastic Net và stability
+  selection đắt nhất; k-TSP ≈ 1 phút), TCGA ≈ 15–30 phút/fold → 125 fold ≈ 25–40 giờ CPU, chia 4–5 tiến trình ≈ 6–10 giờ. Wrapper: 15 fold ×
+  3 k × 2 × 3 cohort × 5–10 phút ≈ 20–45 giờ CPU. Pha B: RF 500 cây ở k ∈ {5, 25} chiếm phần lớn, ≈ 1 giờ/bộ.
+
+### 7.4 E1b — đường cong học few-shot (việc #7)
+
+- *Chứng minh (RQ4, RQ3):* các phương pháp hiện có suy giảm thế nào khi n_T ∈ {5, 10, 20, 40} mẫu/lớp dưới ngân sách k ≤ 10; n_T*; ổn định few-shot.
+- *Lệnh:* `python scripts/run_survey_e1b_learning_curve.py --n-jobs 4` (4 cohort; 11 phương pháp + ihc_2, ihc_4 + random-k; k ∈ {2, 3, 4, 5, 10}).
+- *Đầu ra:* `E1b/<cohort>/{e1b_per_run.csv, e1b_selected_genes.csv, e1b_random_k.csv, e1b_stability.csv, config.json}`.
+- *Chấp nhận:* 20 lần chạy (5 split × 4 subset) ở mỗi mức n_T có trong bản chia; `C = 1` ở n_T ≤ 10 (M5); `fewshot_splits_sha256` trong config
+  trùng manifest; `n_runs = 20` trong `e1b_stability.csv`.
+- *Thời gian:* mỗi lần chạy (một tập con) ≈ 1–3 phút cho 11 phương pháp → 4 cohort × 20 × 4–5 mức ≈ 8–12 giờ CPU.
+
+### 7.5 E7 — chuyển giao đơn giản (việc #10, ưu tiên 2; GVHD chốt 26/10 giữ E7 trong survey, hạn cắt 10/11)
+
+- *Chứng minh (RQ4):* với n_T ∈ {5, 10, 20}, source_only (zero-shot, φ mức panel), select_on_source, pooled so với target_only trên cùng tập con;
+  chuyển giao âm = CI của hiệu nằm dưới 0.
+- *Lệnh:* `python scripts/run_survey_e7_transfer_naive.py --n-jobs 4` (sau E1b; cùng `fewshot_splits.csv`).
+- *Đầu ra:* `E7/<cohort>/{e7_per_run.csv, e7_selected_genes.csv, config.json}` (config ghi panel nguồn theo k và |G|).
+- *Chấp nhận:* 4 chiến lược × 5 k × 20 lần chạy × 3 mức n_T mỗi cohort; `source_only` cùng giá trị cho mọi tập con trong một split.
+- *Thời gian:* ≤ 6–10 giờ CPU (pooled fit L1 trên ≈ 1.000 + 2 n_T mẫu × 5.000 gen).
+
+### 7.6 E2 + E3 — chi phí (việc #8): như bản 25/10, trên TCGA LUAD+LUSC, `--k 10 50`, lưới n {100, 200, 400, all}; k-TSP ghi NaN khi p > 5.000;
+BLAS 1 luồng, `machine_config.json`, `wall_spread_max_rel < 0,3`. v3.1 (QĐ18): được chạy trên Kaggle **có hiệu chuẩn** — phiên tham chiếu
+chạy trước, các phiên sau dùng `--calibration-reference`; `config.json` phải có `calibration_ok = true` (hoặc `null` ở phiên tham chiếu);
+`--isolate-memory` bắt buộc cho E2 (bộ nhớ đỉnh = `maxrss_isolated_mb`). Số đo 26–28/10 (notebook, 6 phiên, không hiệu chuẩn) chỉ để ước lượng
+chi phí (M19), không trích.
+
+### 7.7 E4 + E5 — ổn định (việc #9): như bản 25/10 nhưng `--datasets` mặc định = TCGA, GSE37745; E5a và E5b chỉ GSE37745; E5b gồm
+rf_importance, stability_selection (mọi k) và GA, BPSO (k = 10); E5c ở k = 10 từ `selected_genes.csv` của pha A (+ wrapper). Random-k ở sàn
+≈ k/5.000; mọi phương pháp cao hơn sàn (CI không chồng lấn) ở ít nhất một k.
+
+### 7.8 Bảng, hình, E6: `python scripts/make_survey_tables.py` → `tables/*.csv|*.tex`, `figures/*.pdf|*.png`, `provenance_manifest.json`.
+Mới: `e0_signal_check`, `e1_kstar_pooled(_by_k)`, `e1_kstar_per_cohort`, `e1_bayes_rope`, `e1b_learning_curves(_table)`, `e1b_stability`,
+`e7_transfer_table`, `fig_e1b_learning_curve_<cohort>`, `fig_e7_transfer_<cohort>`; E6 tại k = 10.
 
 ---
 
-## 8. Thống kê dùng trong bài — hiểu để kiểm tra đầu ra
+## 8. Thống kê dùng trong bài — bổ sung so với bản 25/10
 
-- **p hoán vị** (P0): p = (#{hoán vị có BAcc ≥ thật} + 1)/(B + 1) (Phipson & Smyth 2010). p nhỏ nhất = 1/(B+1).
-- **Holm (1979)**: hiệu chỉnh đa kiểm định trong *từng họ*. P0: họ = (bộ, tác vụ, class_weight, loại kiểm định), 15
-  kiểm định. E1: họ = một phương pháp × 5 mức k. Cột `*_holm`.
-- **t-test hiệu chỉnh Nadeau–Bengio (2003)**: với J = 25 chênh lệch d_j của CV lặp, phương sai của d̄ không phải s²/J
-  mà là (1/J + n_test/n_train)·s² vì các tập train chồng lấn. t = d̄ / √((1/J + 1/4)·s²), bậc tự do J − 1. Bảo thủ hơn
-  t-test thường — đúng ý đồ. Hàm `stats.nadeau_bengio_ttest`; dùng cho "vs random-k" (một phía) và "vs B0" (hai phía).
-- **CI 95%** của mean AUROC cũng dùng phương sai Nadeau–Bengio (`stats.mean_ci`).
-- **Bayesian correlated t-test** (Corani & Benavoli 2015; Benavoli et al. 2017): hậu nghiệm Student-t của chênh lệch
-  trung bình, báo P(left), P(ROPE), P(right) với ROPE = ±0,01 AUROC — trả lời "hai phương pháp có tương đương về thực
-  tiễn không", điều p-value không nói được. Chỉ cho các cặp dẫn đầu trên GSE68465.
-- **Nogueira, Sechidis & Brown (2018)**: Φ = 1 − (M/(M−1))·mean_f[p_f(1−p_f)] / ((k̄/d)(1−k̄/d)) với Z là ma trận
-  M × d (M lần chọn, d = *toàn bộ* gen của bộ dữ liệu). Φ = 1: luôn chọn cùng tập; Φ ≈ 0: như ngẫu nhiên. CI tiệm cận chỉ
-  hợp lệ khi M lần chọn độc lập → E4 dùng M = 30 tập con độc lập (không dùng fold của CV).
-- **Kuncheva (2007)**, **Jaccard**: đối chiếu với v1; Kuncheva cần các tập cùng kích thước.
-- Người viết chỉ được viết "tốt hơn" khi `p_holm < 0,05`; nếu không, viết "không có bằng chứng khác biệt".
+- **k* gộp (QĐ8 + QĐ11, `survey_v2/kstar.py`):** với mỗi phương pháp, chuỗi k cố định 50 → 25 → 10 → 5 → 4 → 3 → 2 → 1 trên các mức đã
+  chạy; mức k "đạt" khi cận dưới một phía 95 % của ΔAUROC(panel − B0) gộp qua 3 cohort GPL570 > −0,02 theo IVW (phương sai Nadeau–Bengio)
+  **và** trọng số bằng nhau; dừng ở lần đầu không đạt. Báo `k_star_ivw`, `k_star_both`, trọng số từng cohort, I², `k_sequence_used`.
+  Quy tắc "ủng hộ/bác bỏ" chỉ có nghĩa cho H1 của L1-LR; với phương pháp khác là mô tả.
+- **Few-shot:** CI bootstrap qua các lần chạy (2.000 lần) cho E1b; hiệu ghép cặp + Wilcoxon + Holm trên 3 mức n_T cho E7.
+- **log-loss, Brier (M9):** chỉ khi điểm là xác suất (LR-L2, RF); SVM tuyến tính ghi NaN.
+- Người viết chỉ được viết "tốt hơn" khi `p_holm < 0,05` hoặc ngoài ROPE; trên GSE30219/GSE37745 AUROC bão hoà từ k ≈ 2–4 nên so sánh ở
+  k ≤ 3, ở GSE10245/GSE42127 và theo log-loss/Brier.
 
 ---
 
@@ -372,87 +367,53 @@ Copy (không đổi tên) các thư mục sau vào `input/results/` của không
 
 ```
 input/results/
+  data_cards/             DATA_CARD_<5 bộ>.md + DATA_CARD_tcga_normal_vs_tumor_sanity.md
+  splits/                 <bộ>/repeated_splits.csv (5), e1_repeated_splits_manifest.json, <cohort>/fewshot_splits.csv (4), fewshot_splits_manifest.json
   sanity/                 sanity_summary.csv, sanity_per_fold.csv, config.json
-  P0/                     p0_decision.csv, p0_summary_merged.csv, p0_decision.md, config.json
-  P0/perm_test_v3/<bộ>/   summary.csv, decision.csv, pvalues_adjusted.csv, config.json
-  E1/<bộ>/                e1_per_fold.csv, e1_selected_genes.csv, e1_random_k.csv, cv_splits.csv, config.json
+  E0/<bộ>/                e0_signal_check.csv, e0_perm_scores.csv, e0_random_k_scores.csv, config.json
+  E1_feature_selection/<bộ>/          selection_per_fold.csv, selected_genes.csv, selection_stability.csv, config.json
+  E1_wrapper_feature_selection/<cohort>/  như trên
+  E1_classification/<bộ>/             classification_per_fold.csv, classification_summary.csv, e1_random_k.csv, config.json
+  E1b/<cohort>/           e1b_per_run.csv, e1b_selected_genes.csv, e1b_stability.csv, config.json
   E2_E3/                  e2_cost_point.csv, e3_scaling_n.csv, e3_scaling_p.csv, e3_wrapper_evals.csv, e3_exponents.csv, machine_config.json, config.json
-  E4_E5/<bộ>/             e4_stability.csv, e5a_redundancy.csv, e5b_seed_stability.csv, e5c_overlap_k50.csv, config.json
+  E4_E5/<bộ>/             e4_stability.csv, e5a_redundancy.csv, e5b_seed_stability.csv, e5c_overlap_k10.csv, subsamples.csv, config.json
+  E7/<cohort>/            e7_per_run.csv, e7_selected_genes.csv, config.json
   tables/, figures/       toàn bộ (kèm provenance_manifest.json)
-  data_cards/             DATA_CARD.md của 3 bộ giai đoạn + sanity
+  HANDOVER.md             commit hash từng thư mục, ngày chạy, máy (E2–E3), thời gian thực tế, cảnh báo, sai lệch, phương pháp không chạy
 ```
-
-Kèm một tệp `HANDOVER.md` ghi: commit hash dùng cho từng thư mục (`git log -1`), ngày chạy, máy chạy (E2–E3), thời gian
-thực tế, các cảnh báo in ra khi chạy, và mọi sai lệch so với hướng dẫn này. Không gửi tệp `e1_scores.csv` (lớn) trừ khi được hỏi.
 
 Checklist trước khi gửi:
 
-- [ ] `python -m pytest tests -q` xanh trên máy chạy.
-- [ ] Mọi `config.json` có `traceable: true`, `dirty: false`, `commit_hash` khớp `HANDOVER.md`.
-- [ ] Sanity đạt (≥ 0,99).
-- [ ] P0 khớp Bảng 4 (Review 20/10) về số "có tín hiệu / có ích / bền".
-- [ ] E1: 25 fold (15 cho wrapper) × 5 k đủ cho mọi phương pháp và bộ; `cv_splits.csv` không trùng bệnh nhân.
-- [ ] E2–E3: `machine_config.json` đầy đủ; dao động giữa 3 lần đo nhỏ.
-- [ ] E4: M = 30; random-k ở sàn (≈ k/5.000) và thấp hơn mọi phương pháp.
+- [ ] `python -m pytest tests -q` xanh trên máy chạy (và trên Kaggle: cell test của runner).
+- [ ] Mọi `config.json` có `traceable: true`, `dirty: false`, `commit_hash` khớp `HANDOVER.md`; commit mang danh tính sinh viên.
+- [ ] Sanity đạt (≥ 0,99); E0 đạt ở 5 bộ.
+- [ ] E1 pha A: 25 fold × 8 k đủ cho 11 phương pháp ở 5 bộ; `gene_space` = giao với TCGA ở 4 cohort GEO; wrapper 15 fold × 3 k × 3 cohort.
+- [ ] E1 pha B: có `b0`, `random_k` (100 lần/fold), `ihc_2`, `ihc_4`; không có "best classifier by test".
+- [ ] E1b: 20 lần chạy mỗi mức n_T; E7 (nếu có): source_only không đổi theo tập con.
+- [ ] E2–E3: `machine_config.json` đầy đủ; dao động nhỏ. E4: M = 30; random-k ở sàn.
 - [ ] `make_survey_tables.py` chạy không lỗi; `provenance_manifest.json` liệt kê mọi tệp đầu vào.
 
 ---
 
-## 10. Lịch gợi ý (theo Review 24/10, Bảng 17)
+## 10. Lịch (Review 26/10, Bảng lộ trình)
 
 | Ngày | Việc | Ghi chú |
 |---|---|---|
-| 25–27/10 | Cài môi trường, `pytest`, smoke test; sanity Y10; chạy lại P0 (#1, #2, #8) | P0 có thể chạy đêm |
-| 28/10–03/11 | E1 filter + embedded trên 3 bộ (#3); E2 + E3 trên máy cố định (#4) | E2–E3 chạy khi máy rảnh |
-| 04–06/11 | E4 + E5 (#6); `make_survey_tables.py` lần 1 (#7) | gửi bản tạm cho người viết |
-| 04–08/11 | E1 wrapper (#5) | chạy song song với việc trên |
-| 08–10/11 | `make_survey_tables.py` lần cuối; bàn giao đủ `input/results/` + `HANDOVER.md` | bản đầy đủ bài 13/11 |
+| 30–31/10 | Áp patch v3.1, `pytest`, smoke test, push (danh tính UIT); sinh lại few-shot (`build_v3_splits.py --force`); kiểm tra bằng nhau panel TCGA (QĐ19); hoàn tất Cổng 1′ (data card, code J, GSE43580, sanity Y10) | 31/10: `published_panels.csv` |
+| 01–03/11 | E0 (5 bộ, v3.1); E1 pha A + B (5 bộ; TCGA pha A tái dùng nếu khớp); E2 trên Kaggle có hiệu chuẩn (QĐ18) | 03/11: bàn giao đợt 1 (E0, E1 không wrapper, E2); dời 04/11 nếu báo trước 02/11 |
+| 04–08/11 | E1b (4 tập con); E3; E4 + E5 (TCGA, GSE37745); E1 wrapper (3 cohort GPL570); E7; `make_survey_tables.py`; HANDOVER | 06/11: E1b, E3, E4–E6; 08/11: wrapper, E7 |
+| 09–10/11 | Bổ sung theo yêu cầu người viết; ablation loại 4 gen IHC (khoá luận): pha A và B với `--exclude-genes NKX2-1 TP63 NAPSA KRT5 --out E1_feature_selection_noIHC` / `--selection-roots .../E1_feature_selection_noIHC --out E1_classification_noIHC` | 10/11: RQ1 chốt |
 
 ---
 
-## 11. Lỗi thường gặp
+## 11. Lỗi thường gặp (bổ sung)
 
 | Hiện tượng | Nguyên nhân | Xử lý |
 |---|---|---|
-| `[traceable] DỪNG: script chưa được Git theo dõi / HEAD chưa có trên remote` | chưa commit/push | `git add`, `git commit`, `git push` rồi chạy lại. Không dùng `KLTN_ALLOW_UNPUSHED=1` cho lần chạy thật. |
-| `ProvenanceError: Còn thay đổi chưa commit` | sửa file đã theo dõi | commit hoặc `git stash`. |
-| `FileNotFoundError .../experiment-data-perm/<bộ>/expression.h5` | `KLTN_DATA_ROOT` sai | kiểm tra biến môi trường; thư mục phải chứa `experiment-data-perm/`. |
-| `ValueError: ... không cùng thứ tự sample_id` | expression.h5 và metadata.csv lệch | dựng lại bộ dữ liệu bằng `build_perm_test_data.py`, không sửa tay. |
-| `ModuleNotFoundError: skrebate` | chưa cài | `pip install skrebate` (hoặc `--no-deps`). |
-| E1 chạy rất chậm | nhiều luồng BLAS tranh nhau khi `--n-jobs > 1` | script đã giới hạn 1 luồng/fold; đặt thêm `OMP_NUM_THREADS=1` ở shell; `--n-jobs` ≤ số nhân vật lý. |
-| Elastic Net cảnh báo hội tụ | saga chưa hội tụ ở C lớn | đã tắt cảnh báo; không đổi `tol`/`max_iter` nếu chưa hỏi. |
-| `n_filled > 0` ở L1-LR | L1 bão hòa (k > số hệ số khác 0 tối đa ≈ n) | bình thường; người viết sẽ báo cáo. |
-| Nogueira của random-k cao hơn sàn k/5.000 rõ rệt (ví dụ > 0,2) hoặc âm mạnh | lỗi dựng ma trận Z hoặc không gian gen | báo GVHD; không sửa số. |
-| Thời gian E2 dao động mạnh giữa 3 lần | máy đang bận / tiết kiệm năng lượng | chạy lại khi máy rảnh, cắm điện, tắt turbo nếu được. |
-
----
-
-## Phụ lục A. Tham số đặt trước (`survey_v2/config.py`) — đối chiếu KBTN v2.1
-
-| Nhóm | Tham số | Giá trị |
-|---|---|---|
-| Dữ liệu | bộ xếp hạng / mô tả | GSE68465 / TCGA-LUAD, TCGA-LUSC; E2–E3 trên TCGA-LUAD |
-| CV | seed lặp; số fold; wrapper | 42, 43, 44, 45, 46; 5; 3 lần lặp đầu |
-| Ngân sách | k | 10, 50, 100, 200, 500 |
-| Lọc sơ bộ | p0 | 5.000 gen phương sai lớn nhất trên train |
-| Random-k | số lần rút | 100 mỗi (fold, k); seed `[cohort, seed, fold, k, draw]` |
-| Bộ phân loại | LR-L2 C; CV nội bộ; RF cây; phụ ở k | {0,01; 0,1; 1; 10}; 3 fold; 500; {50, 200} |
-| mRMR | tiêu chí; rời rạc hóa | MID; 3 mức μ ± σ/2 |
-| ReliefF | lân cận | 10 |
-| Wrapper | quần thể; thế hệ; fitness; GA; BPSO | 30; 50; AUROC CV 3 fold LR-L2 C = 1; tournament 3, elite 2, đột biến 1/k; w 0,9→0,4, c1 = c2 = 2, v_max 6 |
-| Ổn định | M; tỉ lệ; ρ; bản sao; seed E5b; k chồng lấn | 30; 0,5/0,7/0,9; 0,5/0,8/0,95; 50; 0–4; 50 |
-| Thống kê | α; ROPE; tỉ lệ n_test/n_train | 0,05; ±0,01 AUROC; 1/4 |
-| Chi phí | lần đo; k; lưới n; lưới p; ngân sách wrapper | 3; 50; 100/200/300/toàn bộ; 1.000/2.000/5.000/10.000/toàn bộ; 10×20, 30×50 |
-| Sanity | bộ; k; ngưỡng AUROC | tcga_normal_vs_tumor_sanity; 10; 0,99 |
-
-## Phụ lục B. Tài liệu gốc để đọc thêm
-
-Đã có trong danh mục tham khảo của bản v1 (người viết giữ): Guyon & Elisseeff 2003 (tổng quan FS); Saeys 2007;
-Peng 2005 (mRMR); Urbanowicz 2018 (ReliefF, skrebate); Tibshirani 1996 và Zou & Hastie 2005 (L1, Elastic Net);
-Breiman 2001 (RF); Guyon 2002 (SVM-RFE); Siedlecki & Sklansky 1989 (GA); Kennedy & Eberhart 1995 (PSO);
-Nogueira 2018; Kuncheva 2007.
-
-Người viết đang bổ sung (`input/references/new_references_required.md`): Nadeau & Bengio 2003; Holm 1979;
-Benavoli et al. 2017 (Bayesian correlated t-test); Ambroise & McLachlan 2002 (selection bias); Kennedy & Eberhart 1997
-(BPSO); Ojala & Garriga 2010 và Phipson & Smyth 2010 (kiểm định hoán vị). Đội code không cần trích dẫn; chỉ cần
-biết nguồn gốc của từng công thức trong mục 8 khi được hỏi.
+| `không có gen chung với tcga_luad_lusc_primary_tumor` | tên gen cohort GEO không phải gene symbol như TCGA | kiểm tra quy tắc gom probe → gene symbol của notebook dựng cohort; không sửa tay |
+| `fewshot_splits.csv không hợp lệ` | bản chia cũ / sửa tay | chạy lại `build_fewshot_splits.py --force` sau khi kiểm tra; không chỉnh tay |
+| `abess` không cài được trên Python 3.14 | chưa có wheel | ghi vào HANDOVER; pha A ghi `methods_skipped = ["abess"]`; thử Python 3.12 trên Kaggle nếu muốn có abess |
+| k-TSP `KTSP_MAX_P` | p > 5.000 (E3 ở p lớn) | bình thường; E3 ghi NaN cho k-TSP ở p > 5.000 |
+| `n_selected = 0` ở ktsp | k lẻ | bình thường (KBTN 5.1); người viết báo cáo "—" |
+| E1 pha B chậm | RF 500 cây ở k ∈ {5, 25} | chia theo `--datasets`; không giảm số cây nếu chưa hỏi |
+| `source_only` AUROC < 0,5 | lệch nền tảng khiến φ đảo chiều | đây là kết quả (chuyển giao âm), không phải lỗi; báo cáo nguyên |

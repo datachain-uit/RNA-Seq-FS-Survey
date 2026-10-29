@@ -22,4 +22,5 @@ psutil>=5.9          # machine_config.json của E2–E3
 matplotlib>=3.8      # make_survey_tables.py (hình E1, E3, E4, E5c, E6)
 xgboost>=2.1         # classifier E1 phase B
 lightgbm>=4.5        # classifier E1 phase B
-codecarbon>=2.8      # optional energy/carbon collection for selection benchmarks
+codecarbon>=2.8      # optional energy estimate (OFF by default, --track-emissions; descriptive only, Y16)
+# abess>=0.4         # L0 / best-subset (survey v3 method 'abess'); install separately: pip install abess (no wheel on some Python versions -> method skipped)

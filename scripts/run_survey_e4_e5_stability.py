@@ -1,21 +1,21 @@
-"""E4 (độ ổn định theo tỉ lệ lấy mẫu con) và E5 (nhạy với dư thừa, nhạy với seed, chồng lấn giữa phương pháp).
+"""E4 (độ ổn định theo tỉ lệ lấy mẫu con) và E5 (nhạy với dư thừa, nhạy với seed, chồng lấn giữa phương pháp) — survey v3.
 
-E4: với mỗi bộ dữ liệu và tỉ lệ f ∈ {0,5; 0,7; 0,9}: rút M = 30 tập con bệnh nhân ĐỘC LẬP (phân tầng theo
-    nhãn), lọc sơ bộ không dùng nhãn trong từng tập con, chọn k gen (k ∈ K_GRID) bằng từng phương pháp;
-    đo Nogueira (chính, kèm CI 95%) trên KHÔNG GIAN TOÀN BỘ GEN, Kuncheva và Jaccard trung bình (phụ);
+E4: với mỗi bộ trong STABILITY_DATASETS (TCGA LUAD+LUSC, GSE37745) và tỉ lệ f ∈ {0,5; 0,7; 0,9}: rút M = 30 tập con bệnh nhân
+    ĐỘC LẬP (phân tầng theo nhãn), lọc sơ bộ không dùng nhãn trong từng tập con, chọn k gen (k ∈ K_GRID) bằng từng phương pháp
+    (11 phương pháp không wrapper); đo Nogueira (chính, kèm CI 95%) trên KHÔNG GIAN GEN G, Kuncheva và Jaccard trung bình (phụ);
     random-k làm sàn tham chiếu (kỳ vọng Nogueira ≈ 0).
-E5a: tại f = 0,7, thêm 50 bản sao tương quan (ρ ∈ {0,5; 0,8; 0,95}) của 50 gen phương sai lớn nhất sau
-    lọc sơ bộ; đo lại ổn định (thô và sau khi gộp bản sao về gen gốc) và số cặp (gốc, bản sao) cùng được chọn.
-E5b: trên GSE68465, lần lặp 0 fold 0: GA, BPSO (k = 50) và RF importance (mọi k) với 5 seed; AUROC test của
-    LR-L2 cho từng seed; Nogueira/Jaccard giữa 5 tập gen (biến thiên thuần do thuật toán, dữ liệu cố định).
-E5c: chồng lấn Jaccard giữa các phương pháp ở k = 50 từ kết quả E1 (e1_selected_genes.csv), nếu đã có.
+E5a: chỉ REDUNDANCY_DATASET (GSE37745), tại f = 0,7: thêm 50 bản sao tương quan (ρ ∈ {0,5; 0,8; 0,95}) của 50 gen phương sai
+    lớn nhất sau lọc sơ bộ; đo lại ổn định (thô và sau khi gộp bản sao về gen gốc) và số cặp (gốc, bản sao) cùng được chọn.
+E5b: chỉ RANKING_DATASET (GSE37745), lần lặp 0 fold 0: SEED_VARIABILITY_METHODS (RF importance, stability selection; mọi k)
+    và GA, BPSO (k ∈ --wrapper-k) với 5 seed; AUROC test của LR-L2 cho từng seed; Nogueira/Jaccard giữa 5 tập gen.
+E5c: chồng lấn Jaccard giữa các phương pháp ở k = OVERLAP_K (10) từ kết quả pha A của E1 (selected_genes.csv), nếu đã có.
 
-    python scripts/run_survey_e4_e5_stability.py                                  # E4 + E5a + E5b + E5c, 3 bộ
-    python scripts/run_survey_e4_e5_stability.py --datasets gse68465_stage_early_late --methods f_test l1_lr --m 5
-    python scripts/run_survey_e4_e5_stability.py --wrappers --n-jobs 6             # thêm GA/BPSO vào E4 (f = 0,7, k = 50)
+    python scripts/run_survey_e4_e5_stability.py --n-jobs 4                      # E4 (2 bộ) + E5a, E5b (GSE37745) + E5c
+    python scripts/run_survey_e4_e5_stability.py --datasets gse37745 --methods f_test l1_lr --m 5
+    python scripts/run_survey_e4_e5_stability.py --wrappers --n-jobs 6             # thêm GA/BPSO vào E4 (f = 0,7, k = OVERLAP_K)
 
 Đầu ra: results/survey_v2/E4_E5/<bộ>/{subsamples.csv, e4_selected_genes.csv, e4_stability.csv, e5a_selected_genes.csv,
-e5a_redundancy.csv, e5b_seed_runs.csv, e5b_seed_stability.csv, e5c_overlap_k50.csv, config.json}. Chạy lại sẽ bỏ qua
+e5a_redundancy.csv, e5b_seed_runs.csv, e5b_seed_stability.csv, e5c_overlap_k10.csv, config.json}. Chạy lại sẽ bỏ qua
 các (fraction, subsample, method) đã có trong e4_selected_genes.csv / e5a_selected_genes.csv (resume).
 """
 
@@ -42,14 +42,14 @@ from survey_v2.runlog import DATA_ROOT, all_versions, results_dir, start_run, wr
 from survey_v2.stability import kuncheva_index, mean_jaccard, nogueira, overlap_matrix, selections_to_matrix  # noqa: E402
 
 COHORT_ID = {name: i for i, name in enumerate(C.DATASETS)}
-METHOD_ID = {m: i for i, m in enumerate(C.FILTER_METHODS + C.EMBEDDED_METHODS + C.WRAPPER_METHODS)}
-NON_WRAPPER = list(C.FILTER_METHODS + C.EMBEDDED_METHODS)
+METHOD_ID = dict(C.METHOD_ID)
+NON_WRAPPER = list(C.NON_WRAPPER_METHODS)
 TAG_E4, TAG_E5A, TAG_E5B = 4, 5, 6   # phần tử phân biệt trong seed
 
 
 def parse_args(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--datasets", nargs="+", default=list(C.DATASETS))
+    ap.add_argument("--datasets", nargs="+", default=list(C.STABILITY_DATASETS))
     ap.add_argument("--methods", nargs="+", default=NON_WRAPPER)
     ap.add_argument("--k", nargs="+", type=int, default=list(C.K_GRID))
     ap.add_argument("--m", type=int, default=C.STABILITY_M, help="số tập con độc lập M")
@@ -61,7 +61,8 @@ def parse_args(argv=None):
     ap.add_argument("--generations", type=int, default=C.WRAPPER_GENERATIONS)
     ap.add_argument("--skip-e5a", action="store_true")
     ap.add_argument("--skip-e5b", action="store_true")
-    ap.add_argument("--e1-dir", default="E1", help="thư mục E1 (trong results/survey_v2/) để tính E5c")
+    ap.add_argument("--e1-dir", default="E1_feature_selection", help="thư mục pha A của E1 (trong results/survey_v2/) để tính E5c")
+    ap.add_argument("--e1-wrapper-dir", default="E1_wrapper_feature_selection")
     ap.add_argument("--n-jobs", type=int, default=1)
     ap.add_argument("--out", default="E4_E5")
     return ap.parse_args(argv)
@@ -90,12 +91,18 @@ def select_on_subset(ds, idx, methods, k_list, seed_parts, args, extra_cols: dic
                 panels = {k: random_panel(p0, k, np.random.default_rng([cid, *seed_parts, k])) for k in ks}
                 info = {}
             else:
-                sel = select(method, Xp, y, ks, seed=C.seed_for(cid, *seed_parts, METHOD_ID.get(method, 50)),
-                             n_jobs=1, wrapper_kwargs={"pop": args.pop, "generations": args.generations})
+                try:
+                    sel = select(method, Xp, y, ks, seed=C.seed_for(cid, *seed_parts, METHOD_ID.get(method, 50)),
+                                 n_jobs=1, wrapper_kwargs={"pop": args.pop, "generations": args.generations})
+                except ImportError as exc:
+                    print(f"[{ds.name}] {method}: bỏ qua ({exc})", flush=True)
+                    continue
                 panels, info = sel.panels, sel.info
             dt = time.perf_counter() - t0
             time_rows.append({**extra_cols, "method": method, "n": len(idx), "p0": p0, "select_time_s": dt})
             for k in ks:
+                if panels.get(k) is None:          # k-TSP ở k lẻ
+                    continue
                 sel_idx = np.asarray(panels[k])
                 for rank, j in enumerate(sel_idx):
                     gene_rows.append({**extra_cols, "method": method, "k": int(k), "rank": rank + 1, "gene": genes[j]})
@@ -201,7 +208,9 @@ def run_e4_e5a(ds, out: Path, args) -> dict:
 
     # ---- E5a --------------------------------------------------------------------------------------------
     n_e5a_rows = 0
-    if not args.skip_e5a:
+    if not args.skip_e5a and ds.name != C.REDUNDANCY_DATASET:
+        print(f"[{ds.name}] E5a chỉ chạy trên {C.REDUNDANCY_DATASET}; bỏ qua", flush=True)
+    elif not args.skip_e5a:
         fw = C.REDUNDANCY_FRACTION
         if fw not in frac_list:
             print(f"[{ds.name}] E5a bỏ qua: --fractions không chứa {fw}", flush=True)
@@ -253,7 +262,7 @@ def run_e5b(ds, out: Path, args) -> dict:
     cid = COHORT_ID.get(ds.name, 99)
     repeat, seed, fold, tr, te = repeated_patient_splits(ds.y, ds.groups)[0]
     Xtr, ytr, Xte, yte = ds.X[tr], ds.y[tr], ds.X[te], ds.y[te]
-    plan = [("rf_importance", list(args.k))] + [(m, list(args.wrapper_k)) for m in C.WRAPPER_METHODS]
+    plan = [(m, list(args.k)) for m in C.SEED_VARIABILITY_METHODS] + [(m, list(args.wrapper_k)) for m in C.WRAPPER_METHODS]
     runs = out / "e5b_seed_runs.csv"
     done = done_triples(runs, ["method", "seed_id"]) if runs.exists() else set()
     with threadpool_limits(1):
@@ -268,7 +277,9 @@ def run_e5b(ds, out: Path, args) -> dict:
             dt = time.perf_counter() - t0
             rows, gene_rows = [], []
             for k in ks:
-                idx = sel.panels[k]
+                idx = sel.panels.get(k)
+                if idx is None:
+                    continue
                 r = evaluate_panel(Xtr_p[:, idx], ytr, Xte_p[:, idx], yte, classifier="lr_l2",
                                    seed=C.seed_for(cid, seed, fold, 1000 + k))
                 rows.append({"cohort": ds.name, "repeat": repeat, "fold": fold, "method": method, "seed_id": s, "k": int(k),
@@ -296,13 +307,22 @@ def run_e5b(ds, out: Path, args) -> dict:
 
 
 # ---------------------------------------------------------------------------------------------------
-def run_e5c(ds, out: Path, e1_dir: Path) -> dict:
-    f = e1_dir / ds.name / "e1_selected_genes.csv"
-    if not f.exists():
-        print(f"[{ds.name}] E5c bỏ qua: chưa có {f}", flush=True)
-        return {"status": "skipped", "reason": f"missing {f}"}
-    g = pd.read_csv(f)
-    g = g[g.k == C.OVERLAP_K]
+def run_e5c(ds, out: Path, e1_dir: Path, e1_wrapper_dir: Path | None = None) -> dict:
+    frames = []
+    for d in (e1_dir, e1_wrapper_dir):
+        if d is None:
+            continue
+        f = d / ds.name / "selected_genes.csv"
+        if f.exists():
+            try:
+                frames.append(pd.read_csv(f))
+            except pd.errors.EmptyDataError:
+                pass
+    if not frames:
+        print(f"[{ds.name}] E5c bỏ qua: chưa có selected_genes.csv của pha A trong {e1_dir}", flush=True)
+        return {"status": "skipped", "reason": f"missing {e1_dir / ds.name / 'selected_genes.csv'}"}
+    g = pd.concat(frames, ignore_index=True)
+    g = g[(g.k == C.OVERLAP_K) & (~g.method.isin(["ihc_2", "ihc_4"])) & (~g.method.str.startswith("panel_"))]
     if g.empty:
         print(f"[{ds.name}] E5c bỏ qua: {f} không có k = {C.OVERLAP_K}", flush=True)
         return {"status": "skipped", "reason": f"no k={C.OVERLAP_K} in {f}"}
@@ -326,8 +346,8 @@ def run_e5c(ds, out: Path, e1_dir: Path) -> dict:
             n_pairs[i, j] = len(vals)
     mat = pd.DataFrame(M, index=names, columns=names)
     mat.index.name = "method"
-    mat.to_csv(out / "e5c_overlap_k50.csv", encoding="utf-8-sig")
-    pd.DataFrame(n_pairs, index=names, columns=names).to_csv(out / "e5c_overlap_k50_nfolds.csv")
+    mat.to_csv(out / f"e5c_overlap_k{C.OVERLAP_K}.csv", encoding="utf-8-sig")
+    pd.DataFrame(n_pairs, index=names, columns=names).to_csv(out / f"e5c_overlap_k{C.OVERLAP_K}_nfolds.csv")
     return {"status": "ok", "methods": names, "k": C.OVERLAP_K, "n_folds_total": len(folds)}
 
 
@@ -337,6 +357,7 @@ def main(argv=None, script=__file__) -> None:
     prov = start_run(script, params=vars(args))
     t_start = time.time()
     e1_dir = DATA_ROOT.joinpath(*C.RESULT_DIR, args.e1_dir)
+    e1_wrapper_dir = DATA_ROOT.joinpath(*C.RESULT_DIR, args.e1_wrapper_dir)
     for name in args.datasets:
         ds = load_dataset(DATA_ROOT, name)
         out = results_dir(args.out, name)
@@ -344,12 +365,13 @@ def main(argv=None, script=__file__) -> None:
         info = {"experiment": "E4_E5", "dataset": name, "n_samples": ds.n, "n_genes": ds.p, "k_grid": args.k,
                 "methods": args.methods + ["random_k"], "prefilter_p0": args.prefilter,
                 "subsample_seed": "default_rng([cohort_id, 4, fraction_index, subsample])",
-                "stability_universe": "all genes of the dataset (prefilter is inside each subsample)",
+                "stability_universe": "gene space G of the dataset (prefilter is inside each subsample)", "gene_space": ds.notes,
+                "role": C.DATASETS.get(name),
                 "nogueira_ci": "asymptotic 95% CI (Nogueira et al. 2018), valid for independent subsamples"}
         info["e4_e5a"] = run_e4_e5a(ds, out, args)
         if not args.skip_e5b and name == C.RANKING_DATASET:
             info["e5b"] = run_e5b(ds, out, args)
-        info["e5c"] = run_e5c(ds, out, e1_dir)
+        info["e5c"] = run_e5c(ds, out, e1_dir, e1_wrapper_dir)
         info["versions"] = all_versions()
         info["elapsed_s"] = time.time() - t_start
         write_config(out, prov, info, data_files=[ds.data_dir / "expression.h5", ds.data_dir / "metadata.csv"])

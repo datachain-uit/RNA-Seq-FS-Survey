@@ -1,11 +1,14 @@
-"""Mười phương pháp chọn gen + hai tham chiếu của survey v2 (Bảng 10, Review 24/10/2026).
+"""Mười ba phương pháp chọn gen + tham chiếu của survey v3 (QĐ15, Review 26/10/2026; KBTN v2 Mục 5.1).
+
+So với v2: thêm abess (L0, ràng buộc cứng |S| = k), stability selection (Meinshausen & Bühlmann 2010) và k-TSP
+(Tan et al. 2005); SVM-RFE xếp hạng tới k_min = 1; panel cố định (IHC, panel công bố) ở survey_v2/panels.py.
 
 Quy ước chung
 -------------
 * Mọi hàm chỉ nhận PHẦN TRAIN của fold (đã lọc sơ bộ p0 gen). Không hàm nào nhận phần test.
 * Phương pháp xếp hạng (RANKING_METHODS) trả về một thứ tự đầy đủ/đủ dài; tập k gen = k gen đầu
   (tiền tố), nên các tập lồng nhau theo k (assert trong `prefix_panels`).
-* Phương pháp theo k (l1_lr, elastic_net) trả về đúng k gen cho từng k; khi L1 không đạt đủ k gen
+* Phương pháp theo k (l1_lr, elastic_net, abess) trả về đúng k gen cho từng k; k-TSP chỉ ở k chẵn (panel[k] = None ở k lẻ); khi L1 không đạt đủ k gen
   (bão hòa ≤ n_train), bổ sung theo thứ hạng F-test trên train và ghi `n_filled` (KBTN 5.1).
 * Chuẩn hóa z-score (fit trên train) được áp dụng TRƯỚC l1_lr, elastic_net, svm_rfe (M7).
 * Chỉ số trả về là chỉ số cột của ma trận đưa vào (ma trận đã lọc sơ bộ); người gọi ánh xạ về gen.
@@ -224,6 +227,132 @@ def select_sparse_exact_k(X, y, k_list, kind: str, seed: int = 0,
 
 
 # ---------------------------------------------------------------------------------------------------
+# Ràng buộc cứng, tần suất chọn, thứ hạng cặp (KBTN v2 Mục 5.1)
+# ---------------------------------------------------------------------------------------------------
+def _stratified_half(y: np.ndarray, rng: np.random.Generator, fraction: float = C.STABSEL_FRACTION) -> np.ndarray:
+    idx = []
+    for c in (0, 1):
+        cand = np.flatnonzero(y == c)
+        m = max(2, int(round(fraction * len(cand))))
+        idx.append(rng.choice(cand, size=min(m, len(cand)), replace=False))
+    return np.sort(np.concatenate(idx))
+
+
+def rank_stability_selection(X, y, k_max: int, seed: int = 0, n_subsamples: int = C.STABSEL_N_SUBSAMPLES,
+                             fraction: float = C.STABSEL_FRACTION, **_) -> tuple[np.ndarray, dict]:
+    """Stability selection (Meinshausen & Bühlmann 2010) với L1-LR (X đã z-score trên train).
+
+    Mức phạt được chọn MỘT lần trên toàn bộ phần train sao cho số hệ số khác 0 ≈ q = STABSEL_TARGET_NNZ_FACTOR·k_max
+    (q của M&B); sau đó fit L1-LR tại C đó trên `n_subsamples` tập con phân tầng 50 %; π_j = tần suất β_j ≠ 0.
+    Xếp hạng theo π_j giảm dần, hoà theo |β| trung bình; trả về (thứ tự, {"C": C_q, "pi": π}).
+    """
+    n, p = X.shape
+    q = int(min(C.STABSEL_TARGET_NNZ_FACTOR * k_max, max(2, n // 2 - 1), p))
+    factory = _l1_factory(seed)
+    path = _coef_path(factory, X, y, np.logspace(-3, 2, 26))
+    sel, c_q, _ = _exact_k_from_path(factory, X, y, q, path, refine_steps=4)
+    if c_q is None:                       # bão hoà: lấy C lớn nhất của lưới
+        c_q = float(path[-1][0])
+    rng = np.random.default_rng(seed)
+    counts = np.zeros(p)
+    abs_coef = np.zeros(p)
+    for _ in range(n_subsamples):
+        idx = _stratified_half(y, rng, fraction)
+        m = factory(c_q)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            m.fit(X[idx], y[idx])
+        coef = np.ravel(m.coef_)
+        counts += coef != 0
+        abs_coef += np.abs(coef)
+    pi = counts / n_subsamples
+    order = np.lexsort((-abs_coef, -pi))   # π giảm dần, hoà: |β| trung bình giảm dần
+    return np.asarray(order, dtype=int), {"C": float(c_q), "pi": pi, "q_target": q}
+
+
+def ktsp_pair_scores(X, y, max_p: int = C.KTSP_MAX_P, chunk: int = 16):
+    """Điểm cặp gen của TSP (Geman et al. 2004; Tan et al. 2005): Δ_ij = |P(x_i < x_j | y = 0) − P(x_i < x_j | y = 1)|,
+    tính chính xác cho mọi cặp i < j (O(n p^2), theo khối). Trả về (Δ, γ) với γ_ij = |mean rank diff| để phá hoà.
+    """
+    n, p = X.shape
+    if p > max_p:
+        raise ValueError(f"k-TSP: p = {p} > KTSP_MAX_P = {max_p}; lọc sơ bộ trước")
+    X0, X1 = X[y == 0], X[y == 1]
+    # thứ hạng trong mẫu (tiêu chí phụ của Tan 2005): trung bình rank theo lớp, tính một lần
+    r0 = np.argsort(np.argsort(X0, axis=1), axis=1).mean(axis=0).astype(np.float32)   # (p,)
+    r1 = np.argsort(np.argsort(X1, axis=1), axis=1).mean(axis=0).astype(np.float32)
+    delta = np.zeros((p, p), dtype=np.float32)
+    for start in range(0, p, chunk):
+        sl = slice(start, min(start + chunk, p))
+        p0 = (X0[:, sl, None] < X0[:, None, :]).mean(axis=0)   # (chunk, p): P(x_i < x_j | 0)
+        p1 = (X1[:, sl, None] < X1[:, None, :]).mean(axis=0)
+        delta[sl] = np.abs(p0 - p1)
+    # γ_ij = |E[r_i − r_j | 0] − E[r_i − r_j | 1]| (tuyến tính theo trung bình rank nên không cần khối)
+    dr = (r0 - r1)
+    gamma = np.abs(dr[:, None] - dr[None, :]).astype(np.float32)
+    iu = np.triu_indices(p, 1)
+    delta_sym = np.maximum(delta, delta.T)
+    gamma_sym = np.maximum(gamma, gamma.T)
+    return delta_sym[iu], gamma_sym[iu], iu
+
+
+def rank_ktsp(X, y, k_max: int, **_) -> tuple[np.ndarray, dict]:
+    """k-TSP: chọn tham lam các cặp gen RỜI NHAU theo Δ giảm dần (hoà theo γ); panel k = 2m gen = m cặp đầu.
+
+    Trả về thứ tự gen ghép theo cặp [i1, j1, i2, j2, ...] (tiền tố chẵn là panel hợp lệ) và danh sách cặp.
+    Chỉ k chẵn là panel k-TSP đúng nghĩa; k lẻ được ghi NaN ở script (KBTN 5.1).
+    """
+    d, g, (ii, jj) = ktsp_pair_scores(X, y)
+    order = np.lexsort((-g, -d))
+    used = set()
+    pairs = []
+    need = max(1, k_max // 2)
+    for t in order:
+        a, b = int(ii[t]), int(jj[t])
+        if a in used or b in used:
+            continue
+        pairs.append((a, b, float(d[t]), float(g[t])))
+        used.update((a, b))
+        if len(pairs) >= need:
+            break
+    ranking = np.array([x for a, b, _, _ in pairs for x in (a, b)], dtype=int)
+    return ranking, {"pairs": pairs}
+
+
+def select_abess(X, y, k_list, seed: int = 0) -> Selection:
+    """L0 / best-subset logistic (abess; Zhu et al. 2020, 2022) với support_size = k cho từng k (X đã z-score)."""
+    try:
+        from abess import LogisticRegression as AbessLR
+    except ImportError as exc:   # pragma: no cover
+        raise ImportError("abess chưa cài: pip install abess (ghi 'không chạy' trong HANDOVER nếu không cài được)") from exc
+    panels, info = {}, {"exact": {}, "n_filled": {}}
+    for k in sorted(int(k) for k in k_list):
+        m = AbessLR(support_size=int(k))
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            m.fit(X, y)
+        coef = np.ravel(m.coef_)
+        sel = np.flatnonzero(coef != 0)
+        sel = sel[np.argsort(-np.abs(coef[sel]), kind="stable")]
+        exact = len(sel) == k
+        if len(sel) > k:
+            sel = sel[:k]
+        sel, n_filled = _fill_with_ftest(np.asarray(sel, dtype=int), k, X, y)
+        panels[k] = np.sort(sel[:k])
+        info["exact"][k], info["n_filled"][k] = bool(exact), n_filled
+        assert len(panels[k]) == k
+    return Selection(method="abess", panels=panels, info=info)
+
+
+def ktsp_vote_scores(X, pairs) -> np.ndarray:
+    """Luật bỏ phiếu k-TSP (phụ): điểm = tỉ lệ cặp (i, j) có x_i < x_j (hướng cặp đã chuẩn hoá theo lớp 1)."""
+    votes = np.zeros(X.shape[0])
+    for a, b, _, _ in pairs:
+        votes += (X[:, a] < X[:, b]).astype(float)
+    return votes / max(1, len(pairs))
+
+
+# ---------------------------------------------------------------------------------------------------
 # Tham chiếu
 # ---------------------------------------------------------------------------------------------------
 def random_panel(p: int, k: int, rng: np.random.Generator) -> np.ndarray:
@@ -258,7 +387,24 @@ def select(method: str, X_tr: np.ndarray, y_tr: np.ndarray, k_list, seed: int = 
     elif method == "rf_importance":
         order = rank_rf_importance(X_use, y_tr, seed=seed, n_jobs=n_jobs)
     elif method == "svm_rfe":
-        order = rank_svm_rfe(X_use, y_tr, k_min=k_min)
+        order = rank_svm_rfe(X_use, y_tr, k_min=1)
+    elif method == "stability_selection":
+        order, extra = rank_stability_selection(X_use, y_tr, k_max=k_max, seed=seed)
+        return Selection(method=method, panels=prefix_panels(order, ks), ranking=np.asarray(order, dtype=int),
+                         info={"C": {k: extra["C"] for k in ks}, "q_target": extra["q_target"]})
+    elif method == "ktsp":
+        order, extra = rank_ktsp(X_use, y_tr, k_max=k_max)
+        panels, info = {}, {"pairs": extra["pairs"], "exact": {}}
+        for k in ks:
+            if k % 2 == 0 and k <= len(order):
+                panels[k] = np.asarray(order[:k], dtype=int)
+                info["exact"][k] = True
+            else:                                       # k lẻ hoặc không đủ cặp: không phải panel k-TSP
+                panels[k] = None
+                info["exact"][k] = False
+        return Selection(method=method, panels=panels, ranking=np.asarray(order, dtype=int), info=info)
+    elif method == "abess":
+        return select_abess(X_use, y_tr, ks, seed=seed)
     elif method in ("l1_lr", "elastic_net"):
         return select_sparse_exact_k(X_use, y_tr, ks, kind=method, seed=seed)
     elif method in ("ga", "bpso"):

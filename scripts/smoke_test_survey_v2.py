@@ -1,12 +1,13 @@
-"""Chạy thử toàn bộ chuỗi survey v2 trên DỮ LIỆU TỔNG HỢP (≈ 3–10 phút) để kiểm tra môi trường trước khi chạy thật.
+"""Chạy thử toàn bộ chuỗi survey v3 trên DỮ LIỆU TỔNG HỢP (≈ 5–15 phút) để kiểm tra môi trường trước khi chạy thật.
 
-Tạo KLTN_DATA_ROOT tạm (hoặc --root), sinh 3 bộ giai đoạn + bộ sanity theo đúng định dạng experiment-data-perm/,
-rồi chạy lần lượt: run_survey_e1 → run_survey_e1_wrappers → run_survey_e2_e3_timing → run_survey_e4_e5_stability →
-make_survey_tables → run_p0_perm_v3 → aggregate_p0_decision → run_sanity_auroc. In thời gian từng bước.
+Tạo KLTN_DATA_ROOT tạm (hoặc --root), sinh nguồn TCGA giả (perm/), 4 cohort GEO giả (geo-target/) và bộ sanity, rồi chạy
+lần lượt: build_e1_repeated_splits → build_fewshot_splits → run_survey_e0_signal_check → run_e1_feature_selection (pha A)
+→ run_e1_wrappers_all_cohorts → run_e1_classification (pha B) → run_survey_e1b_learning_curve → run_survey_e7_transfer_naive
+→ run_survey_e2_e3_timing → run_survey_e4_e5_stability → make_survey_tables → run_sanity_auroc. In thời gian từng bước.
 Kết quả chạy thử KHÔNG được dùng cho bài (dữ liệu giả); xóa thư mục tạm sau khi xem.
 
     python scripts/smoke_test_survey_v2.py                 # thư mục tạm, cấu hình nhỏ
-    python scripts/smoke_test_survey_v2.py --root /tmp/kltn_smoke --n 150 --p 1500 --full-methods
+    python scripts/smoke_test_survey_v2.py --root /tmp/kltn_smoke --n 160 --p 1500 --full-methods --n-jobs 4
 """
 
 from __future__ import annotations
@@ -27,7 +28,7 @@ def parse_args():
     ap.add_argument("--root", default=None, help="KLTN_DATA_ROOT tạm (mặc định: thư mục tạm của hệ thống)")
     ap.add_argument("--n", type=int, default=120)
     ap.add_argument("--p", type=int, default=800)
-    ap.add_argument("--full-methods", action="store_true", help="chạy đủ 8 phương pháp filter/embedded (chậm hơn)")
+    ap.add_argument("--full-methods", action="store_true", help="chạy đủ 11 phương pháp không wrapper (chậm hơn)")
     ap.add_argument("--n-jobs", type=int, default=1)
     return ap.parse_args()
 
@@ -36,7 +37,7 @@ def main() -> None:
     args = parse_args()
     root = Path(args.root) if args.root else Path(tempfile.mkdtemp(prefix="kltn_smoke_"))
     os.environ["KLTN_DATA_ROOT"] = str(root)
-    os.environ.setdefault("KLTN_ALLOW_UNPUSHED", "1")      # chạy thử: không yêu cầu đã push
+    os.environ.setdefault("KLTN_ALLOW_UNPUSHED", "1")
     for v in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS"):
         os.environ.setdefault(v, "1")
     sys.path.insert(0, str(REPO))
@@ -46,37 +47,45 @@ def main() -> None:
 
     print(f"KLTN_DATA_ROOT (tạm) = {root}")
     t0 = time.time()
-    synthetic.make_all(root, n=args.n, p=args.p, effect_stage=0.7)
+    synthetic.make_all(root, n=args.n, p=args.p, effect=0.8, n_target=max(60, args.n // 2))
     timings = {"synthetic data": time.time() - t0}
-    methods = list(C.FILTER_METHODS + C.EMBEDDED_METHODS) if args.full_methods else ["f_test", "mrmr", "l1_lr", "rf_importance"]
-    pre = str(min(500, args.p))
+    methods = list(C.NON_WRAPPER_METHODS) if args.full_methods else ["f_test", "mrmr", "l1_lr", "stability_selection", "ktsp"]
+    pre = str(min(400, args.p))
     nj = str(args.n_jobs)
+    main_cohort = "gse37745"
 
-    def run(label, module, argv):
+    def run(label, module, argv, entry="main"):
         t = time.time()
         mod = importlib.import_module(module)
         sys.argv = [f"{module}.py", *argv]
-        rc = mod.main(argv) if module not in ("run_survey_e1_wrappers", "run_survey_e2_e3_timing") else mod.main()
+        fn = getattr(mod, entry)
+        rc = fn() if module == "run_survey_e2_e3_timing" else fn(argv)
         timings[label] = time.time() - t
         print(f"==> {label}: {timings[label]:.1f}s\n", flush=True)
         return rc
 
-    run("E1 (filter+embedded, 3 bộ, 2 lần lặp)", "run_survey_e1",
-        ["--methods", *methods, "--k", "10", "50", "100", "--repeats", "0", "1", "--prefilter", pre, "--random-draws", "5",
-         "--secondary", "--n-jobs", nj])
-    run("E1 wrapper (GA+BPSO, 1 lần lặp, quần thể 8 × 3 thế hệ)", "run_survey_e1_wrappers",
-        ["--repeats", "0", "--k", "10", "50", "--prefilter", pre, "--pop", "8", "--generations", "3", "--n-jobs", nj])
+    run("Bản chia 5×5 (5 bộ)", "build_e1_repeated_splits", [])
+    run("Bản chia few-shot (4 cohort)", "build_fewshot_splits", [])
+    run("E0 kiểm tra tín hiệu (2 cohort, 20 hoán vị)", "run_survey_e0_signal_check",
+        ["--datasets", main_cohort, "gse10245", "--n-perm", "20", "--n-random", "10", "--prefilter", pre, "--n-jobs", nj])
+    run("E1 pha A (chọn gen, 2 bộ, 1 lần lặp)", "run_e1_feature_selection",
+        ["--datasets", main_cohort, C.SOURCE_DATASET, "--methods", *methods, "ihc_2", "ihc_4", "--k", "1", "2", "3", "4", "5", "10", "25",
+         "--repeats", "0", "--prefilter", pre])
+    run("E1 pha A wrapper (GA+BPSO, quần thể 8 × 3 thế hệ)", "run_e1_wrappers_all_cohorts",
+        ["--datasets", main_cohort, "--repeats", "0", "--k", "5", "10", "--prefilter", pre, "--pop", "8", "--generations", "3"], entry="run")
+    run("E1 pha B (LR-L2 + phụ, B0, random-k)", "run_e1_classification",
+        ["--datasets", main_cohort, C.SOURCE_DATASET, "--repeats", "0", "--secondary", "--random-draws", "5", "--prefilter", pre])
+    run("E1b đường cong học (1 cohort)", "run_survey_e1b_learning_curve",
+        ["--datasets", main_cohort, "--methods", *methods, "ihc_2", "ihc_4", "--k", "2", "4", "5", "10", "--prefilter", pre,
+         "--random-draws", "5", "--n-jobs", nj])
+    run("E7 chuyển giao đơn giản (1 cohort)", "run_survey_e7_transfer_naive",
+        ["--datasets", main_cohort, "--k", "2", "5", "10", "--n-t", "5", "10", "--prefilter", pre, "--n-jobs", nj])
     run("E2+E3 (thời gian)", "run_survey_e2_e3_timing",
-        ["--methods", *methods, "--repeats", "1", "--n-grid", "40", "60", "all", "--p-grid", "200", "400", "all", "--k", "10"])
+        ["--methods", *methods, "--repeats", "1", "--n-grid", "40", "80", "all", "--p-grid", "200", "400", "all", "--k", "10"])
     run("E4+E5 (ổn định, M = 6)", "run_survey_e4_e5_stability",
-        ["--methods", *methods, "--k", "10", "50", "--m", "6", "--prefilter", pre, "--wrapper-k", "10", "--pop", "8",
-         "--generations", "3", "--n-jobs", nj])
-    C.OVERLAP_K = 50
+        ["--datasets", main_cohort, "--methods", *methods, "--k", "2", "5", "10", "--m", "6", "--prefilter", pre, "--wrapper-k", "10",
+         "--pop", "8", "--generations", "3", "--n-jobs", nj])
     run("Bảng + hình", "make_survey_tables", ["--e6-fraction", "0.7"])
-    run("P0 perm v3 (20 hoán vị, 20 random-k)", "run_p0_perm_v3",
-        ["--datasets", "gse68465_stage_early_late", "--n-perm", "20", "--n-random", "20", "--n-jobs", nj])
-    run("P0 quyết định hợp nhất", "aggregate_p0_decision",
-        ["--summaries", str(root / "results" / "survey_v2" / "P0" / "perm_test_v3" / "gse68465_stage_early_late" / "summary.csv")])
     rc = run("Sanity Y10", "run_sanity_auroc", ["--repeats", "0", "--prefilter", pre])
     print("\n=== Thời gian từng bước ===")
     for k, v in timings.items():

@@ -1,7 +1,19 @@
-"""Build and validate fixed v3 repeated-CV and few-shot split manifests.
+"""Build and validate the fixed v3 split files (5x5 repeated CV + few-shot) in one data-only pass.
 
-This utility is intentionally data-only. It creates the manifests documented
-for the LUAD/LUSC v3 protocol without running feature selection or classifiers.
+v3.1 (Review 29/10/2026, QĐ19): the few-shot part now writes the KBTN v2.1 Section 6 protocol
+(``survey_v2.fewshot``): 5 test_T/pool_T splits (1/3 : 2/3, stratified, seeds 42-46) x FEWSHOT_SUBSETS = 4 nested
+subsets per n_T level per class (n_T in {5, 10, 20, 40, pool}; GSE10245 only {5, 10}; levels above the smaller
+class of pool_T are dropped automatically, e.g. GSE42127 has no 40). The single-subset format of the first version
+(commit ad75caa, column ``n_target``) is kept below as *legacy* helpers for the unit tests only; it is NOT written
+any more because one subset per n_T cannot estimate the between-subset variance required by E1b/E7 (Review 29/10, O23).
+
+Outputs (next to each cohort, below $KLTN_DATA_ROOT or --data-root):
+  <cohort>/repeated_splits.csv            5 repeats x 5 patient-grouped outer folds (survey_v2.e1_splits)
+  <cohort>/fewshot_splits.csv             GEO cohorts only (survey_v2.fewshot, columns incl. ``subset``)
+  split_manifests/e1_repeated_splits_manifest.json, split_manifests/fewshot_splits_manifest.json (SHA-256, commit)
+
+Existing files are validated and kept unless --force. Equivalent single-purpose scripts: build_e1_repeated_splits.py,
+build_fewshot_splits.py (same generators, same seeds, same output).
 """
 
 from __future__ import annotations
@@ -12,23 +24,29 @@ import json
 import os
 import subprocess
 import sys
+import warnings
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from sklearn.model_selection import StratifiedGroupKFold, StratifiedKFold, StratifiedShuffleSplit
+from sklearn.model_selection import StratifiedGroupKFold, StratifiedShuffleSplit
 
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO))
 
-from survey_v2.e1_splits import build_repeated_split_manifest, validate_repeated_split_manifest
+from survey_v2 import config as C  # noqa: E402
+from survey_v2.data import load_dataset, resolve_dataset_dir  # noqa: E402
+from survey_v2.e1_splits import build_repeated_split_manifest, validate_repeated_split_manifest  # noqa: E402
+from survey_v2.fewshot import build_fewshot_manifest, validate_fewshot_manifest  # noqa: E402
 
 
-REPEAT_SEEDS = (42, 43, 44, 45, 46)
-PRIMARY_DATASETS = ("tcga_luad_lusc_primary_tumor", "gse10245", "gse30219", "gse37745", "gse42127")
-GEO_DATASETS = ("gse10245", "gse30219", "gse37745", "gse42127")
+REPEAT_SEEDS = C.REPEAT_SEEDS
+PRIMARY_DATASETS = tuple(C.DATASETS)
+GEO_DATASETS = tuple(C.FEWSHOT_COHORTS)
+# n_T levels per cohort (documentation + legacy helpers). survey_v2.fewshot derives the same levels from the data:
+# a level is kept only when the smaller class of pool_T has at least n_T samples; GSE10245 is capped by FEWSHOT_N_T_LIMIT.
 FEWSHOT_N = {"gse10245": (5, 10), "gse30219": (5, 10, 20, 40), "gse37745": (5, 10, 20, 40), "gse42127": (5, 10, 20)}
-FEWSHOT_COLUMNS = ("split", "seed", "n_target", "sample_id", "patient_id", "label", "role")
+FEWSHOT_COLUMNS = ("split", "seed", "n_target", "sample_id", "patient_id", "label", "role")   # legacy format only
 
 
 def sha256(path: Path) -> str:
@@ -39,6 +57,7 @@ def sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+# --- legacy single-subset few-shot format (commit ad75caa) — kept for tests, not used by build_all ---------------------
 def _validate_input(sample_ids, patient_ids, labels) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     sample_ids = np.asarray(sample_ids, dtype=str)
     patient_ids = np.asarray(patient_ids, dtype=str)
@@ -63,12 +82,13 @@ def _fewshot_test_pool_indices(sample_ids, patient_ids, labels, *, seed: int, te
 
 
 def build_fewshot_split_manifest(sample_ids, patient_ids, labels, *, seeds=REPEAT_SEEDS, n_per_class=(5, 10, 20, 40), test_fraction=1 / 3) -> pd.DataFrame:
-    """Build deterministic fixed-test, nested target-training subsets.
+    """LEGACY (one subset per n_T). Use survey_v2.fewshot.build_fewshot_manifest for experiments.
 
-    Each split has one fixed test set. For a numeric ``n_target``, train rows
-    contain exactly that many samples of each class, nested by increasing n.
-    The additional ``pool`` level trains on all remaining non-test samples.
+    Each split has one fixed test set. For a numeric ``n_target``, train rows contain exactly that many samples of
+    each class, nested by increasing n. The additional ``pool`` level trains on all remaining non-test samples.
     """
+    warnings.warn("build_fewshot_split_manifest is the legacy single-subset format; experiments use "
+                  "survey_v2.fewshot.build_fewshot_manifest (4 nested subsets per n_T)", DeprecationWarning, stacklevel=2)
     sample_ids, patient_ids, labels = _validate_input(sample_ids, patient_ids, labels)
     n_per_class = tuple(sorted(set(int(value) for value in n_per_class)))
     rows = []
@@ -106,7 +126,7 @@ def build_fewshot_split_manifest(sample_ids, patient_ids, labels, *, seeds=REPEA
 
 
 def validate_fewshot_split_manifest(manifest: pd.DataFrame, *, n_per_class) -> list[str]:
-    """Return validation errors for a v3 few-shot split manifest."""
+    """Return validation errors for a LEGACY single-subset few-shot manifest."""
     errors: list[str] = []
     missing = set(FEWSHOT_COLUMNS) - set(manifest.columns)
     if missing:
@@ -143,62 +163,80 @@ def validate_fewshot_split_manifest(manifest: pd.DataFrame, *, n_per_class) -> l
     return errors
 
 
+# --- v3.1 builder ----------------------------------------------------------------------------------------------------
 def _dataset_dir(data_root: Path, name: str) -> Path:
-    parent = "experiment-data-perm" if name == "tcga_luad_lusc_primary_tumor" else "experiment-data-geo-target"
-    return data_root / parent / name
+    return resolve_dataset_dir(data_root, name)
 
 
-def _load_metadata(data_dir: Path) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-    metadata = pd.read_csv(data_dir / "metadata.csv", dtype={"sample_id": str, "patient_id": str, "label": int})
-    return metadata.sample_id.to_numpy(), metadata.patient_id.to_numpy(), metadata.label.to_numpy(dtype=int)
+def _load_ids(data_root: Path, name: str) -> tuple[np.ndarray, np.ndarray, np.ndarray, dict]:
+    """sample_id, patient_id, label via the shared loader (handles both perm/ and geo-target/ metadata formats)."""
+    ds = load_dataset(data_root, name, gene_space=None)
+    return ds.sample_ids.astype(str), ds.groups.astype(str), ds.y.astype(int), ds.notes
 
 
 def _git_commit(repo: Path) -> str:
-    return subprocess.check_output(["git", "-C", str(repo), "rev-parse", "HEAD"], text=True).strip()
+    try:
+        return subprocess.check_output(["git", "-C", str(repo), "rev-parse", "HEAD"], text=True).strip()
+    except (subprocess.CalledProcessError, OSError):
+        return "unknown"
 
 
 def build_all(data_root: Path, *, force: bool = False) -> dict:
+    data_root = Path(data_root)
     repo = Path(__file__).resolve().parents[1]
     repeated_files = []
     fewshot_files = []
     for name in PRIMARY_DATASETS:
         data_dir = _dataset_dir(data_root, name)
-        sample_ids, patient_ids, labels = _load_metadata(data_dir)
+        sample_ids, patient_ids, labels, notes = _load_ids(data_root, name)
         path = data_dir / "repeated_splits.csv"
         if path.exists() and not force:
             manifest = pd.read_csv(path)
         else:
-            manifest = build_repeated_split_manifest(sample_ids, patient_ids, labels, seeds=REPEAT_SEEDS)
+            manifest = build_repeated_split_manifest(sample_ids, patient_ids, labels, seeds=REPEAT_SEEDS, n_folds=C.N_FOLDS)
             manifest.to_csv(path, index=False)
-        errors = validate_repeated_split_manifest(manifest)
+        errors = validate_repeated_split_manifest(manifest, n_folds=C.N_FOLDS)
         if errors:
             raise ValueError(f"{name}: invalid repeated split: {errors}")
-        repeated_files.append({"dataset": name, "path": str(path.relative_to(data_root)), "rows": len(manifest), "sha256": sha256(path)})
+        repeated_files.append({"dataset": name, "path": str(path.relative_to(data_root)), "rows": int(len(manifest)),
+                               "sha256": sha256(path), "n_per_class": notes.get("n_per_class"),
+                               "patient_id_assumed_from_sample_id": notes.get("patient_id_assumed_from_sample_id")})
     for name in GEO_DATASETS:
         data_dir = _dataset_dir(data_root, name)
-        sample_ids, patient_ids, labels = _load_metadata(data_dir)
+        sample_ids, patient_ids, labels, notes = _load_ids(data_root, name)
         path = data_dir / "fewshot_splits.csv"
         if path.exists() and not force:
-            manifest = pd.read_csv(path, dtype={"n_target": str})
+            manifest = pd.read_csv(path, dtype={"n_t": str})
+            if "subset" not in manifest.columns:
+                raise ValueError(f"{name}: {path} is the legacy single-subset format (no 'subset' column); "
+                                 f"rebuild with --force (Review 29/10, O23)")
         else:
-            manifest = build_fewshot_split_manifest(sample_ids, patient_ids, labels, n_per_class=FEWSHOT_N[name])
-            manifest.to_csv(path, index=False)
-        errors = validate_fewshot_split_manifest(manifest, n_per_class=FEWSHOT_N[name])
+            manifest = build_fewshot_manifest(name, sample_ids, patient_ids, labels)
+            manifest.to_csv(path, index=False, encoding="utf-8")
+        errors = validate_fewshot_manifest(manifest)
         if errors:
             raise ValueError(f"{name}: invalid few-shot split: {errors}")
-        fewshot_files.append({"dataset": name, "path": str(path.relative_to(data_root)), "rows": len(manifest), "sha256": sha256(path), "n_per_class": list(FEWSHOT_N[name]) + ["pool"]})
+        levels = sorted({str(v) for v in manifest.n_t.unique()}, key=lambda t: 10**9 if t == "pool" else int(t))
+        fewshot_files.append({"dataset": name, "path": str(path.relative_to(data_root)), "rows": int(len(manifest)),
+                              "sha256": sha256(path), "n_t_levels": levels, "n_splits": int(manifest.split.nunique()),
+                              "n_subsets": int(manifest.subset.nunique()), "n_per_class": notes.get("n_per_class")})
     out = data_root / "split_manifests"
     out.mkdir(exist_ok=True)
     common = {"generator": "scripts/build_v3_splits.py", "generator_commit": _git_commit(repo), "repeat_seeds": list(REPEAT_SEEDS)}
-    (out / "e1_repeated_splits_manifest.json").write_text(json.dumps({**common, "protocol": "5 repeats x 5 patient-grouped outer folds", "files": repeated_files}, indent=2) + "\n", encoding="utf-8")
-    (out / "fewshot_splits_manifest.json").write_text(json.dumps({**common, "protocol": "fixed test split plus nested balanced target subsets", "test_fraction": 1 / 3, "files": fewshot_files}, indent=2) + "\n", encoding="utf-8")
+    (out / "e1_repeated_splits_manifest.json").write_text(json.dumps({
+        **common, "protocol": f"{len(REPEAT_SEEDS)} repeats x {C.N_FOLDS} patient-grouped outer folds", "files": repeated_files},
+        indent=2) + "\n", encoding="utf-8")
+    (out / "fewshot_splits_manifest.json").write_text(json.dumps({
+        **common, "protocol": f"{C.FEWSHOT_SPLITS} splits test_T/pool_T (1/3:2/3, stratified) x {C.FEWSHOT_SUBSETS} nested subsets per n_T per class",
+        "test_fraction": C.FEWSHOT_TEST_FRACTION, "n_t_grid": [v if v is not None else "pool" for v in C.N_T_GRID],
+        "n_t_limit": {k: list(v) for k, v in C.FEWSHOT_N_T_LIMIT.items()}, "files": fewshot_files}, indent=2) + "\n", encoding="utf-8")
     return {"repeated": repeated_files, "fewshot": fewshot_files}
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--data-root", type=Path, default=None)
-    parser.add_argument("--force", action="store_true")
+    parser.add_argument("--force", action="store_true", help="rebuild existing split files (after validation of the new ones)")
     args = parser.parse_args()
     if args.data_root is None:
         root = os.environ.get("KLTN_DATA_ROOT")
