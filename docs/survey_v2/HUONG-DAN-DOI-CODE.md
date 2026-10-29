@@ -298,8 +298,14 @@ python scripts/compare_panels.py --old <thư mục E1_feature_selection chạy 2
 `E1_feature_selection/tcga_luad_lusc_primary_tumor/` (kèm `config.json` cũ và ghi chú trong HANDOVER); phương pháp `RERUN` chạy lại
 đủ 5 lần lặp bằng v3.1. GEO: luôn chạy lại (gene space G và bản chia few-shot đã đổi).
 
-*Cặp mẫu nghi trùng (Y22):* `python scripts/check_duplicate_pair.py --dataset gse37745 --samples GSM1019246 GSM1019247` — so gen giới tính
-(XIST; RPS4Y1, DDX3Y, KDM5D, UTY) với metadata; khác metadata → cách ly cả hai mẫu (excluded_samples_gse37745.csv) trước khi sinh lại bản chia.
+*Cặp mẫu nghi trùng (Y22 → QĐ21):* `python scripts/check_duplicate_pair.py --dataset gse37745 --samples GSM1019246 GSM1019247` — kết quả 29/10:
+cả hai là nữ theo biểu hiện, GSM1019247 ghi nam → cách ly cả hai (GSE37745 còn 170 = 105/65).
+
+*Giới tính theo biểu hiện cho MỌI mẫu (QĐ22):* `python scripts/check_sex_consistency.py` (5 bộ; cần cột sex/gender trong metadata.csv lấy từ
+series matrix; GSE10245 không có → chỉ phân loại). Hai trục XIST và trung bình gen Y được chia hai cụm k-means trên chính cohort (tự hiệu chuẩn
+theo nền tảng). Cách ly: `opposite` (cả hai trục trái metadata) và `inconsistent` (XIST và gen Y cùng cao); giữ và ghi cờ: `inconclusive`
+(both-low, hoặc chỉ một trục trái, hoặc trục không phân biệt). Không sửa nhãn. Đầu ra `qc/sex_check_<bộ>.csv`, `qc/sex_check_summary.csv`
+nộp cùng Cổng 1′; mẫu cách ly ghi vào `excluded_samples_<bộ>.csv`, cập nhật `DATASET_EXPECTED_N` (một commit "QĐ22") rồi mới sinh bản chia.
 
 - *Đầu ra:* `E1_feature_selection/<bộ>/{selection_per_fold.csv, selected_genes.csv, selection_stability.csv, selection_gene_frequency.csv, config.json}`;
   `E1_wrapper_feature_selection/<cohort GPL570>/...`; `E1_classification/<bộ>/{classification_per_fold.csv, classification_summary.csv, e1_random_k.csv, config.json}`.
