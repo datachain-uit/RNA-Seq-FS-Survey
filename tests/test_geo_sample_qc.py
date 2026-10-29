@@ -69,6 +69,24 @@ def test_sex_only_keeps_samples_and_apply_sex_qc_appends_quarantine(tmp_path):
     excl = pd.read_csv(d / "excluded_samples_gse37745.csv")
     assert excl.sample_id.tolist() == ["GSM001", "GSM002", "GSM003", "GSM004"]
     assert "không xác minh được danh tính mẫu" in excl.loc[3, "reason"]
-    assert qc.apply_sex_qc(tmp_path, qc_dir, ["gse37745"])[0]["added"] == []      # chạy lại không thêm trùng
+    qc.apply_sex_qc(tmp_path, qc_dir, ["gse37745"])                                  # chạy lại: tính lại, không trùng
+    assert pd.read_csv(d / "excluded_samples_gse37745.csv").sample_id.tolist() == ["GSM001", "GSM002", "GSM003", "GSM004"]
     final = qc.rebuild(tmp_path, "gse37745", {"commit_hash": None})
     assert final["n_after"] == 8
+
+
+def test_apply_sex_qc_recomputes_previous_qd22_rows(tmp_path):
+    d, _, _ = _cohort(tmp_path)
+    qc_dir = tmp_path / "qc"
+    qc_dir.mkdir()
+    first = pd.DataFrame({"sample_id": ["GSM003"], "verdict": ["inconsistent"], "category": ["both-high"],
+                          "meta_sex": [None], "action": ["quarantine"]})
+    first.to_csv(qc_dir / "sex_check_gse37745.csv", index=False)
+    qc.apply_sex_qc(tmp_path, qc_dir, ["gse37745"])
+    second = pd.DataFrame({"sample_id": ["GSM003", "GSM004"], "verdict": ["inconsistent", "opposite"],
+                           "category": ["both-high", "F-like"], "meta_sex": ["male", "male"], "action": ["quarantine", "quarantine"]})
+    second.to_csv(qc_dir / "sex_check_gse37745.csv", index=False)
+    qc.apply_sex_qc(tmp_path, qc_dir, ["gse37745"])
+    excl = pd.read_csv(d / "excluded_samples_gse37745.csv")
+    assert excl.sample_id.tolist() == ["GSM001", "GSM002", "GSM003", "GSM004"]
+    assert "meta_sex = male" in excl.loc[2, "reason"]
