@@ -1,123 +1,223 @@
-"""Hằng số đặt trước của bộ thực nghiệm survey v2 (Bảng 10–11, Review 24/10/2026; KBTN v2.1 M10–M11).
+"""Hằng số đặt trước của bộ thực nghiệm survey v3 (QĐ15, Review 26/10/2026; KBTN v2.1 M10–M13).
+
+Bài toán: LUAD (0) vs LUSC (1) — bài toán chính của khoá luận. Nguồn TCGA (RNA-seq) và bốn cohort GEO đích
+(3 GPL570 + GSE42127). E1 của survey ≡ RQ1 của khoá luận (một thí nghiệm, một bộ kết quả).
 
 Mọi thay đổi ở đây phải được ghi lý do và duyệt trước khi chạy (nguyên tắc đặt trước của KBTN).
+Các tên hằng số của bản v2 được giữ để script và runner Kaggle của đội code không hỏng.
 """
 
 from __future__ import annotations
 
-# --- Bộ dữ liệu (thư mục con của $KLTN_DATA_ROOT/experiment-data-perm) -------------------
+# --- Bộ dữ liệu ------------------------------------------------------------------------------------
+# tên trong code -> vai trò (giữ dạng dict tên -> chuỗi để `list(C.DATASETS)` và `.index()` vẫn chạy)
 DATASETS = {
-    # tên thư mục: vai trò trong survey (QĐ6)
-    "gse68465_stage_early_late": "ranking",      # so sánh, kiểm định, xếp hạng; chạy cả wrapper
-    "tcga_luad_stage_early_late": "descriptive",  # mô tả: filter + embedded, B0, random-k
-    "tcga_lusc_stage_early_late": "descriptive",
+    "tcga_luad_lusc_primary_tumor": "large_n_reference",   # TCGA v2, RNA-seq; nguồn cho E7; E2–E3; E4
+    "gse10245": "target_small",                             # GPL570, 40/18: cohort phân biệt phương pháp
+    "gse30219": "target_main",                              # GPL570, 85/61 (gse30219_r5_fixed, R5)
+    "gse37745": "target_main",                              # GPL570, 106/66; E4–E5
+    "gse42127": "target_second_platform",                   # GPL6884, 133/43; báo cáo riêng
 }
-RANKING_DATASET = "gse68465_stage_early_late"
-TIMING_DATASET = "tcga_luad_stage_early_late"    # E2–E3: dải p rộng nhất (19.938 gen)
+# Thư mục chứa từng bộ (tương đối với $KLTN_DATA_ROOT). Bộ perm/ v2 giữ định dạng cũ; cohort GEO dùng
+# experiment-data-geo-target/<thư mục> như RQ0′ (scripts/run_rq0_prime.py::cohort_data_dir).
 PERM_DATA_DIR = "experiment-data-perm"
-RESULT_DIR = ("results", "survey_v2")           # $KLTN_DATA_ROOT/results/survey_v2/<E>
+GEO_TARGET_DIR = "experiment-data-geo-target"
+# v3.1: thư mục chính = layout Kaggle Input "experiment-data-v3" của đội code (DATA_AUDIT 27/10: gse30219 đã là bản R5,
+# 146 mẫu). DATASET_DIR_ALTERNATIVES: tên thư mục thay thế được chấp nhận (layout RQ0′ trên máy cá nhân);
+# survey_v2.data.resolve_dataset_dir() chọn thư mục đầu tiên tồn tại.
+DATASET_DIRS = {
+    "tcga_luad_lusc_primary_tumor": f"{PERM_DATA_DIR}/tcga_luad_lusc_primary_tumor",
+    "gse10245": f"{GEO_TARGET_DIR}/gse10245",
+    "gse30219": f"{GEO_TARGET_DIR}/gse30219",
+    "gse37745": f"{GEO_TARGET_DIR}/gse37745",
+    "gse42127": f"{GEO_TARGET_DIR}/gse42127",
+}
+DATASET_DIR_ALTERNATIVES = {"gse30219": (f"{GEO_TARGET_DIR}/gse30219_r5_fixed",)}
+# Số mẫu kỳ vọng (LUAD/LUSC) theo DATA_AUDIT 27/10 và Review 26/10 (Bảng A3). load_dataset() ghi vào notes
+# và DỪNG khi KLTN_STRICT_N=1 (runner Kaggle đặt biến này) nếu lệch: tránh chạy nhầm bản GSE30219 chưa sửa R5.
+DATASET_EXPECTED_N = {
+    "tcga_luad_lusc_primary_tumor": (517, 501),
+    "gse10245": (40, 18),
+    "gse30219": (85, 61),
+    "gse37745": (106, 66),
+    "gse42127": (133, 43),
+}
+DATASET_PLATFORM = {"tcga_luad_lusc_primary_tumor": "RNA-seq (log2 TPM+1)", "gse10245": "GPL570", "gse30219": "GPL570",
+                    "gse37745": "GPL570", "gse42127": "GPL6884"}
+# Tên giữ cho runner/test của đội code (commit 3059ce5, 2508a2a): cùng nội dung với DATASETS/DATASET_DIRS.
+V3_EXPERIMENT_DATASETS = tuple(DATASETS)
+V3_DATASET_DIRS = {name: tuple(path.split("/")) for name, path in DATASET_DIRS.items()}
+SOURCE_DATASET = "tcga_luad_lusc_primary_tumor"            # nguồn (E7) và không gian gen G = giao với bộ này
+GENE_SPACE_REFERENCE = SOURCE_DATASET                       # cohort GEO chỉ dùng gen có trong TCGA (B8)
+GPL570_COHORTS = ("gse10245", "gse30219", "gse37745")       # k* gộp (QĐ8, QĐ11) chỉ trên ba cohort này
+POOLED_KSTAR_COHORTS = GPL570_COHORTS
+FEWSHOT_COHORTS = ("gse10245", "gse30219", "gse37745", "gse42127")   # E1b, E7
+WRAPPER_DATASETS = GPL570_COHORTS                           # GA, BPSO chỉ chạy ở đây (3×5, WRAPPER_K)
+RANKING_DATASET = "gse37745"                                # bộ dùng cho E5b (seed) và ma trận ROPE đầy đủ
+TIMING_DATASET = SOURCE_DATASET                             # E2–E3: n lớn nhất, p = 19.938
+STABILITY_DATASETS = (SOURCE_DATASET, "gse37745")           # E4
+REDUNDANCY_DATASET = "gse37745"                             # E5a
+RESULT_DIR = ("results", "survey_v2")                       # giữ tên để runner Kaggle của đội code không đổi
+SPLITS_DIR = "splits"                                       # $KLTN_DATA_ROOT/splits/<bộ>/{repeated_splits.csv, fewshot_splits.csv}
 
-# --- Survey v3: layout mounted directly by Kaggle -----------------------------------------------
-# ``$KLTN_DATA_ROOT`` is the directory shown in the Kaggle input browser.  It contains these two
-# folders directly; do not add another ``experiment-data-v3`` component when resolving datasets.
-V3_DATASET_DIRS = {
-    "tcga_luad_lusc_primary_tumor": ("experiment-data-perm", "tcga_luad_lusc_primary_tumor"),
-    "tcga_normal_vs_tumor_sanity": ("experiment-data-perm", "tcga_normal_vs_tumor_sanity"),
-    "gse10245": ("experiment-data-geo-target", "gse10245"),
-    "gse30219": ("experiment-data-geo-target", "gse30219"),
-    "gse37745": ("experiment-data-geo-target", "gse37745"),
-    "gse42127": ("experiment-data-geo-target", "gse42127"),
-}
-V3_EXPERIMENT_DATASETS = (
-    "tcga_luad_lusc_primary_tumor", "gse10245", "gse30219", "gse37745", "gse42127",
-)
-DATASET_SEED_IDS = {
-    **{name: i for i, name in enumerate(DATASETS)},
-    **{name: 100 + i for i, name in enumerate(V3_EXPERIMENT_DATASETS)},
-}
+
+def dataset_dir(name: str) -> str:
+    """Đường dẫn tương đối (so với KLTN_DATA_ROOT) của một bộ; bộ không có trong registry -> perm/<name>."""
+    return DATASET_DIRS.get(name, f"{PERM_DATA_DIR}/{name}")
+
+
+def dataset_dir_candidates(name: str) -> tuple[str, ...]:
+    """Thư mục chính rồi đến các thư mục thay thế (tương đối với KLTN_DATA_ROOT)."""
+    return (dataset_dir(name),) + tuple(DATASET_DIR_ALTERNATIVES.get(name, ()))
+
+
+# --- Không gian seed theo cohort ----------------------------------------------------------------------
+# 100 + thứ tự trong DATASETS: giữ nguyên quy ước của đội code (commit 2508a2a, tests/test_v3_data_layout.py)
+# để panel pha A trên TCGA chạy trước 29/10 có thể đối chiếu bằng kiểm tra bằng nhau (QĐ19). Bộ ngoài registry
+# (bộ sanity, dữ liệu tổng hợp) dùng 99.
+DATASET_SEED_IDS = {name: 100 + i for i, name in enumerate(DATASETS)}
+UNREGISTERED_COHORT_ID = 99
 
 
 def dataset_seed_id(name: str) -> int:
-    """Stable cohort namespace for random seeds across legacy and v3 runners."""
+    """Mã cohort ổn định dùng trong seed_for(); lỗi nếu bộ không có trong registry."""
     try:
         return DATASET_SEED_IDS[name]
     except KeyError as exc:
         raise ValueError(f"unknown dataset for deterministic seed: {name}") from exc
 
-# --- Giao thức -------------------------------------------------------------------------
-REPEAT_SEEDS = (42, 43, 44, 45, 46)             # CV 5×5; mọi phương pháp dùng chung lần chia
+
+def cohort_id(name: str) -> int:
+    """Như dataset_seed_id() nhưng không lỗi với bộ ngoài registry (trả về UNREGISTERED_COHORT_ID)."""
+    return DATASET_SEED_IDS.get(name, UNREGISTERED_COHORT_ID)
+
+
+# --- Giao thức E1 (= RQ1) ------------------------------------------------------------------------------
+REPEAT_SEEDS = (42, 43, 44, 45, 46)             # CV 5×5; trùng RQ0′; mọi phương pháp dùng chung lần chia
 N_FOLDS = 5
-WRAPPER_REPEATS = 3                             # wrapper (GA, BPSO) chỉ chạy 3 lần lặp đầu (3×5)
-K_GRID = (10, 50, 100, 200, 500)                # ngân sách k
-PREFILTER_P0 = 5000                             # lọc sơ bộ không dùng nhãn: 5.000 gen phương sai lớn nhất trên train
+WRAPPER_REPEATS = 3                             # wrapper chỉ 3 lần lặp đầu (3×5)
+K_GRID = (1, 2, 3, 4, 5, 10, 25, 50)            # ngân sách k (QĐ2 + M4); vùng chính k <= 10
+WRAPPER_K = (5, 10, 50)                         # GA, BPSO chỉ ở các k này
+PREFILTER_P0 = 5000                             # lọc sơ bộ KHÔNG dùng nhãn: 5.000 gen phương sai lớn nhất trên train (GVHD chốt 26/10, KBTN M14)
 N_RANDOM_DRAWS = 100                            # random-k: 100 lần rút mỗi fold
 INNER_CV_FOLDS = 3                              # CV nội bộ để chọn C và ngưỡng
 C_GRID = (0.01, 0.1, 1.0, 10.0)                 # lưới C của LR-L2 và SVM tuyến tính
-SECONDARY_K = (50, 200)                         # bộ phân loại phụ chỉ ở k ∈ {50, 200}
-RF_N_TREES = 500                                # số cây của RF (bộ phân loại phụ và RF importance)
+SECONDARY_K = (5, 25)                           # bộ phân loại phụ chỉ ở k ∈ {5, 25}
+RF_N_TREES = 500
+CLASSIFIERS_MAIN = ("lr_l2",)                   # QĐ13: LR-L2 là bộ phân loại chính
+CLASSIFIERS_SECONDARY = ("rf", "svm_linear")    # chỉ ở SECONDARY_K; bộ 11 mô hình mở rộng chỉ chạy với --models-extended
+SMALL_N_FIXED_C = 1.0                           # M5: khi n_T <= SMALL_N_T_MAX mỗi lớp, C = 1 cố định, ngưỡng 0,5
+SMALL_N_T_MAX = 10
 
-# --- Phương pháp chọn gen (10) + 2 tham chiếu ----------------------------------------------
+# --- Phương pháp chọn gen (13) + tham chiếu -----------------------------------------------------------
 FILTER_METHODS = ("f_test", "mutual_info", "mrmr", "relieff")
 EMBEDDED_METHODS = ("l1_lr", "elastic_net", "rf_importance", "svm_rfe")
+CONSTRAINED_METHODS = ("abess", "stability_selection", "ktsp")   # KBTN 5.1: L0, tần suất chọn, thứ hạng cặp
 WRAPPER_METHODS = ("ga", "bpso")
+NON_WRAPPER_METHODS = FILTER_METHODS + EMBEDDED_METHODS + CONSTRAINED_METHODS
+ALL_SELECTORS = NON_WRAPPER_METHODS + WRAPPER_METHODS
 REFERENCE_METHODS = ("b0", "random_k")
-RANKING_METHODS = ("f_test", "mutual_info", "mrmr", "relieff", "rf_importance", "svm_rfe")  # chạy 1 lần ở k_max, lấy tiền tố
-PER_K_METHODS = ("l1_lr", "elastic_net", "ga", "bpso")                                      # chạy riêng theo k
+FIXED_PANEL_METHODS = ("ihc_2", "ihc_4")        # + "panel_<tên>" đọc từ survey_v2/panels/published_panels.csv
+RANKING_METHODS = ("f_test", "mutual_info", "mrmr", "relieff", "rf_importance", "svm_rfe", "stability_selection")
+PER_K_METHODS = ("l1_lr", "elastic_net", "abess", "ktsp", "ga", "bpso")
 METHOD_FAMILY = {**{m: "filter" for m in FILTER_METHODS}, **{m: "embedded" for m in EMBEDDED_METHODS},
-                 **{m: "wrapper" for m in WRAPPER_METHODS}, "b0": "reference", "random_k": "reference"}
-STANDARDIZE_BEFORE = ("l1_lr", "elastic_net", "svm_rfe")   # z-score (fit trên train) trước khi chọn (M7)
+                 "abess": "constrained", "stability_selection": "constrained", "ktsp": "rank-based",
+                 **{m: "wrapper" for m in WRAPPER_METHODS}, "b0": "reference", "random_k": "reference",
+                 "ihc_2": "knowledge", "ihc_4": "knowledge"}
+STANDARDIZE_BEFORE = ("l1_lr", "elastic_net", "svm_rfe", "abess", "stability_selection")   # z-score trong fold (M7)
+METHOD_ID = {m: i for i, m in enumerate(ALL_SELECTORS)}   # dùng trong seed
 
-# --- mRMR (Peng et al., 2005) ----------------------------------------------------------------
-MRMR_CRITERION = "MID"           # "MID": I(X;Y) − mean I(X;Xs); "MIQ": I(X;Y) / mean I(X;Xs)
-MRMR_DISCRETIZE = "mean_half_sd"  # 3 mức: < μ − σ/2, [μ − σ/2, μ + σ/2], > μ + σ/2 (tính trên train)
+# --- mRMR (Peng et al., 2005) ----------------------------------------------------------------------
+MRMR_CRITERION = "MID"
+MRMR_DISCRETIZE = "mean_half_sd"
 
-# --- ReliefF ------------------------------------------------------------------------------
+# --- ReliefF ------------------------------------------------------------------------------------
 RELIEFF_NEIGHBORS = 10
 
-# --- Wrapper (QĐ: duyệt có chỉnh sửa M10) ----------------------------------------------------
+# --- Stability selection (Meinshausen & Bühlmann 2010) ------------------------------------------------
+STABSEL_N_SUBSAMPLES = 100
+STABSEL_FRACTION = 0.5
+STABSEL_TARGET_NNZ_FACTOR = 2        # C chọn trên toàn bộ train sao cho ~ 2·k_max hệ số khác 0 (q của M&B)
+
+# --- k-TSP (Tan et al., 2005) ----------------------------------------------------------------------
+KTSP_MAX_P = 5000                    # không tính điểm cặp khi p > KTSP_MAX_P (O(n p^2)); E3 ghi NaN ở p lớn hơn
+
+# --- Panel tri thức (QĐ2, QĐ12; Yatabe et al., 2019) ---------------------------------------------------
+IHC_2 = ("NKX2-1", "TP63")
+IHC_4 = ("NKX2-1", "TP63", "NAPSA", "KRT5")
+PUBLISHED_PANELS_CSV = "panels/published_panels.csv"   # tương đối với survey_v2/; sinh viên điền Girard 2016, Wilkerson 2013
+
+# --- Wrapper ----------------------------------------------------------------------------------------
 WRAPPER_POP = 30
 WRAPPER_GENERATIONS = 50
-WRAPPER_FITNESS_CV = 3            # fitness = AUROC trung bình CV 3 fold của LR-L2 (C = 1) TRONG phần train của fold
+WRAPPER_FITNESS_CV = 3
 WRAPPER_FITNESS_C = 1.0
 GA_TOURNAMENT = 3
 GA_ELITE = 2
-GA_MUTATION_PER_GENE = None       # None -> 1/k (trung bình đổi 1 gen mỗi cá thể)
+GA_MUTATION_PER_GENE = None
 BPSO_W_START, BPSO_W_END = 0.9, 0.4
 BPSO_C1, BPSO_C2 = 2.0, 2.0
 BPSO_V_MAX = 6.0
 
-# --- Độ ổn định (E4, E5) ------------------------------------------------------------------------
-STABILITY_M = 30                             # số lần lấy mẫu con độc lập (M11)
-SUBSAMPLE_FRACTIONS = (0.5, 0.7, 0.9)        # E4: tỉ lệ bệnh nhân
-REDUNDANCY_RHO = (0.5, 0.8, 0.95)            # E5a: tương quan của bản sao
-REDUNDANCY_N_COPIES = 50                     # E5a: số gen phương sai lớn được tạo bản sao
-REDUNDANCY_FRACTION = 0.7                    # E5a: dùng cùng tỉ lệ lấy mẫu con 0,7 của E4 làm nền
-SEED_VARIABILITY_SEEDS = (0, 1, 2, 3, 4)     # E5b: 5 seed cho GA, BPSO, RF
-OVERLAP_K = 50                               # E5c: chồng lấn Jaccard giữa phương pháp ở k = 50
+# --- Few-shot (E1b, E7; giao thức RQ2 của KBTN v2) -------------------------------------------------------
+FEWSHOT_SPLITS = 5                              # 5 lần chia test_T / pool_T, seed 42–46
+FEWSHOT_TEST_FRACTION = 1.0 / 3.0               # test_T ≈ 1/3, phân tầng
+FEWSHOT_SUBSETS = 4                             # 4 tập con mỗi mức n_T, lồng nhau theo n_T trong cùng (split, subset)
+N_T_GRID = (5, 10, 20, 40, None)                # mẫu mỗi lớp; None = toàn bộ pool_T
+FEWSHOT_K_GRID = (2, 3, 4, 5, 10)
+FEWSHOT_N_T_LIMIT = {"gse10245": (5, 10)}       # KBTN: GSE10245 chỉ n_T ∈ {5, 10}
+FEWSHOT_METHODS = NON_WRAPPER_METHODS           # 11 phương pháp (wrapper không chạy ở few-shot)
+BOOTSTRAP_N = 2000                              # bootstrap hai tầng (bệnh nhân trong test_T × lần chạy)
 
-# --- Thống kê -------------------------------------------------------------------------------------
+# --- E7: chuyển giao đơn giản ---------------------------------------------------------------------------
+TRANSFER_STRATEGIES = ("source_only", "select_on_source", "pooled", "target_only")
+TRANSFER_N_T = (5, 10, 20)
+TRANSFER_K_GRID = FEWSHOT_K_GRID
+TRANSFER_SELECTOR = "l1_lr"                     # phương pháp chọn gen dùng cho cả ba chiến lược (và target-only ghép cặp)
+PANEL_NORMALISATION = "within_sample_zscore"    # φ: z-score trong mẫu trên gen của panel; k = 2: hiệu hai gen
+
+# --- E0: kiểm tra tín hiệu -------------------------------------------------------------------------------
+E0_K = 10
+E0_N_PERM = 200
+E0_N_RANDOM = 100
+E0_SELECTOR = "f_test"
+
+# --- Độ ổn định (E4, E5) --------------------------------------------------------------------------------
+STABILITY_M = 30
+SUBSAMPLE_FRACTIONS = (0.5, 0.7, 0.9)
+REDUNDANCY_RHO = (0.5, 0.8, 0.95)
+REDUNDANCY_N_COPIES = 50
+REDUNDANCY_FRACTION = 0.7
+SEED_VARIABILITY_SEEDS = (0, 1, 2, 3, 4)
+SEED_VARIABILITY_METHODS = ("rf_importance", "stability_selection")   # + WRAPPER_METHODS ở WRAPPER_K
+OVERLAP_K = 10                                  # E5c, ma trận ROPE, hình E4/E6 tại k = 10 (vùng chính)
+
+# --- Thống kê ------------------------------------------------------------------------------------------------
 ALPHA = 0.05
-ROPE_AUROC = 0.01                            # Bayesian correlated t-test, ROPE ±0,01 AUROC
-NB_TEST_TRAIN_RATIO = 1.0 / 4.0              # Nadeau–Bengio: n_test / n_train với 5 fold
+ROPE_AUROC = 0.01
+NB_TEST_TRAIN_RATIO = 1.0 / 4.0
+KSTAR_DELTA = 0.02                              # biên không thua kém (QĐ8)
+KSTAR_SEQUENCE = (50, 25, 10, 5, 4, 3, 2, 1)    # chuỗi kiểm định cố định (QĐ11)
+ROPE_K = (2, 5, 10)                             # cặp dẫn đầu được so bằng Bayesian ROPE ở các k này
 
-# --- E2–E3: chi phí ---------------------------------------------------------------------------------
-TIMING_REPEATS = 3                           # trung vị 3 lần
-TIMING_K = 50
-E3_N_GRID = (100, 200, 300, None)            # None = toàn bộ phần train
-E3_P_GRID = (1000, 2000, 5000, 10000, None)  # None = toàn bộ gen
-E3_WRAPPER_BUDGETS = ((10, 20), (30, 50))    # (quần thể, thế hệ)
+# --- E2–E3: chi phí ---------------------------------------------------------------------------------------------
+TIMING_REPEATS = 3
+# QĐ18 (Review 29/10): E2/E3 được phép đo trên Kaggle với hiệu chuẩn giữa phiên: mỗi phiên đo lại 3 phương pháp mốc
+# ở điểm E2 (k = TIMING_K[0]); phiên chỉ được chấp nhận khi wall time của mỗi mốc lệch < CALIBRATION_MAX_DRIFT so với phiên tham chiếu.
+CALIBRATION_METHODS = ("l1_lr", "svm_rfe", "rf_importance")   # ≈ 10 s, 4 s, 32 s trên TCGA (n = 814, p = 5.000): đủ dài để độ lệch < 10 % có nghĩa
+CALIBRATION_MAX_DRIFT = 0.10
+TIMING_K = (10, 50)                             # hai điểm k (bản v2 là một điểm k = 50)
+E3_N_GRID = (100, 200, 400, None)               # None = toàn bộ phần train (TCGA ≈ 814)
+E3_P_GRID = (1000, 2000, 5000, 10000, None)     # None = toàn bộ gen (19.938)
+E3_WRAPPER_BUDGETS = ((10, 20), (30, 50))
 
-# --- Sanity (Y10) -------------------------------------------------------------------------------------
+# --- Sanity (Y10) --------------------------------------------------------------------------------------------------
 SANITY_DATASET = "tcga_normal_vs_tumor_sanity"
 SANITY_K = 10
 SANITY_AUROC_THRESHOLD = 0.99
 
 
 def seed_for(*parts: int) -> int:
-    """Suy seed tất định từ (cohort_id, split_seed, fold, k, draw, ...) — sửa Y14.
-
-    Dùng np.random.default_rng([...]) trực tiếp cũng được; hàm này trả về một int ổn định
-    để ghi vào config và dùng cho các thư viện chỉ nhận int (scikit-learn).
-    """
+    """Suy seed tất định từ (cohort_id, split_seed, fold, k, draw, ...) — sửa Y14."""
     import numpy as np
-    return int(np.random.SeedSequence(list(parts)).generate_state(1)[0] % (2**31 - 1))
+    return int(np.random.SeedSequence(list(int(p) for p in parts)).generate_state(1)[0] % (2**31 - 1))

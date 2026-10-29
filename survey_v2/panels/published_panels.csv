@@ -1,0 +1,6 @@
+# Panel cố định dùng làm tham chiếu trong E1/E1b (survey v3, KBTN v2 Mục 5.1).
+# Cột: panel, gene, source. Tên method trong kết quả = panel_<panel> (IHC-2/IHC-4 là built-in: survey_v2/config.py IHC_2, IHC_4).
+# ĐỘI CODE ĐIỀN: danh sách gen của Girard et al. 2016 (Clin Cancer Res 22(19):4880, phần AC vs SCC) và
+# Wilkerson et al. 2013 (J Mol Diagn 15(4):485) lấy TỪ BÀI GỐC (bảng/bổ sung), ghi DOI vào cột source.
+# Gen không có trên nền tảng sẽ được ghi vào config (missing) và panel được đánh giá với phần còn lại (cờ complete = false).
+panel,gene,source

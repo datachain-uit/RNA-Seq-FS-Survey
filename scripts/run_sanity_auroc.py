@@ -1,7 +1,7 @@
-"""Y10 — Sanity check (đối chứng dương) của pipeline survey v2 trên tcga_normal_vs_tumor_sanity.
+"""Y10 — Sanity check (đối chứng dương) của pipeline survey (v3) trên tcga_normal_vs_tumor_sanity.
 
 Mục đích: chứng minh pipeline đánh giá (CV theo bệnh nhân, lọc sơ bộ trong fold, chọn k = 10 gen, LR-L2 với C chọn
-bằng CV nội bộ) phát hiện được tín hiệu MẠNH (normal vs tumor), để kết quả yếu ở bài toán giai đoạn không phải do
+bằng CV nội bộ) phát hiện được tín hiệu MẠNH (normal vs tumor), để mọi kết quả của E0–E7 không bị nghi do
 pipeline hỏng. Tiêu chí đặt trước: AUROC trung bình ≥ 0,99 cho cả ba pipeline (f_test, l1_lr, rf_importance) ở k = 10.
 
     python scripts/run_sanity_auroc.py                    # 5×5 CV

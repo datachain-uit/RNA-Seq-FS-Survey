@@ -64,24 +64,32 @@ Notebook chạy trên Kaggle/Colab: clone kho ở đúng commit rồi dùng `scr
 | `experiment-data-perm/` | dữ liệu permutation test v3 |
 | `results/` | kết quả theo phase |
 
-## Survey v2 (E1–E6, P0, sanity) — 25/10/2026
+## Survey v3.1 (E0–E7, dùng chung với RQ1 khoá luận) — 29/10/2026 (QĐ15, QĐ18–QĐ20)
 
-Bộ thực nghiệm cho bản survey viết lại (Review 24/10, Bảng 10–12) nằm trong `survey_v2/` và `scripts/run_survey_*.py`;
-hướng dẫn đầy đủ (mục đích từng thí nghiệm, lệnh, đầu ra, tiêu chí chấp nhận, bàn giao) ở
-[`docs/survey_v2/HUONG-DAN-DOI-CODE.md`](docs/survey_v2/HUONG-DAN-DOI-CODE.md).
+v3.1 = gói v3 (26/10) ghép lên HEAD `2508a2a` của đội code: giữ `dataset_path()`, `dataset_seed_id()`, `build_v3_splits.py`
+(phần few-shot sửa thành 4 tập con lồng nhau), layout Kaggle `experiment-data-geo-target/gse30219`; thêm `KLTN_STRICT_N`.
+Chi tiết và việc phải làm trước: mục "v3.1" đầu `docs/survey_v2/HUONG-DAN-DOI-CODE.md`.
+
+Bài survey theo cùng bài toán với khoá luận (LUAD vs LUSC; nguồn TCGA + 4 cohort GEO). Bộ thực nghiệm nằm trong `survey_v2/`
+và `scripts/`; hướng dẫn đầy đủ (mục đích từng thí nghiệm, lệnh, đầu ra, tiêu chí chấp nhận, bàn giao) ở
+[`docs/survey_v2/HUONG-DAN-DOI-CODE.md`](docs/survey_v2/HUONG-DAN-DOI-CODE.md). Bài toán giai đoạn (P0, GSE68465) không còn thuộc survey.
 
 ```powershell
-python -m pytest tests -q                      # kiểm tra đơn vị + chạy đầu-cuối trên dữ liệu giả
-python scripts/smoke_test_survey_v2.py         # chạy thử toàn bộ chuỗi (≈ 5–15 phút, dữ liệu giả)
-python scripts/run_sanity_auroc.py             # Y10: đối chứng dương
-python scripts/run_p0_perm_v3.py               # P0 chạy lại có provenance (3 bộ giai đoạn)
-python scripts/aggregate_p0_decision.py --summaries "$env:KLTN_DATA_ROOT/results/survey_v2/P0/perm_test_v3/*/summary.csv"
-python scripts/run_survey_e1.py --secondary    # E1 filter + embedded + B0 + random-k (3 bộ)
-python scripts/run_survey_e1_wrappers.py       # E1 GA + BPSO (GSE68465, 3×5)
-python scripts/run_survey_e2_e3_timing.py --wrappers   # E2 + E3 (một máy cố định)
-python scripts/run_survey_e4_e5_stability.py   # E4 + E5
-python scripts/make_survey_tables.py           # bảng, hình, E6, manifest truy vết
+python -m pytest tests -q                              # kiểm tra đơn vị + 7 test đầu-cuối trên dữ liệu giả
+python scripts/smoke_test_survey_v2.py --n-jobs 4      # chạy thử toàn bộ chuỗi E0–E7 (≈ 10–20 phút, dữ liệu giả)
+python scripts/build_e1_repeated_splits.py             # bản chia 5×5 theo bệnh nhân cho 5 bộ
+python scripts/build_fewshot_splits.py                 # bản chia few-shot (5 split × 4 tập con × n_T) cho 4 cohort GEO
+python scripts/run_sanity_auroc.py                     # Y10: đối chứng dương
+python scripts/run_survey_e0_signal_check.py           # E0: hoán vị + random-k cho 5 bộ
+python scripts/run_e1_feature_selection.py             # E1 pha A: 11 phương pháp + panel IHC, 5 bộ, k ∈ {1..50}
+python scripts/run_e1_wrappers_all_cohorts.py          # E1 pha A: GA, BPSO (3 cohort GPL570, 3×5, k ∈ {5,10,50})
+python scripts/run_e1_classification.py --secondary    # E1 pha B: LR-L2 (+ RF, SVM ở k ∈ {5,25}), B0, random-k
+python scripts/run_survey_e1b_learning_curve.py        # E1b: đường cong học few-shot (= nhánh target-only của RQ2)
+python scripts/run_survey_e7_transfer_naive.py         # E7: source-only / select-on-source / pooled (= baseline D3 của RQ2)
+python scripts/run_survey_e2_e3_timing.py --wrappers   # E2 + E3 (TCGA, một máy cố định)
+python scripts/run_survey_e4_e5_stability.py           # E4 (TCGA, GSE37745) + E5 (GSE37745)
+python scripts/make_survey_tables.py                   # bảng, hình, k* gộp (QĐ11), E6, manifest truy vết
 ```
 
-Kết quả vào `$KLTN_DATA_ROOT/results/survey_v2/<E>/...`, mỗi thư mục có `config.json` (commit hash, SHA-256 dữ liệu,
-`traceable`). Script dừng nếu chưa commit + push (Y13); `KLTN_ALLOW_UNPUSHED=1` chỉ để chạy thử.
+Kết quả vào `$KLTN_DATA_ROOT/results/survey_v2/<E>/...`, mỗi thư mục có `config.json` (commit hash, SHA-256 dữ liệu và bản chia,
+`traceable`, `gene_space`). Script dừng nếu chưa commit + push (Y13); `KLTN_ALLOW_UNPUSHED=1` chỉ để chạy thử.
