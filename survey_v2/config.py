@@ -15,7 +15,7 @@ DATASETS = {
     "tcga_luad_lusc_primary_tumor": "large_n_reference",   # TCGA v2, RNA-seq; nguồn cho E7; E2–E3; E4
     "gse10245": "target_small",                             # GPL570, 40/18: cohort phân biệt phương pháp
     "gse30219": "target_main",                              # GPL570, 85/61 (gse30219_r5_fixed, R5)
-    "gse37745": "target_main",                              # GPL570, 106/66; E4–E5
+    "gse37745": "target_main",                              # GPL570, 105/65 (QĐ21: bỏ GSM1019246/GSM1019247); E4–E5
     "gse42127": "target_second_platform",                   # GPL6884, 133/43; báo cáo riêng
 }
 # Thư mục chứa từng bộ (tương đối với $KLTN_DATA_ROOT). Bộ perm/ v2 giữ định dạng cũ; cohort GEO dùng
@@ -39,7 +39,7 @@ DATASET_EXPECTED_N = {
     "tcga_luad_lusc_primary_tumor": (517, 501),
     "gse10245": (40, 18),
     "gse30219": (85, 61),
-    "gse37745": (106, 66),
+    "gse37745": (105, 65),   # QĐ21 (29/10): cách ly GSM1019246/GSM1019247 (cặp gần trùng, metadata mâu thuẫn); 172 -> 170
     "gse42127": (133, 43),
 }
 DATASET_PLATFORM = {"tcga_luad_lusc_primary_tumor": "RNA-seq (log2 TPM+1)", "gse10245": "GPL570", "gse30219": "GPL570",
