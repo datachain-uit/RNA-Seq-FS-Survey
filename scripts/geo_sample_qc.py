@@ -1,6 +1,12 @@
 """Kiểm soát chất lượng mẫu cho 4 cohort GEO đích (QĐ21, Review 29/10/2026; Cổng 1′).
 
-Ba lệnh con, chạy theo thứ tự:
+Các lệnh con (QĐ21 + QĐ22), theo thứ tự dùng:
+
+  fetch-tcga-sex  TCGA: lấy giới tính (demographic.gender) từ GDC API theo patient_id, ghi
+              <tcga>/sex_gdc.csv + sex_gdc_source.json (nguồn cho cột sex của TCGA). Cần mạng tới api.gdc.cancer.gov.
+  rebuild --sex-only  chỉ thêm cột ``sex`` vào metadata.csv (không bỏ mẫu nào) để chạy check_sex_consistency.py.
+  apply-sex-qc  đọc qc/sex_check_<bộ>.csv (scripts/check_sex_consistency.py) và thêm mẫu action = quarantine
+              (opposite, inconsistent) vào excluded_samples_<bộ>.csv kèm lý do; không sửa nhãn/giới tính.
 
   rebuild     Dựng lại <cohort>/{expression.h5, metadata.csv} từ chính bản v3 hiện có:
               * bỏ các mẫu liệt kê trong <cohort>/excluded_samples_<cohort>.csv (cột sample_id, reason, decision);
@@ -16,7 +22,11 @@ Ba lệnh con, chạy theo thứ tự:
               cohort (trên gen chung của cả 4 cohort), kèm r thô trong cohort. Ghi <out>/rz_screen_pairs.csv (mọi cặp
               r_z >= --threshold hoặc r >= --raw-threshold) và <out>/rz_screen_summary.csv (theo cặp cohort).
 
-    python scripts/geo_sample_qc.py rebuild --cohorts gse10245 gse30219 gse37745 gse42127
+    python scripts/geo_sample_qc.py fetch-tcga-sex
+    python scripts/geo_sample_qc.py rebuild --sex-only --cohorts gse10245 gse30219 gse37745 gse42127 tcga_luad_lusc_primary_tumor
+    python scripts/check_sex_consistency.py
+    python scripts/geo_sample_qc.py apply-sex-qc
+    python scripts/geo_sample_qc.py rebuild --cohorts gse10245 gse30219 gse37745 gse42127 tcga_luad_lusc_primary_tumor
     python scripts/geo_sample_qc.py sex-check --out D:/KLTN/Nop-GVHD-2026-10-29/04_Du-lieu/_kiem_tra
     python scripts/geo_sample_qc.py rz-screen --out D:/KLTN/Nop-GVHD-2026-10-29/04_Du-lieu/_kiem_tra
 
@@ -131,8 +141,21 @@ def parse_sex(meta: pd.DataFrame) -> tuple[pd.Series, str | None]:
     return pd.Series([""] * len(meta), index=meta.index), None
 
 
+TCGA = "tcga_luad_lusc_primary_tumor"
+GDC_API = "https://api.gdc.cancer.gov"
+
+
+def sex_for(d: Path, meta: pd.DataFrame) -> tuple[pd.Series, str | None]:
+    """Cột sex: GEO từ Sample_characteristics (theo khoá sex:/gender:); TCGA từ sex_gdc.csv (theo patient_id)."""
+    gdc = d / "sex_gdc.csv"
+    if gdc.exists() and "patient_id" in meta.columns:
+        table = pd.read_csv(gdc, dtype=str, keep_default_na=False).set_index("patient_id")["sex"]
+        return meta["patient_id"].map(table).fillna(""), "sex_gdc.csv (GDC demographic.gender)"
+    return parse_sex(meta)
+
+
 # --------------------------------------------------------------------------------------------- rebuild
-def rebuild(data_root: Path, cohort: str, prov: dict, dry_run: bool = False) -> dict:
+def rebuild(data_root: Path, cohort: str, prov: dict, dry_run: bool = False, sex_only: bool = False) -> dict:
     d = resolve_dataset_dir(data_root, cohort)
     meta_path, expr_path = d / "metadata.csv", d / "expression.h5"
     meta = read_metadata_text(meta_path)
@@ -143,10 +166,12 @@ def rebuild(data_root: Path, cohort: str, prov: dict, dry_run: bool = False) -> 
 
     excl_path = d / f"excluded_samples_{cohort}.csv"
     excluded = pd.read_csv(excl_path, dtype=str) if excl_path.exists() else pd.DataFrame(columns=["sample_id"])
-    drop = [s for s in excluded["sample_id"].astype(str) if s in set(meta["sample_id"])]
+    drop = [] if sex_only else [s for s in excluded["sample_id"].astype(str) if s in set(meta["sample_id"])]
     missing = [s for s in excluded["sample_id"].astype(str) if s not in set(meta["sample_id"])]
+    if cohort == TCGA and not (d / "sex_gdc.csv").exists() and "sex" not in meta.columns:
+        raise SystemExit(f"{cohort}: chưa có sex_gdc.csv — chạy `geo_sample_qc.py fetch-tcga-sex` trước")
 
-    sex, sex_source = parse_sex(meta)
+    sex, sex_source = sex_for(d, meta)
     has_sex = "sex" in meta.columns
     new_meta = meta.copy()
     if not has_sex:
@@ -166,9 +191,9 @@ def rebuild(data_root: Path, cohort: str, prov: dict, dry_run: bool = False) -> 
     n_per_class = [int((labels == 0).sum()), int((labels == 1).sum())]
     changed = bool(drop) or not has_sex
     log = {"cohort": cohort, "data_dir": str(d), "excluded_file": str(excl_path) if excl_path.exists() else None,
-           "excluded_now": drop, "excluded_already_absent": missing, "n_before": int(X.shape[0]), "n_after": int(new_X.shape[0]),
+           "mode": "sex-only" if sex_only else "full", "excluded_now": drop, "excluded_already_absent": missing, "n_before": int(X.shape[0]), "n_after": int(new_X.shape[0]),
            "n_per_class_after": n_per_class, "n_per_class_expected": list(C.DATASET_EXPECTED_N.get(cohort, ())),
-           "sex_column": "kept" if has_sex else ("added from " + sex_source if sex_source else "added (empty: not in series matrix)"),
+           "sex_column": "kept" if has_sex else ("added from " + sex_source if sex_source else "added (empty: not in source metadata)"),
            "sex_counts": new_meta["sex"].replace("", "unknown").value_counts().to_dict(),
            "sha256_before": {"expression.h5": sha256(expr_path), "metadata.csv": sha256(meta_path)},
            "changed": changed, "script": "scripts/geo_sample_qc.py rebuild", **prov,
@@ -177,7 +202,10 @@ def rebuild(data_root: Path, cohort: str, prov: dict, dry_run: bool = False) -> 
         log["sha256_after"] = log["sha256_before"]
         return log
 
-    backup = d / f"_backup_{datetime.now().strftime('%Y%m%d-%H%M%S')}"
+    stamp_ = datetime.now().strftime("%Y%m%d-%H%M%S")
+    backup, k = d / f"_backup_{stamp_}", 1
+    while backup.exists():                           # hai lần chạy trong cùng một giây
+        backup, k = d / f"_backup_{stamp_}_{k}", k + 1
     backup.mkdir()
     for p in (expr_path, meta_path):
         shutil.copy2(p, backup / p.name)
@@ -195,7 +223,11 @@ def rebuild(data_root: Path, cohort: str, prov: dict, dry_run: bool = False) -> 
     os.replace(tmp_csv, meta_path)
     log["backup_dir"] = str(backup)
     log["sha256_after"] = {"expression.h5": sha256(expr_path), "metadata.csv": sha256(meta_path)}
-    (d / "rebuild_log.json").write_text(json.dumps(log, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    history_path = d / "rebuild_log.json"                     # lịch sử: mỗi lần ghi thêm một mục
+    history = json.loads(history_path.read_text(encoding="utf-8")) if history_path.exists() else []
+    history = history if isinstance(history, list) else [history]
+    history.append(log)
+    history_path.write_text(json.dumps(history, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     return log
 
 
@@ -293,10 +325,70 @@ def rz_screen(data_root: Path, cohorts, threshold: float, raw_threshold: float):
     return pd.DataFrame(pairs, columns=cols).sort_values("r_z", ascending=False), pd.DataFrame(summary)
 
 
+# --------------------------------------------------------------------------------------------- fetch-tcga-sex
+def fetch_tcga_sex(data_root: Path, prov: dict) -> pd.DataFrame:
+    import requests
+    d = resolve_dataset_dir(data_root, TCGA)
+    meta = read_metadata_text(d / "metadata.csv")
+    patients = sorted(set(meta["patient_id"]))
+    payload = {"filters": {"op": "in", "content": {"field": "submitter_id", "value": patients}},
+               "fields": "submitter_id,case_id,project.project_id,demographic.gender", "format": "JSON", "size": len(patients) + 100}
+    r = requests.post(f"{GDC_API}/cases", json=payload, timeout=180)
+    r.raise_for_status()
+    hits = r.json()["data"]["hits"]
+    rows = [{"patient_id": h["submitter_id"], "case_id": h.get("case_id"), "project": (h.get("project") or {}).get("project_id"),
+             "gender_raw": (h.get("demographic") or {}).get("gender")} for h in hits]
+    table = pd.DataFrame(rows, columns=["patient_id", "case_id", "project", "gender_raw"]).drop_duplicates("patient_id")
+    table["sex"] = table["gender_raw"].fillna("").str.strip().str.lower().map(SEX_MAP).fillna("")
+    missing = sorted(set(patients) - set(table.patient_id))
+    table = pd.concat([table, pd.DataFrame({"patient_id": missing, "sex": ""})], ignore_index=True).sort_values("patient_id")
+    table.to_csv(d / "sex_gdc.csv", index=False, encoding="utf-8")
+    source = {"api": f"POST {GDC_API}/cases", "fields": payload["fields"], "n_patients": len(patients), "n_found": len(hits),
+              "n_missing": len(missing), "missing": missing, "sex_counts": table["sex"].replace("", "unknown").value_counts().to_dict(),
+              "sha256": sha256(d / "sex_gdc.csv"), **prov, "run_at": datetime.now().astimezone().isoformat(timespec="seconds")}
+    (d / "sex_gdc_source.json").write_text(json.dumps(source, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    print(f"[{TCGA}] GDC: {len(hits)}/{len(patients)} bệnh nhân; sex = {source['sex_counts']}; thiếu: {missing or '—'}")
+    return table
+
+
+# --------------------------------------------------------------------------------------------- apply-sex-qc
+REASON = {
+    "opposite": "QĐ22 sex check: opposite — XIST và gen Y đều trái metadata (meta_sex = {meta_sex}, biểu hiện = {category}); "
+                "nhãn mô học cùng dòng metadata nên không tin được",
+    "inconsistent": "QĐ22 sex check: inconsistent — XIST và gen Y cùng cao (meta_sex = {meta_sex}); không xác minh được danh tính mẫu",
+}
+
+
+def apply_sex_qc(data_root: Path, qc_dir: Path, cohorts) -> list[dict]:
+    out = []
+    for c in cohorts:
+        path = qc_dir / f"sex_check_{c}.csv"
+        if not path.exists():
+            print(f"[{c}] không có {path} — bỏ qua")
+            continue
+        t = pd.read_csv(path, dtype={"sample_id": str})
+        q = t[t["action"] == "quarantine"]
+        d = resolve_dataset_dir(data_root, c)
+        excl_path = d / f"excluded_samples_{c}.csv"
+        excl = pd.read_csv(excl_path, dtype=str, keep_default_na=False) if excl_path.exists() else pd.DataFrame(columns=["sample_id", "reason", "decision"])
+        have = set(excl["sample_id"])
+        new = [{"sample_id": r.sample_id, "reason": REASON[r.verdict].format(meta_sex=r.meta_sex if isinstance(r.meta_sex, str) else "không có",
+                                                                             category=r.category),
+                "decision": "QĐ22 2026-10-29", "verdict": r.verdict, "category": r.category} for r in q.itertuples() if r.sample_id not in have]
+        merged = pd.concat([excl, pd.DataFrame(new)], ignore_index=True).fillna("")
+        if new:
+            merged.to_csv(excl_path, index=False, encoding="utf-8")
+        flagged = t[t["verdict"] == "inconclusive"]["sample_id"].tolist()
+        print(f"[{c}] cách ly mới: {[n['sample_id'] for n in new] or '—'}; tổng trong {excl_path.name}: {len(merged)}; "
+              f"inconclusive (giữ, ghi cờ data card): {len(flagged)}")
+        out.append({"cohort": c, "added": [n["sample_id"] for n in new], "n_excluded_total": len(merged), "inconclusive": flagged})
+    return out
+
+
 # --------------------------------------------------------------------------------------------- main
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("command", choices=["rebuild", "sex-check", "rz-screen"])
+    ap.add_argument("command", choices=["rebuild", "sex-check", "rz-screen", "fetch-tcga-sex", "apply-sex-qc"])
     ap.add_argument("--data-root", type=Path, default=None)
     ap.add_argument("--cohorts", nargs="+", default=list(GEO))
     ap.add_argument("--out", type=Path, default=None, help="thư mục ghi kết quả kiểm tra (sex-check, rz-screen)")
@@ -304,15 +396,24 @@ def main(argv=None):
     ap.add_argument("--threshold", type=float, default=0.90, help="ngưỡng r_z (mặc định 0,90)")
     ap.add_argument("--raw-threshold", type=float, default=0.99, help="ngưỡng r thô trong cohort (mặc định 0,99)")
     ap.add_argument("--dry-run", action="store_true", help="rebuild: chỉ in kế hoạch, không ghi")
+    ap.add_argument("--sex-only", action="store_true", help="rebuild: chỉ thêm cột sex, không bỏ mẫu (trước check_sex_consistency.py)")
+    ap.add_argument("--qc-dir", type=Path, default=None, help="apply-sex-qc: thư mục sex_check_<bộ>.csv (mặc định $KLTN_DATA_ROOT/qc)")
     args = ap.parse_args(argv)
     root = args.data_root or (Path(os.environ["KLTN_DATA_ROOT"]) if os.environ.get("KLTN_DATA_ROOT") else None)
     if root is None:
         ap.error("đặt KLTN_DATA_ROOT hoặc --data-root")
 
+    if args.command == "fetch-tcga-sex":
+        fetch_tcga_sex(root, require_traceable())
+        return
+    if args.command == "apply-sex-qc":
+        cohorts = args.cohorts if args.cohorts != list(GEO) else list(C.DATASETS)
+        apply_sex_qc(root, args.qc_dir or (root / "qc"), cohorts)
+        return
     if args.command == "rebuild":
         prov = git_state() if args.dry_run else require_traceable()
         for c in args.cohorts:
-            log = rebuild(root, c, prov, dry_run=args.dry_run)
+            log = rebuild(root, c, prov, dry_run=args.dry_run, sex_only=args.sex_only)
             exp = log["n_per_class_expected"]
             flag = "" if not exp or exp == log["n_per_class_after"] else f"   <-- khác DATASET_EXPECTED_N {tuple(exp)}"
             print(f"[{c}] {log['n_before']} -> {log['n_after']} mẫu, LUAD/LUSC = {tuple(log['n_per_class_after'])}{flag}; "
