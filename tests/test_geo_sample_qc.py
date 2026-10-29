@@ -53,3 +53,22 @@ def test_sex_check_and_rz_screen(tmp_path):
     assert (t.status == "match").all()
     pairs, summary = qc.rz_screen(tmp_path, ["gse37745"], threshold=0.9, raw_threshold=0.99)
     assert summary.loc[0, "scope"] == "within" and summary.loc[0, "n_pairs"] == 10 * 9 // 2
+
+
+def test_sex_only_keeps_samples_and_apply_sex_qc_appends_quarantine(tmp_path):
+    d, X, ids = _cohort(tmp_path)
+    log = qc.rebuild(tmp_path, "gse37745", {"commit_hash": None}, sex_only=True)
+    assert log["n_after"] == 12 and log["excluded_now"] == []
+    qc_dir = tmp_path / "qc"
+    qc_dir.mkdir()
+    pd.DataFrame({"sample_id": ["GSM003", "GSM004", "GSM005"], "verdict": ["opposite", "inconsistent", "inconclusive"],
+                  "category": ["F-like", "both-high", "both-low"], "meta_sex": ["male", "female", "male"],
+                  "action": ["quarantine", "quarantine", "keep"]}).to_csv(qc_dir / "sex_check_gse37745.csv", index=False)
+    res = qc.apply_sex_qc(tmp_path, qc_dir, ["gse37745"])
+    assert res[0]["added"] == ["GSM003", "GSM004"] and res[0]["inconclusive"] == ["GSM005"]
+    excl = pd.read_csv(d / "excluded_samples_gse37745.csv")
+    assert excl.sample_id.tolist() == ["GSM001", "GSM002", "GSM003", "GSM004"]
+    assert "không xác minh được danh tính mẫu" in excl.loc[3, "reason"]
+    assert qc.apply_sex_qc(tmp_path, qc_dir, ["gse37745"])[0]["added"] == []      # chạy lại không thêm trùng
+    final = qc.rebuild(tmp_path, "gse37745", {"commit_hash": None})
+    assert final["n_after"] == 8
