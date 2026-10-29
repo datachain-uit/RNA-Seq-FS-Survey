@@ -151,7 +151,7 @@ def sex_for(d: Path, meta: pd.DataFrame) -> tuple[pd.Series, str | None]:
     gdc = d / "sex_gdc.csv"
     if gdc.exists() and "patient_id" in meta.columns:
         table = pd.read_csv(gdc, dtype=str, keep_default_na=False).set_index("patient_id")["sex"]
-        return meta["patient_id"].map(table).fillna(""), "sex_gdc.csv (GDC demographic.gender)"
+        return meta["patient_id"].map(table).fillna(""), "sex_gdc.csv (GDC demographic: gender, nếu trống thì sex_at_birth; ngày truy vấn trong sex_gdc_source.json)"
     return parse_sex(meta)
 
 
