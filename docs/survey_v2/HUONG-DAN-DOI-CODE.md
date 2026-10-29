@@ -306,12 +306,15 @@ series matrix; GSE10245 không có → chỉ phân loại). Hai trục XIST và 
 theo nền tảng). Cách ly: `opposite` (cả hai trục trái metadata) và `inconsistent` (XIST và gen Y cùng cao); giữ và ghi cờ: `inconclusive`
 (both-low, hoặc chỉ một trục trái, hoặc trục không phân biệt). Không sửa nhãn. Đầu ra `qc/sex_check_<bộ>.csv`, `qc/sex_check_summary.csv`
 nộp cùng Cổng 1′; mẫu cách ly ghi vào `excluded_samples_<bộ>.csv`, cập nhật `DATASET_EXPECTED_N` (một commit "QĐ22") rồi mới sinh bản chia.
-TCGA v2 chỉ có gen mã hoá protein (không có XIST): script tự chuyển sang chế độ MỘT trục gen Y (QĐ22b): `opposite` chỉ khi mẫu ghi nữ nằm rõ trong
-cụm nam (cách tâm cụm nữ hơn 3/4 khoảng cách hai tâm) hoặc ngược lại; vùng giữa → `inconclusive` (giữ, ghi cờ). Cột sex của TCGA lấy từ GDC
-(`sex_at_birth`) và ghi vào `metadata.csv` bằng script đã commit; dùng `--male-axis RPS4Y1` làm kiểm tra thứ hai bên cạnh trục trung bình.
-Kết quả 29/10 (sau QĐ21 + QĐ22): GSE10245 58 → 55 (37/18), GSE30219 146 → 141 (81/60), GSE37745 172 → 169 (104/65), GSE42127 176 → 167 (126/41);
-TCGA: 2 mẫu ghi nữ có RPS4Y1 ≈ 6,5 (mức nam) → cách ly; 2 mẫu RPS4Y1 ≈ 3,1 → giữ, ghi cờ. Sàng r_z ≥ 0,90: không có cặp. Vì bản chia TCGA đổi,
-điều khoản tái dùng panel của QĐ19 không còn: pha A TCGA chạy lại đầy đủ bằng v3.1.
+TCGA v2 chỉ có gen mã hoá protein (không có XIST): script tự chuyển sang chế độ MỘT trục gen Y **bỏ phiếu theo từng gen** (QĐ22b, bản v3.1.3):
+ngưỡng từng gen = trung điểm (phân vị 95 nhóm ghi nữ, phân vị 5 nhóm ghi nam); M-like(Y) khi ≥ 4/5 gen vượt ngưỡng, F-like(Y) khi ≤ 1/5,
+còn lại intermediate(Y) → `inconclusive` (giữ, ghi cờ); `opposite` → cách ly. Không dùng trục trung bình gen Y với biên: u của nam thường
+giảm biểu hiện Y (mất một phần nhiễm sắc thể Y) nên trục trung bình cho 5 "opposite" giả ở nam LUSC (29/10). Cột sex của TCGA lấy từ GDC
+(`sex_at_birth`) và ghi vào `metadata.csv` bằng script đã commit.
+Kết quả 29/10 (sau QĐ21 + QĐ22 + QĐ22b): GSE10245 58 → 55 (37/18), GSE30219 146 → 141 (81/60), GSE37745 172 → 169 (104/65), GSE42127 176 → 167
+(126/41); TCGA 1.018 → 1.016 (515/501): cách ly TCGA-49-4505-01A, TCGA-49-AARN-01A (5/5 gen Y ở mức nam, ghi nữ); 5 mẫu `inconclusive` giữ và
+ghi cờ (TCGA-21-5782-01A; TCGA-33-4582-01A, TCGA-85-A4QR-01A, TCGA-MF-A522-01A, TCGA-NC-A5HG-01A). Sàng r_z ≥ 0,90: không có cặp. Vì bản chia
+TCGA đổi, điều khoản tái dùng panel của QĐ19 không còn: pha A TCGA chạy lại đầy đủ bằng v3.1.
 
 - *Đầu ra:* `E1_feature_selection/<bộ>/{selection_per_fold.csv, selected_genes.csv, selection_stability.csv, selection_gene_frequency.csv, config.json}`;
   `E1_wrapper_feature_selection/<cohort GPL570>/...`; `E1_classification/<bộ>/{classification_per_fold.csv, classification_summary.csv, e1_random_k.csv, config.json}`.

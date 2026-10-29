@@ -24,26 +24,30 @@ def test_categories_and_verdicts_follow_qd22():
     assert normalise_sex("Female") == "female" and normalise_sex("M") == "male" and normalise_sex("") is None
 
 
-def test_single_axis_mode_when_xist_is_absent(tmp_path, monkeypatch):
+def test_single_axis_vote_mode_when_xist_is_absent():
     import pandas as pd
     from scripts.check_sex_consistency import sex_table
 
     class DS:  # protein-coding only: no XIST
         pass
     rng = np.random.default_rng(3)
-    n = 40
-    genes = np.array(["RPS4Y1", "DDX3Y", "G1", "G2"])
-    X = rng.normal(5, 0.3, (n, 4))
-    X[:20, 0:2] = rng.normal(0.05, 0.05, (20, 2))      # females
-    X[20:, 0:2] = rng.normal(6.5, 0.3, (20, 2))        # males
-    X[0, 0:2] = 6.6                                     # annotated female, male-level Y -> opposite
-    X[1, 0:2] = 3.1                                     # annotated female, between the clusters -> inconclusive, keep
+    n = 80
+    genes = np.array(["RPS4Y1", "DDX3Y", "KDM5D", "UTY", "EIF1AY", "G1"])
+    X = rng.normal(5, 0.3, (n, 6))
+    X[:40, 0:5] = rng.normal(0.1, 0.1, (40, 5)).clip(0)        # annotated females: Y genes ~0
+    X[40:, 0:5] = rng.normal(5.0, 0.8, (40, 5))                # annotated males
+    X[70:, 0:5] = rng.normal(1.5, 0.3, (10, 5))                # ... including a tail with reduced Y expression (tumour LOY)
+    X[0, 0:5] = [6.6, 3.0, 1.6, 1.0, 2.4]                      # annotated female, all five genes male-level -> opposite
+    X[1, 0:5] = [3.2, 0.2, 0.1, 0.05, 0.2]                     # annotated female, only RPS4Y1 up -> F-like, match
+    X[2, 0:5] = [2.5, 2.2, 1.0, 1.0, 2.1]                      # annotated female, several genes up -> never silently 'match'
+    X[40, 0:5] = [3.3, 0.9, 0.7, 0.2, 0.3]                     # annotated male with low Y (LOY) -> must NOT be opposite
     ds = DS(); ds.genes = genes; ds.X = X; ds.y = np.zeros(n, dtype=int); ds.sample_ids = np.array([f"T{i}" for i in range(n)])
-    meta = pd.DataFrame({"sex": ["female"] * 20 + ["male"] * 20}, index=ds.sample_ids)
+    meta = pd.DataFrame({"sex": ["female"] * 40 + ["male"] * 40}, index=ds.sample_ids)
     table, info = sex_table(ds, meta)
-    assert info["mode"].startswith("single-axis")
-    assert table.set_index("sample_id").loc["T0", "verdict"] == "opposite"
-    t1 = table.set_index("sample_id").loc["T1"]
-    assert t1["category"] == "intermediate(Y)" and t1["verdict"] == "inconclusive" and t1["action"] == "keep"
-    assert (table.verdict == "opposite").sum() == 1
-    assert sex_table(ds, meta, male_axis="RPS4Y1")[1]["male_axis"] == "RPS4Y1"
+    t = table.set_index("sample_id")
+    assert info["mode"].startswith("single-axis") and info["threshold_rule"].startswith("midpoint")
+    assert t.loc["T0", "verdict"] == "opposite" and t.loc["T0", "action"] == "quarantine"
+    assert t.loc["T1", "verdict"] == "match" and t.loc["T1", "votes_male"] <= 1
+    assert t.loc["T2", "verdict"] in ("inconclusive", "opposite")      # multi-gene elevation is never silently 'match'
+    assert t.loc["T40", "verdict"] != "opposite"                       # LOY male keeps
+    assert (table.verdict == "opposite").sum() <= 2 and (table[table.meta_sex == "male"].verdict == "opposite").sum() == 0
