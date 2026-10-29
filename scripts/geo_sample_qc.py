@@ -175,26 +175,27 @@ def rebuild(data_root: Path, cohort: str, prov: dict, dry_run: bool = False, sex
     sex, sex_source = sex_for(d, meta)
     has_sex = "sex" in meta.columns
     new_meta = meta.copy()
-    if not has_sex:
-        new_meta["sex"] = sex.values
+    new_meta["sex"] = sex.values                     # cột dẫn xuất: luôn tính lại từ nguồn (series matrix / sex_gdc.csv)
+    sex_changed = (not has_sex) or not meta["sex"].equals(new_meta["sex"])
     keep = ~new_meta["sample_id"].isin(drop)
     new_meta = new_meta.loc[keep].reset_index(drop=True)
     new_X = X.loc[new_meta["sample_id"].tolist()]
 
     # --- bất biến: mẫu còn lại không đổi gì ngoài cột sex mới
+    base_cols = [c for c in meta.columns if c != "sex"]
     old_kept = meta.loc[keep.values].reset_index(drop=True)
-    assert old_kept.equals(new_meta[meta.columns]), "metadata của mẫu còn lại bị đổi"
+    assert old_kept[base_cols].equals(new_meta[base_cols]), "metadata của mẫu còn lại bị đổi"
     assert np.array_equal(X.loc[keep.values].to_numpy(), new_X.to_numpy(), equal_nan=True), "biểu hiện bị đổi"
     assert list(new_X.columns) == list(X.columns)
     assert new_X.shape[0] == X.shape[0] - len(drop)
 
     labels = new_meta["label"].astype(int)
     n_per_class = [int((labels == 0).sum()), int((labels == 1).sum())]
-    changed = bool(drop) or not has_sex
+    changed = bool(drop) or sex_changed
     log = {"cohort": cohort, "data_dir": str(d), "excluded_file": str(excl_path) if excl_path.exists() else None,
            "mode": "sex-only" if sex_only else "full", "excluded_now": drop, "excluded_already_absent": missing, "n_before": int(X.shape[0]), "n_after": int(new_X.shape[0]),
            "n_per_class_after": n_per_class, "n_per_class_expected": list(C.DATASET_EXPECTED_N.get(cohort, ())),
-           "sex_column": "kept" if has_sex else ("added from " + sex_source if sex_source else "added (empty: not in source metadata)"),
+           "sex_column": ("unchanged" if not sex_changed else ("updated" if has_sex else "added")) + " from " + (sex_source or "nothing (not in source metadata)"),
            "sex_counts": new_meta["sex"].replace("", "unknown").value_counts().to_dict(),
            "sha256_before": {"expression.h5": sha256(expr_path), "metadata.csv": sha256(meta_path)},
            "changed": changed, "script": "scripts/geo_sample_qc.py rebuild", **prov,
@@ -333,14 +334,24 @@ def fetch_tcga_sex(data_root: Path, prov: dict) -> pd.DataFrame:
     meta = read_metadata_text(d / "metadata.csv")
     patients = sorted(set(meta["patient_id"]))
     payload = {"filters": {"op": "in", "content": {"field": "submitter_id", "value": patients}},
-               "fields": "submitter_id,case_id,project.project_id,demographic.gender", "format": "JSON", "size": len(patients) + 100}
+               "fields": "submitter_id,case_id,project.project_id,demographic.gender,demographic.sex_at_birth",
+               "format": "JSON", "size": len(patients) + 100}
     r = requests.post(f"{GDC_API}/cases", json=payload, timeout=180)
     r.raise_for_status()
     hits = r.json()["data"]["hits"]
+    def demo(h):
+        v = h.get("demographic") or {}
+        return v[0] if isinstance(v, list) and v else (v if isinstance(v, dict) else {})
     rows = [{"patient_id": h["submitter_id"], "case_id": h.get("case_id"), "project": (h.get("project") or {}).get("project_id"),
-             "gender_raw": (h.get("demographic") or {}).get("gender")} for h in hits]
-    table = pd.DataFrame(rows, columns=["patient_id", "case_id", "project", "gender_raw"]).drop_duplicates("patient_id")
-    table["sex"] = table["gender_raw"].fillna("").str.strip().str.lower().map(SEX_MAP).fillna("")
+             "gender_raw": demo(h).get("gender"), "sex_at_birth_raw": demo(h).get("sex_at_birth")} for h in hits]
+    table = pd.DataFrame(rows, columns=["patient_id", "case_id", "project", "gender_raw", "sex_at_birth_raw"]).drop_duplicates("patient_id")
+    norm = lambda col: table[col].fillna("").astype(str).str.strip().str.lower().map(SEX_MAP).fillna("")
+    g, b = norm("gender_raw"), norm("sex_at_birth_raw")
+    table["sex"] = g.where(g != "", b)
+    table["sex_conflict"] = (g != "") & (b != "") & (g != b)
+    if (table["sex"] == "").all():
+        print("Ví dụ bản ghi GDC:", json.dumps(hits[:2], ensure_ascii=False)[:800])
+        raise SystemExit("GDC không trả về giới tính cho bệnh nhân nào — KHÔNG ghi sex_gdc.csv; báo lại để sửa trường truy vấn")
     missing = sorted(set(patients) - set(table.patient_id))
     table = pd.concat([table, pd.DataFrame({"patient_id": missing, "sex": ""})], ignore_index=True).sort_values("patient_id")
     table.to_csv(d / "sex_gdc.csv", index=False, encoding="utf-8")
@@ -348,7 +359,8 @@ def fetch_tcga_sex(data_root: Path, prov: dict) -> pd.DataFrame:
               "n_missing": len(missing), "missing": missing, "sex_counts": table["sex"].replace("", "unknown").value_counts().to_dict(),
               "sha256": sha256(d / "sex_gdc.csv"), **prov, "run_at": datetime.now().astimezone().isoformat(timespec="seconds")}
     (d / "sex_gdc_source.json").write_text(json.dumps(source, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    print(f"[{TCGA}] GDC: {len(hits)}/{len(patients)} bệnh nhân; sex = {source['sex_counts']}; thiếu: {missing or '—'}")
+    print(f"[{TCGA}] GDC: {len(hits)}/{len(patients)} bệnh nhân; sex = {source['sex_counts']}; "
+          f"gender/sex_at_birth mâu thuẫn: {int(table['sex_conflict'].sum())}; thiếu: {missing or '—'}")
     return table
 
 
