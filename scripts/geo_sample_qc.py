@@ -85,7 +85,8 @@ def git_state() -> dict:
     if head:
         remote = run("branch", "-r", "--contains", head)
         pushed = bool(remote)
-    return {"commit_hash": head, "dirty": bool(dirty), "script_tracked": tracked, "pushed": pushed}
+    return {"commit_hash": head, "dirty": bool(dirty), "dirty_files": (dirty or "").splitlines()[:20],
+            "script_tracked": tracked, "pushed": pushed}
 
 
 def require_traceable() -> dict:
@@ -94,7 +95,7 @@ def require_traceable() -> dict:
     if not state["script_tracked"]:
         problems.append("scripts/geo_sample_qc.py chưa được commit")
     if state["dirty"]:
-        problems.append("kho có thay đổi chưa commit (git status)")
+        problems.append("kho có thay đổi chưa commit (git status):\n    " + "\n    ".join(state["dirty_files"]))
     if not state["pushed"]:
         problems.append("HEAD chưa push")
     state["traceable"] = not problems
@@ -371,12 +372,14 @@ def apply_sex_qc(data_root: Path, qc_dir: Path, cohorts) -> list[dict]:
         d = resolve_dataset_dir(data_root, c)
         excl_path = d / f"excluded_samples_{c}.csv"
         excl = pd.read_csv(excl_path, dtype=str, keep_default_na=False) if excl_path.exists() else pd.DataFrame(columns=["sample_id", "reason", "decision"])
+        # các dòng QĐ22 cũ được tính lại từ sex_check hiện tại (chạy lại sau khi sửa metadata không để lại lý do sai)
+        excl = excl[~excl.get("decision", pd.Series("", index=excl.index)).astype(str).str.startswith("QĐ22")]
         have = set(excl["sample_id"])
         new = [{"sample_id": r.sample_id, "reason": REASON[r.verdict].format(meta_sex=r.meta_sex if isinstance(r.meta_sex, str) else "không có",
                                                                              category=r.category),
                 "decision": "QĐ22 2026-10-29", "verdict": r.verdict, "category": r.category} for r in q.itertuples() if r.sample_id not in have]
         merged = pd.concat([excl, pd.DataFrame(new)], ignore_index=True).fillna("")
-        if new:
+        if len(merged) or excl_path.exists():
             merged.to_csv(excl_path, index=False, encoding="utf-8")
         flagged = t[t["verdict"] == "inconclusive"]["sample_id"].tolist()
         print(f"[{c}] cách ly mới: {[n['sample_id'] for n in new] or '—'}; tổng trong {excl_path.name}: {len(merged)}; "
