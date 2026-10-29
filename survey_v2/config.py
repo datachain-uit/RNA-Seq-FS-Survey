@@ -12,11 +12,11 @@ from __future__ import annotations
 # --- Bộ dữ liệu ------------------------------------------------------------------------------------
 # tên trong code -> vai trò (giữ dạng dict tên -> chuỗi để `list(C.DATASETS)` và `.index()` vẫn chạy)
 DATASETS = {
-    "tcga_luad_lusc_primary_tumor": "large_n_reference",   # TCGA v2, RNA-seq; nguồn cho E7; E2–E3; E4
-    "gse10245": "target_small",                             # GPL570, 40/18: cohort phân biệt phương pháp
-    "gse30219": "target_main",                              # GPL570, 85/61 (gse30219_r5_fixed, R5)
-    "gse37745": "target_main",                              # GPL570, 105/65 (QĐ21: bỏ GSM1019246/GSM1019247); E4–E5
-    "gse42127": "target_second_platform",                   # GPL6884, 133/43; báo cáo riêng
+    "tcga_luad_lusc_primary_tumor": "large_n_reference",   # TCGA v2, RNA-seq, 515/501 sau QĐ22b; nguồn cho E7; E2–E3; E4
+    "gse10245": "target_small",                             # GPL570, 37/18 sau QĐ22: cohort phân biệt phương pháp
+    "gse30219": "target_main",                              # GPL570, 81/60 sau QĐ22 (gse30219_r5_fixed, R5)
+    "gse37745": "target_main",                              # GPL570, 104/65 sau QĐ21 + QĐ22; E4–E5
+    "gse42127": "target_second_platform",                   # GPL6884, 126/41 sau QĐ22; báo cáo riêng
 }
 # Thư mục chứa từng bộ (tương đối với $KLTN_DATA_ROOT). Bộ perm/ v2 giữ định dạng cũ; cohort GEO dùng
 # experiment-data-geo-target/<thư mục> như RQ0′ (scripts/run_rq0_prime.py::cohort_data_dir).
@@ -33,14 +33,19 @@ DATASET_DIRS = {
     "gse42127": f"{GEO_TARGET_DIR}/gse42127",
 }
 DATASET_DIR_ALTERNATIVES = {"gse30219": (f"{GEO_TARGET_DIR}/gse30219_r5_fixed",)}
-# Số mẫu kỳ vọng (LUAD/LUSC) theo DATA_AUDIT 27/10 và Review 26/10 (Bảng A3). load_dataset() ghi vào notes
-# và DỪNG khi KLTN_STRICT_N=1 (runner Kaggle đặt biến này) nếu lệch: tránh chạy nhầm bản GSE30219 chưa sửa R5.
+# Số mẫu kỳ vọng (LUAD/LUSC) sau QC mẫu QĐ21 + QĐ22 + QĐ22b (29/10/2026). load_dataset() ghi vào notes và DỪNG khi
+# KLTN_STRICT_N=1 (runner Kaggle đặt biến này) nếu lệch. Mẫu bị cách ly: <bộ>/excluded_samples_<bộ>.csv; n trước -> sau:
+#   TCGA 1018 (517/501) -> 1016: 2 mẫu ghi nữ, gen Y mức nam (opposite, bỏ phiếu từng gen Y; QĐ22b)
+#   GSE10245 58 (40/18) -> 55: 3 inconsistent (XIST và gen Y cùng cao; QĐ22)
+#   GSE30219 146 (85/61) -> 141: 1 opposite + 4 inconsistent (QĐ22)
+#   GSE37745 172 (106/66) -> 169: cặp GSM1019246/GSM1019247 (QĐ21) + 1 inconsistent (QĐ22)
+#   GSE42127 176 (133/43) -> 167: 7 opposite + 2 inconsistent (QĐ22)
 DATASET_EXPECTED_N = {
-    "tcga_luad_lusc_primary_tumor": (517, 501),
-    "gse10245": (40, 18),
-    "gse30219": (85, 61),
-    "gse37745": (105, 65),   # QĐ21 (29/10): cách ly GSM1019246/GSM1019247 (cặp gần trùng, metadata mâu thuẫn); 172 -> 170
-    "gse42127": (133, 43),
+    "tcga_luad_lusc_primary_tumor": (515, 501),
+    "gse10245": (37, 18),
+    "gse30219": (81, 60),
+    "gse37745": (104, 65),
+    "gse42127": (126, 41),
 }
 DATASET_PLATFORM = {"tcga_luad_lusc_primary_tumor": "RNA-seq (log2 TPM+1)", "gse10245": "GPL570", "gse30219": "GPL570",
                     "gse37745": "GPL570", "gse42127": "GPL6884"}
