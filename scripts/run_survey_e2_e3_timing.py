@@ -18,6 +18,9 @@ DỪNG (mã thoát 3) nếu có mốc lệch >= CALIBRATION_MAX_DRIFT (bỏ qua 
 và kết quả không được trích). (2) --isolate-memory: bộ nhớ đỉnh E2 đo trong tiến trình con mới cho từng (phương pháp, k)
 (cột maxrss_isolated_mb); peak_mb (tracemalloc) chỉ còn là mô tả.
 
+v3.1.4 (QĐ23): --skip-e2 cho các phiên E3 chia phần (E2 chính thức = phiên tham chiếu, tất cả phương pháp trong một phiên);
+C.E3_MAX_P bỏ điểm p quá lớn cho phương pháp quá chậm (elastic_net: tới 10.000).
+
 Đầu ra: results/survey_v2/E2_E3/{e2_cost_point.csv, e3_scaling_n.csv, e3_scaling_p.csv, e3_wrapper_evals.csv,
 e3_exponents.csv, calibration.csv, calibration_check.json, machine_config.json, config.json}.
 """
@@ -60,6 +63,8 @@ def parse_args():
     ap.add_argument("--p-grid", nargs="+", default=list(C.E3_P_GRID), help="dùng 'all' cho toàn bộ gen")
     ap.add_argument("--wrappers", action="store_true", help="đo GA, BPSO theo ngân sách (quần thể × thế hệ)")
     ap.add_argument("--skip-e3", action="store_true")
+    ap.add_argument("--skip-e2", action="store_true",
+                    help="chỉ hiệu chuẩn + E3 (dùng cho các phiên E3 chia phần — QĐ18; E2 chính thức lấy từ phiên tham chiếu)")
     ap.add_argument("--out", default="E2_E3")
     ap.add_argument("--no-calibrate", dest="calibrate", action="store_false",
                     help="bỏ bước hiệu chuẩn (chỉ cho chạy thử; phiên chính thức luôn hiệu chuẩn — QĐ18)")
@@ -156,7 +161,7 @@ def main() -> None:
         baseline = measure_isolated(X2, ytr, k_e3, "none", seed) if args.isolate_memory else None
         if baseline is not None:
             baseline = {"maxrss_mb": baseline["maxrss_child_mb"]}
-        for k in args.k:
+        for k in ([] if args.skip_e2 else args.k):
             for m in args.methods:
                 print(f"E2 {m} k={k} ...", end=" ", flush=True)
                 r = safe_measure(m, seed, X2, ytr, int(k), args.repeats)
@@ -179,7 +184,8 @@ def main() -> None:
                     rows.append({"method": m, "family": "wrapper", "n": X2.shape[0], "p": X2.shape[1], "k": int(k),
                                  "pop": pop, "generations": gen, **r})
                     print(f"wall {r['wall_s']:.1f}s", flush=True)
-        pd.DataFrame(rows).to_csv(out / "e2_cost_point.csv", index=False, encoding="utf-8-sig")
+        if not args.skip_e2:
+            pd.DataFrame(rows).to_csv(out / "e2_cost_point.csv", index=False, encoding="utf-8-sig")
 
         if not args.skip_e3:
             # ---- E3 theo n (p = 5.000) ---------------------------------------------------------------
@@ -199,6 +205,9 @@ def main() -> None:
                 cols_p = top_variance_columns(Xtr, p)
                 Xp = Xtr[:, cols_p]
                 for m in args.methods:
+                    if Xp.shape[1] > C.E3_MAX_P.get(m, float("inf")):      # QĐ23: bỏ điểm p quá lớn cho phương pháp quá chậm
+                        print(f"E3 p={Xp.shape[1]:6d} {m:20s} bỏ qua (E3_MAX_P = {C.E3_MAX_P[m]})", flush=True)
+                        continue
                     r = safe_measure(m, seed, Xp, ytr, k_e3, args.repeats)
                     if r is None:
                         continue
@@ -237,7 +246,7 @@ def main() -> None:
            "n_grid": args.n_grid, "p_grid": args.p_grid, "methods": args.methods, "wrappers": args.wrappers,
            "blas_threads": 1, "machine": minfo, "versions": all_versions(), "elapsed_s": time.time() - t_all,
            "calibration": calibration, "calibration_ok": (calibration or {}).get("calibration_ok"),
-           "isolate_memory": args.isolate_memory,
+           "isolate_memory": args.isolate_memory, "skip_e2": args.skip_e2, "skip_e3": args.skip_e3, "e3_max_p": dict(C.E3_MAX_P),
            "memory_note": ("maxrss_isolated_mb = ru_maxrss của tiến trình con chạy một lần chọn gen trừ mức nền (bộ nhớ đỉnh dùng cho E2); "
                            "peak_mb = tracemalloc (chỉ cấp phát Python/NumPy, mô tả)") if args.isolate_memory
                           else "peak_mb = tracemalloc (chỉ cấp phát Python/NumPy); maxrss_mb phụ thuộc thứ tự chạy — không dùng làm bộ nhớ đỉnh (Y19)",

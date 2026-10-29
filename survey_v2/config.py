@@ -214,6 +214,10 @@ CALIBRATION_MAX_DRIFT = 0.10
 TIMING_K = (10, 50)                             # hai điểm k (bản v2 là một điểm k = 50)
 E3_N_GRID = (100, 200, 400, None)               # None = toàn bộ phần train (TCGA ≈ 814)
 E3_P_GRID = (1000, 2000, 5000, 10000, None)     # None = toàn bộ gen (19.938)
+# QĐ23 (29/10, v3.1.4): điểm p lớn nhất của E3 cho phương pháp quá chậm để một phiên Kaggle 11 giờ chứa đủ 3 lần đo
+# (Elastic Net saga: ≈ 6.000 s mỗi lần ở p = 19.938 theo số mũ 1,39 đo ngày 28/10). Số mũ theo p fit trên các điểm còn lại;
+# bài ghi rõ "đo tới p = 10.000". Giống cơ chế KTSP_MAX_P.
+E3_MAX_P = {"elastic_net": 10000}
 E3_WRAPPER_BUDGETS = ((10, 20), (30, 50))
 
 # --- Sanity (Y10) --------------------------------------------------------------------------------------------------
