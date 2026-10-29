@@ -306,6 +306,12 @@ series matrix; GSE10245 không có → chỉ phân loại). Hai trục XIST và 
 theo nền tảng). Cách ly: `opposite` (cả hai trục trái metadata) và `inconsistent` (XIST và gen Y cùng cao); giữ và ghi cờ: `inconclusive`
 (both-low, hoặc chỉ một trục trái, hoặc trục không phân biệt). Không sửa nhãn. Đầu ra `qc/sex_check_<bộ>.csv`, `qc/sex_check_summary.csv`
 nộp cùng Cổng 1′; mẫu cách ly ghi vào `excluded_samples_<bộ>.csv`, cập nhật `DATASET_EXPECTED_N` (một commit "QĐ22") rồi mới sinh bản chia.
+TCGA v2 chỉ có gen mã hoá protein (không có XIST): script tự chuyển sang chế độ MỘT trục gen Y (QĐ22b): `opposite` chỉ khi mẫu ghi nữ nằm rõ trong
+cụm nam (cách tâm cụm nữ hơn 3/4 khoảng cách hai tâm) hoặc ngược lại; vùng giữa → `inconclusive` (giữ, ghi cờ). Cột sex của TCGA lấy từ GDC
+(`sex_at_birth`) và ghi vào `metadata.csv` bằng script đã commit; dùng `--male-axis RPS4Y1` làm kiểm tra thứ hai bên cạnh trục trung bình.
+Kết quả 29/10 (sau QĐ21 + QĐ22): GSE10245 58 → 55 (37/18), GSE30219 146 → 141 (81/60), GSE37745 172 → 169 (104/65), GSE42127 176 → 167 (126/41);
+TCGA: 2 mẫu ghi nữ có RPS4Y1 ≈ 6,5 (mức nam) → cách ly; 2 mẫu RPS4Y1 ≈ 3,1 → giữ, ghi cờ. Sàng r_z ≥ 0,90: không có cặp. Vì bản chia TCGA đổi,
+điều khoản tái dùng panel của QĐ19 không còn: pha A TCGA chạy lại đầy đủ bằng v3.1.
 
 - *Đầu ra:* `E1_feature_selection/<bộ>/{selection_per_fold.csv, selected_genes.csv, selection_stability.csv, selection_gene_frequency.csv, config.json}`;
   `E1_wrapper_feature_selection/<cohort GPL570>/...`; `E1_classification/<bộ>/{classification_per_fold.csv, classification_summary.csv, e1_random_k.csv, config.json}`.
