@@ -365,6 +365,8 @@ def fetch_tcga_sex(data_root: Path, prov: dict) -> pd.DataFrame:
 
 
 # --------------------------------------------------------------------------------------------- apply-sex-qc
+REASON_Y_ONLY = ("QĐ22b sex check: opposite — gen Y (bỏ phiếu từng gen; bộ không có XIST) trái metadata (meta_sex = {meta_sex}, "
+                 "biểu hiện = {category}); nhãn mô học cùng dòng metadata nên không tin được")
 REASON = {
     "opposite": "QĐ22 sex check: opposite — XIST và gen Y đều trái metadata (meta_sex = {meta_sex}, biểu hiện = {category}); "
                 "nhãn mô học cùng dòng metadata nên không tin được",
@@ -387,7 +389,7 @@ def apply_sex_qc(data_root: Path, qc_dir: Path, cohorts) -> list[dict]:
         # các dòng QĐ22 cũ được tính lại từ sex_check hiện tại (chạy lại sau khi sửa metadata không để lại lý do sai)
         excl = excl[~excl.get("decision", pd.Series("", index=excl.index)).astype(str).str.startswith("QĐ22")]
         have = set(excl["sample_id"])
-        new = [{"sample_id": r.sample_id, "reason": REASON[r.verdict].format(meta_sex=r.meta_sex if isinstance(r.meta_sex, str) else "không có",
+        new = [{"sample_id": r.sample_id, "reason": (REASON_Y_ONLY if "(Y)" in str(r.category) else REASON[r.verdict]).format(meta_sex=r.meta_sex if isinstance(r.meta_sex, str) else "không có",
                                                                              category=r.category),
                 "decision": "QĐ22 2026-10-29", "verdict": r.verdict, "category": r.category} for r in q.itertuples() if r.sample_id not in have]
         merged = pd.concat([excl, pd.DataFrame(new)], ignore_index=True).fillna("")
