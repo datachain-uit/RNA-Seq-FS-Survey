@@ -96,3 +96,21 @@ def test_runner_notebook_only_dispatches_to_kaggle_jobs():
     assert "scripts/kaggle_jobs.py" in code and "JOB = " in code
     assert "scripts/run_" not in code and "make_survey_tables" not in code      # M18: không có lệnh thí nghiệm trong notebook
     assert "KLTN_STRICT_N" in code and "'traceable'" not in code               # traceable do script kiểm, không gán tay
+
+
+mk = _load(REPO / "scripts" / "make_kaggle_notebooks.py")
+
+
+def test_per_experiment_notebooks_cover_every_job_once_and_are_up_to_date():
+    covered = [n for e in mk.EXPERIMENTS for n in e.jobs]
+    assert sorted(covered) == sorted(kj.JOBS) and len(covered) == len(set(covered))
+    assert mk.main(["--check"]) == 0          # notebooks/kaggle/*.ipynb khớp runner + danh mục (sinh lại nếu lệch)
+
+
+@pytest.mark.parametrize("exp", mk.EXPERIMENTS, ids=lambda e: e.file)
+def test_per_experiment_notebook_only_dispatches(exp):
+    nb = json.loads((REPO / "notebooks" / "kaggle" / exp.file).read_text(encoding="utf-8"))
+    code = "\n".join(c["source"] if isinstance(c["source"], str) else "".join(c["source"]) for c in nb["cells"] if c["cell_type"] == "code")
+    assert f"JOB = {exp.jobs[0]!r}" in code and "assert JOB in JOBS_IN_NOTEBOOK" in code
+    assert "scripts/kaggle_jobs.py" in code and "scripts/run_" not in code and "make_survey_tables" not in code
+    assert "KLTN_STRICT_N" in code and "'traceable'" not in code

@@ -1,8 +1,24 @@
 # Chạy survey v3 trên Kaggle — kế hoạch phiên (sau QĐ21 + QĐ22, 29/10/2026)
 
-Một notebook duy nhất: `notebooks/kaggle_survey_v3_runner.ipynb`. Mỗi phiên Kaggle (Save Version → Run All) chạy **một việc**
-(`JOB`) trong `scripts/kaggle_jobs.py`; lệnh, chia shard, đầu vào cần khôi phục và kiểm tra đầu ra nằm trong script đã commit (M18).
+Mỗi thí nghiệm có **một notebook riêng** trong `notebooks/kaggle/` (sinh từ runner chung bằng `scripts/make_kaggle_notebooks.py`,
+không sửa tay). Mỗi phiên Kaggle (Save Version → Run All) chạy **một việc** (`JOB`) thuộc notebook đó; lệnh, chia shard, đầu vào
+cần khôi phục và kiểm tra đầu ra nằm trong `scripts/kaggle_jobs.py` đã commit (M18).
 
+| Notebook | Thí nghiệm | JOB |
+|---|---|---|
+| `kaggle_00_sanity.ipynb` | Sanity Y10 | `sanity` |
+| `kaggle_E0_signal_check.ipynb` | E0 | `e0` |
+| `kaggle_E1_feature_selection_classification.ipynb` | E1 (pha A, pha B, wrapper) | `e1_phaseA_geo`, `e1_phaseB_geo`, `e1_phaseA_tcga_r012`, `e1_phaseA_tcga_r34`, `e1_phaseB_tcga`, `wrap_<cohort>` ×3, `e1_phaseB_wrappers` |
+| `kaggle_E1b_fewshot.ipynb` | E1b | `fewshot_e1b` |
+| `kaggle_E2_E3_timing.ipynb` | E2 + E3 | `e2_ref`, `e3_p1`, `e3_p2`, `e3_p3`, `e2e3_merge` |
+| `kaggle_E4_E5_stability.ipynb` | E4 + E5 | `e4e5_gse37745`, `e4_tcga` |
+| `kaggle_E6_tables.ipynb` | E6 + bảng, hình | `tables` |
+| `kaggle_E7_transfer.ipynb` | E7 | `e7` |
+| `kaggle_ablation_no_IHC.ipynb` | Ablation không IHC | `ablation_phaseA_geo`, `ablation_phaseA_tcga`, `ablation_phaseB` |
+
+Notebook chung `notebooks/kaggle_survey_v3_runner.ipynb` vẫn chạy được mọi JOB và là khuôn cho 9 notebook trên: sửa logic chung ở
+runner rồi chạy `python scripts/make_kaggle_notebooks.py` (test `--check` báo lỗi nếu quên). Muốn chạy song song hai JOB của cùng một
+thí nghiệm: tạo thêm một bản sao notebook trên Kaggle (Copy & Edit) hoặc hai version khác nhau.
 ```bash
 python scripts/kaggle_jobs.py plan          # bảng việc: đợt, hạn, ước lượng giờ, việc cần khôi phục
 python scripts/kaggle_jobs.py show e1_phaseA_geo
@@ -16,7 +32,7 @@ python scripts/kaggle_jobs.py status        # việc nào đã có đầu ra tro
    `tcga_normal_vs_tumor_sanity/`; `split_manifests/`; `qc/`). Không đưa `_backup_*` và `experiment-data-v3.zip` cũ.
    Gate 1 của notebook dừng nếu Input là bản cũ.
 2. Commit + push code; ghi hash vào `REPO_COMMIT` của notebook và **giữ nguyên cho mọi phiên của một đợt** (cùng commit → gộp được).
-3. Tạo notebook trên Kaggle từ `notebooks/kaggle_survey_v3_runner.ipynb` (File → Import Notebook), Accelerator: None (CPU), Internet: On.
+3. Tạo notebook trên Kaggle từ notebook của thí nghiệm trong `notebooks/kaggle/` (File → Import Notebook), Accelerator: None (CPU), Internet: On.
 
 ## 1. Một phiên
 
