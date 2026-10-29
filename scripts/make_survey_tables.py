@@ -764,9 +764,11 @@ def main(argv=None, script=__file__) -> None:
     if cost is not None:
         c = cost.copy()
         c["wall_s"] = c["wall_s"].astype(float)
-        save(c[[x for x in ("method", "family", "n", "p", "k", "wall_s", "cpu_s", "peak_mb", "maxrss_mb", "repeats", "pop", "generations")
-                if x in c.columns]], out, "e2_cost_table", man,
-             tex=("E2: cost of the selection step at fixed points ($n$ = training part, $p$ = 5000, $k \\in \\{10, 50\\}$; median of 3 runs, one machine, BLAS single-threaded).", "tab:e2_cost"))
+        mem = "maxrss_isolated_mb" if "maxrss_isolated_mb" in c.columns else "peak_mb"     # Y19: bộ nhớ đỉnh = tiến trình con
+        save(c[[x for x in ("session", "method", "family", "n", "p", "k", "wall_s", "cpu_s", mem, "peak_mb", "maxrss_mb", "repeats", "pop", "generations")
+                if x in c.columns and (x != "peak_mb" or mem != "peak_mb")]], out, "e2_cost_table", man,
+             tex=("E2: cost of the selection step at fixed points ($n$ = training part, $p$ = 5000, $k \\in \\{10, 50\\}$; median of 3 runs, "
+                  "one Kaggle machine type with cross-session calibration, BLAS single-threaded; peak memory = max RSS of an isolated process).", "tab:e2_cost"))
         dn, dp = man.read_csv(e23 / "e3_scaling_n.csv"), man.read_csv(e23 / "e3_scaling_p.csv")
         exps = man.read_csv(e23 / "e3_exponents.csv")
         if exps is not None:

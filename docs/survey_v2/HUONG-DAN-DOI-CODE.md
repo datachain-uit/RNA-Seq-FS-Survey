@@ -352,6 +352,10 @@ BLAS 1 luồng, `machine_config.json`, `wall_spread_max_rel < 0,3`. v3.1 (QĐ18)
 chạy trước, các phiên sau dùng `--calibration-reference`; `config.json` phải có `calibration_ok = true` (hoặc `null` ở phiên tham chiếu);
 `--isolate-memory` bắt buộc cho E2 (bộ nhớ đỉnh = `maxrss_isolated_mb`). Số đo 26–28/10 (notebook, 6 phiên, không hiệu chuẩn) chỉ để ước lượng
 chi phí (M19), không trích.
+v3.1.4 (QĐ23, 29/10): E2 chính thức = **phiên tham chiếu** (`e2_ref`: 13 phương pháp + wrapper trong một phiên, ≈ 6–9 giờ); các phiên E3
+chia phần chạy `--skip-e2` (chỉ hiệu chuẩn + E3) và được gộp bằng `kaggle_jobs.py merge-e2e3` (E2 từ phiên tham chiếu, E3 từ các phần;
+config.json của thư mục gộp stamp bằng provenance). `C.E3_MAX_P = {"elastic_net": 10000}`: Elastic Net (saga) đo tới p = 10.000 vì điểm
+p = 19.938 cần ≈ 5 giờ cho 3 lần đo và không vừa một phiên; bài ghi "đo tới p = 10.000", số mũ fit trên 4 điểm.
 
 ### 7.7 E4 + E5 — ổn định (việc #9): như bản 25/10 nhưng `--datasets` mặc định = TCGA, GSE37745; E5a và E5b chỉ GSE37745; E5b gồm
 rf_importance, stability_selection (mọi k) và GA, BPSO (k = 10); E5c ở k = 10 từ `selected_genes.csv` của pha A (+ wrapper). Random-k ở sàn

@@ -67,16 +67,30 @@ def test_run_parallel_reports_exit_codes(tmp_path):
 
 def test_merge_e2e3(tmp_path, monkeypatch):
     monkeypatch.setenv("KLTN_DATA_ROOT", str(tmp_path))
+    # provenance thật đòi cây làm việc sạch và HEAD đã push; test chỉ kiểm tra logic gộp -> thay bằng bản ghi giả
+    import survey_v2.runlog as runlog
+    monkeypatch.setattr(runlog, "start_run", lambda script, params=None, data_files=(): {
+        "commit_hash": "test-merge", "tracked": True, "traceable": True, "traceable_errors": [], "params": params or {}})
     root = tmp_path.joinpath("results", "survey_v2")
+    ref = root / "E2_E3_ref"
+    ref.mkdir(parents=True)
+    pd.DataFrame({"method": ["f_test", "l1_lr", "relieff"], "wall_s": [0.1, 10.0, 800.0], "maxrss_isolated_mb": [5, 60, 100]}).to_csv(ref / "e2_cost_point.csv", index=False)
+    (ref / "machine_config.json").write_text("{}")
+    (ref / "config.json").write_text(json.dumps({"traceable": True, "calibration_ok": None, "commit_hash": "abc", "methods": ["f_test", "l1_lr", "relieff"]}))
     for p, m in [("E2_E3_p1", "f_test"), ("E2_E3_p2", "l1_lr"), ("E2_E3_p3", "relieff")]:
         d = root / p
         d.mkdir(parents=True)
-        pd.DataFrame({"method": [m], "wall_s": [1.0]}).to_csv(d / "e2_cost_point.csv", index=False)
-        (d / "config.json").write_text(json.dumps({"traceable": True, "calibration_ok": True, "commit_hash": "abc", "methods": [m]}))
+        pd.DataFrame({"method": [m], "n": [100], "wall_s": [1.0]}).to_csv(d / "e3_scaling_n.csv", index=False)
+        pd.DataFrame({"method": [m], "alpha_n": [1.0]}).to_csv(d / "e3_exponents.csv", index=False)
+        (d / "config.json").write_text(json.dumps({"traceable": True, "calibration_ok": True, "commit_hash": "abc", "methods": [m], "n_grid": [100]}))
     out = kj.merge_e2e3()
-    merged = pd.read_csv(out / "e2_cost_point.csv")
-    assert merged.method.tolist() == ["f_test", "l1_lr", "relieff"] and set(merged.session) == {"E2_E3_p1", "E2_E3_p2", "E2_E3_p3"}
-    assert json.loads((out / "config.json").read_text())["commit_hash"] == "abc"
+    e2 = pd.read_csv(out / "e2_cost_point.csv")
+    assert e2.method.tolist() == ["f_test", "l1_lr", "relieff"] and set(e2.session) == {"E2_E3_ref"}      # E2 chính thức = phiên tham chiếu
+    e3 = pd.read_csv(out / "e3_scaling_n.csv")
+    assert e3.method.tolist() == ["f_test", "l1_lr", "relieff"] and set(e3.session) == {"E2_E3_p1", "E2_E3_p2", "E2_E3_p3"}
+    cfg = json.loads((out / "config.json").read_text())
+    assert cfg["sources_commit_hash"] == "abc" and cfg["calibration_ok"] is True and "commit_hash" in cfg   # stamp bằng provenance
+    assert (out / "machine_config.json").exists()
     (root / "E2_E3_p2" / "config.json").write_text(json.dumps({"traceable": True, "calibration_ok": False, "commit_hash": "abc"}))
     with pytest.raises(SystemExit):
         kj.merge_e2e3()

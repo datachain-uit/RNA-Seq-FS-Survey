@@ -84,9 +84,10 @@ def build_jobs() -> dict[str, Job]:
     J.append(Job("e1_phaseB_geo", "1 · 03/11", "E1 pha B, 4 cohort GEO: LR-L2 (+RF, SVM ở k ∈ {5, 25}), B0, random-k",
                  [_clf("--datasets", d, "--secondary") for d in GEO], [f"E1_classification/{d}" for d in GEO],
                  requires=[f"E1_feature_selection/{d}/selected_genes.csv" for d in GEO], restore_from=["e1_phaseA_geo"], hours="1–2"))
-    J.append(Job("e2_ref", "1 · 03/11", "E2 phiên tham chiếu (đo tại một điểm; ghi calibration.csv; không E3)",
+    J.append(Job("e2_ref", "1 · 03/11", "E2 phiên tham chiếu = E2 chính thức (13 phương pháp trong MỘT phiên; calibration.csv; "
+                 "bộ nhớ đỉnh trong tiến trình con; không E3)",
                  [["scripts/run_survey_e2_e3_timing.py", "--wrappers", "--isolate-memory", "--skip-e3", "--out", "E2_E3_ref"]],
-                 ["E2_E3_ref"], parallel=1, exclusive=True, hours="2–4"))
+                 ["E2_E3_ref"], parallel=1, exclusive=True, hours="6–9"))
     # ----------------------------------------------------------------- Đợt 1 phần TCGA (04/11)
     J.append(Job("e1_phaseA_tcga_r012", "1T · 04/11", "E1 pha A TCGA, lần lặp 0, 1, 2 (ba tiến trình song song)",
                  [_fs("--datasets", TCGA, "--repeats", str(r)) for r in (0, 1, 2)], [], hours="5–8"))
@@ -102,13 +103,16 @@ def build_jobs() -> dict[str, Job]:
                  [["scripts/run_survey_e1b_learning_curve.py", "--n-jobs", "4"]], [f"E1b/{d}" for d in GEO], parallel=1, hours="3–5"))
     for part, methods in E3_PARTS.items():
         extra = ["--wrappers"] if part == "p1" else []
-        J.append(Job(f"e3_{part}", "2 · 06/11", f"E2+E3 phần {part} ({', '.join(methods)}{', GA, BPSO' if extra else ''}), hiệu chuẩn theo E2_E3_ref",
-                     [["scripts/run_survey_e2_e3_timing.py", "--methods", *methods, *extra, "--isolate-memory",
+        J.append(Job(f"e3_{part}", "2 · 06/11", f"E3 phần {part} ({', '.join(methods)}{', GA, BPSO' if extra else ''}), hiệu chuẩn theo E2_E3_ref; "
+                     "--skip-e2 (E2 chính thức = phiên tham chiếu); elastic_net đo tới p = 10.000 (QĐ23)",
+                     [["scripts/run_survey_e2_e3_timing.py", "--methods", *methods, *extra, "--skip-e2",
                        "--calibration-reference", "{RESULTS}/" + ref, "--out", f"E2_E3_{part}"]],
-                     [f"E2_E3_{part}"], requires=[ref], restore_from=["e2_ref"], parallel=1, exclusive=True, hours="3–8"))
-    J.append(Job("e2e3_merge", "2 · 06/11", "Gộp E2_E3_p1..p3 -> E2_E3 (dùng cho make_survey_tables.py)",
+                     [f"E2_E3_{part}"], requires=[ref], restore_from=["e2_ref"], parallel=1, exclusive=True,
+                     hours={"p1": "2–3", "p2": "5–7", "p3": "7–9"}[part]))
+    J.append(Job("e2e3_merge", "2 · 06/11", "Gộp E2 của phiên tham chiếu + E3 của p1..p3 -> E2_E3 (dùng cho make_survey_tables.py)",
                  [["scripts/kaggle_jobs.py", "merge-e2e3"]], ["E2_E3"],
-                 requires=[f"E2_E3_{p}/config.json" for p in E3_PARTS], restore_from=[f"e3_{p}" for p in E3_PARTS], parallel=1, hours="<0,1"))
+                 requires=["E2_E3_ref/config.json"] + [f"E2_E3_{p}/config.json" for p in E3_PARTS],
+                 restore_from=["e2_ref"] + [f"e3_{p}" for p in E3_PARTS], parallel=1, hours="<0,1"))
     J.append(Job("e4e5_gse37745", "2 · 06/11", "E4 (M = 30) + E5a + E5b + E5c trên GSE37745 (+GA, BPSO ở k = 10); "
                  "chạy lại sau wrap_gse37745 để E5c có GA/BPSO (phần đã có được bỏ qua)",
                  [["scripts/run_survey_e4_e5_stability.py", "--datasets", "gse37745", "--wrappers", "--n-jobs", "4"]],
@@ -252,12 +256,17 @@ def verify(job: Job, commit: str | None) -> list[str]:
 E2E3_TABLES = ("e2_cost_point.csv", "e3_scaling_n.csv", "e3_scaling_p.csv", "e3_wrapper_evals.csv", "e3_exponents.csv")
 
 
-def merge_e2e3(parts=tuple(f"E2_E3_{p}" for p in E3_PARTS), out_name: str = "E2_E3") -> Path:
+def merge_e2e3(parts=tuple(f"E2_E3_{p}" for p in E3_PARTS), ref: str = "E2_E3_ref", out_name: str = "E2_E3") -> Path:
+    """E2 chính thức = phiên tham chiếu (mọi phương pháp trong một phiên); E3 = gộp các phần đã hiệu chuẩn với phiên đó.
+    Mọi phần phải traceable, calibration_ok = true và cùng commit với phiên tham chiếu. config.json của thư mục gộp được
+    stamp bằng provenance của chính lần gộp (M18: không gán traceable bằng tay)."""
+    from survey_v2.runlog import start_run, write_config
     root = results_root()
     out = root / out_name
     out.mkdir(parents=True, exist_ok=True)
+    sources = (ref, *parts)
     cfgs, problems = {}, []
-    for p in parts:
+    for p in sources:
         cfg_path = root / p / "config.json"
         if not cfg_path.exists():
             raise SystemExit(f"thiếu {cfg_path}")
@@ -265,14 +274,32 @@ def merge_e2e3(parts=tuple(f"E2_E3_{p}" for p in E3_PARTS), out_name: str = "E2_
         cfgs[p] = cfg
         if cfg.get("traceable") is not True:
             problems.append(f"{p}: traceable = {cfg.get('traceable')}")
-        if cfg.get("calibration_ok") is not True:
+        if p != ref and cfg.get("calibration_ok") is not True:
             problems.append(f"{p}: calibration_ok = {cfg.get('calibration_ok')}")
     commits = {c.get("commit_hash") for c in cfgs.values()}
     if len(commits) != 1:
         problems.append(f"các phần khác commit: {sorted(map(str, commits))}")
     if problems:
         raise SystemExit("KHÔNG gộp:\n  " + "\n  ".join(problems))
-    for name in E2E3_TABLES:
+    prov = start_run(__file__, params={"merge": "e2e3", "ref": ref, "parts": list(parts)})
+    # E2: từ phiên tham chiếu; E2 của các phần (nếu có, vd. chạy không --skip-e2) giữ riêng để đối chiếu độ lệch
+    ref_e2 = root / ref / "e2_cost_point.csv"
+    if not ref_e2.exists():
+        raise SystemExit(f"thiếu {ref_e2} (phiên tham chiếu phải đo E2)")
+    e2 = pd.read_csv(ref_e2)
+    e2.insert(0, "session", ref)
+    e2.to_csv(out / "e2_cost_point.csv", index=False, encoding="utf-8-sig")
+    part_e2 = []
+    for p in parts:
+        f = root / p / "e2_cost_point.csv"
+        if f.exists() and f.stat().st_size > 3:
+            frame = pd.read_csv(f)
+            frame.insert(0, "session", p)
+            part_e2.append(frame)
+    if part_e2:
+        pd.concat(part_e2, ignore_index=True).to_csv(out / "e2_cost_point_parts.csv", index=False, encoding="utf-8-sig")
+    # E3: gộp các phần
+    for name in E2E3_TABLES[1:]:
         frames = []
         for p in parts:
             f = root / p / name
@@ -282,21 +309,24 @@ def merge_e2e3(parts=tuple(f"E2_E3_{p}" for p in E3_PARTS), out_name: str = "E2_
                 frames.append(frame)
         if frames:
             pd.concat(frames, ignore_index=True).to_csv(out / name, index=False, encoding="utf-8-sig")
-    for p in parts:
+    for p in sources:
         for name in ("calibration.csv", "calibration_check.json", "machine_config.json"):
             if (root / p / name).exists():
                 (out / f"{p}_{name}").write_bytes((root / p / name).read_bytes())
-    first = cfgs[parts[0]]
-    merged = {"experiment": "E2_E3", "merged_from": list(parts), "merged_by": "scripts/kaggle_jobs.py merge-e2e3",
-              "commit_hash": first.get("commit_hash"), "traceable": True, "calibration_ok": True,
+    if (root / ref / "machine_config.json").exists():
+        (out / "machine_config.json").write_bytes((root / ref / "machine_config.json").read_bytes())
+    first = cfgs[ref]
+    merged = {"experiment": "E2_E3", "e2_from": ref, "e3_merged_from": list(parts), "merged_by": "scripts/kaggle_jobs.py merge-e2e3",
+              "sources_commit_hash": first.get("commit_hash"),
+              "calibration_ok": all(cfgs[p].get("calibration_ok") is True for p in parts),
               "calibration": {p: c.get("calibration") for p, c in cfgs.items()},
               "machine": {p: c.get("machine") for p, c in cfgs.items()},
               "methods": {p: c.get("methods") for p, c in cfgs.items()}, "dataset": first.get("dataset"), "split": first.get("split"),
-              "k": first.get("k"), "k_e3": first.get("k_e3"), "p_fixed": first.get("p_fixed"), "n_grid": first.get("n_grid"),
-              "p_grid": first.get("p_grid"), "repeats": first.get("repeats"), "isolate_memory": first.get("isolate_memory"),
-              "note": "Mỗi phần đo trên một phiên Kaggle riêng, hiệu chuẩn với E2_E3_ref (QĐ18); cột session ghi phần.",
-              "merge_commit_hash": head_commit()}
-    (out / "config.json").write_text(json.dumps(merged, ensure_ascii=False, indent=2, default=str) + "\n", encoding="utf-8")
+              "k": first.get("k"), "k_e3": first.get("k_e3"), "p_fixed": first.get("p_fixed"), "n_grid": cfgs[parts[0]].get("n_grid"),
+              "p_grid": cfgs[parts[0]].get("p_grid"), "e3_max_p": cfgs[parts[0]].get("e3_max_p"), "repeats": first.get("repeats"),
+              "isolate_memory": first.get("isolate_memory"),
+              "note": "E2 = phiên tham chiếu (một phiên, mọi phương pháp); E3 = các phần đo ở phiên riêng, hiệu chuẩn với phiên tham chiếu (QĐ18); cột session ghi phần."}
+    write_config(out, prov, merged)
     print("gộp xong:", out)
     return out
 

@@ -50,7 +50,9 @@ tất cả zip của chúng (các script không ghi đè checkpoint của nhau).
 vừa lưu: mọi script tự tiếp tục từ checkpoint.
 
 **E2/E3 (đo thời gian):** chạy một mình trong phiên (script đặt BLAS 1 luồng); các phiên E3 phải cùng loại máy Kaggle (CPU 4 nhân)
-với phiên tham chiếu `e2_ref`; phiên lệch ≥ 10 % sẽ dừng (QĐ18) — chạy lại phiên đó.
+với phiên tham chiếu `e2_ref`; phiên lệch ≥ 10 % sẽ dừng (QĐ18) — chạy lại phiên đó. `e2_ref` là E2 chính thức (mọi phương pháp trong
+một phiên, ≈ 6–9 giờ); `e3_p1..p3` chạy `--skip-e2`; Elastic Net đo tới p = 10.000 (QĐ23, `C.E3_MAX_P`); `e2e3_merge` lấy E2 từ `e2_ref`
+và E3 từ các phần.
 
 ## 2. Thứ tự phiên
 
