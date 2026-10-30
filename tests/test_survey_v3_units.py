@@ -197,3 +197,10 @@ def test_config_consistency():
     assert all(k in C.K_GRID for k in C.KSTAR_SEQUENCE) and C.OVERLAP_K in C.K_GRID
     assert set(C.STANDARDIZE_BEFORE) <= set(C.ALL_SELECTORS)
     assert len(C.METHOD_ID) == len(C.ALL_SELECTORS) == 13
+
+
+def test_ktsp_cap_covers_e5a_copies():
+    """QĐ24: E5a thêm REDUNDANCY_N_COPIES bản sao sau lọc sơ bộ P0; k-TSP phải chạy được ở p = P0 + bản sao."""
+    from survey_v2 import config as C
+    assert C.KTSP_MAX_P >= C.PREFILTER_P0 + C.REDUNDANCY_N_COPIES
+    assert C.KTSP_MAX_P < 10000          # điểm p = 10.000 của E3 vẫn bị bỏ cho k-TSP
