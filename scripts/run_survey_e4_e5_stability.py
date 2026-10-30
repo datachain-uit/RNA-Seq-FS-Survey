@@ -97,6 +97,14 @@ def select_on_subset(ds, idx, methods, k_list, seed_parts, args, extra_cols: dic
                 except ImportError as exc:
                     print(f"[{ds.name}] {method}: bỏ qua ({exc})", flush=True)
                     continue
+                except ValueError as exc:
+                    if "KTSP_MAX_P" not in str(exc):
+                        raise
+                    # v3.1.5: không để một phương pháp làm hỏng cả phiên; ghi nhận và chạy tiếp (E5a với p0 + bản sao > cap)
+                    print(f"[{ds.name}] {method}: bỏ qua ở p = {p0} ({exc})", flush=True)
+                    time_rows.append({**extra_cols, "method": method, "n": len(idx), "p0": p0, "select_time_s": float("nan"),
+                                      "skipped": str(exc)})
+                    continue
                 panels, info = sel.panels, sel.info
             dt = time.perf_counter() - t0
             time_rows.append({**extra_cols, "method": method, "n": len(idx), "p0": p0, "select_time_s": dt})

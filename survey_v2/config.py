@@ -145,7 +145,10 @@ STABSEL_FRACTION = 0.5
 STABSEL_TARGET_NNZ_FACTOR = 2        # C chọn trên toàn bộ train sao cho ~ 2·k_max hệ số khác 0 (q của M&B)
 
 # --- k-TSP (Tan et al., 2005) ----------------------------------------------------------------------
-KTSP_MAX_P = 5000                    # không tính điểm cặp khi p > KTSP_MAX_P (O(n p^2)); E3 ghi NaN ở p lớn hơn
+# Không tính điểm cặp khi p > KTSP_MAX_P (O(n p^2)); E3 bỏ điểm p lớn hơn. QĐ24 (30/10, v3.1.5): = P0 + số bản sao của E5a
+# (5.000 + 50 = 5.050) vì E5a thêm 50 bản sao tương quan sau lọc sơ bộ; trước đó = 5.000 làm k-TSP lỗi ở E5a. E1, E1b, E3
+# không đổi (p sau lọc = 5.000 ≤ cap; điểm p = 10.000 của E3 vẫn bị bỏ).
+KTSP_MAX_P = 5000 + 50
 
 # --- Panel tri thức (QĐ2, QĐ12; Yatabe et al., 2019) ---------------------------------------------------
 IHC_2 = ("NKX2-1", "TP63")
@@ -192,6 +195,7 @@ STABILITY_M = 30
 SUBSAMPLE_FRACTIONS = (0.5, 0.7, 0.9)
 REDUNDANCY_RHO = (0.5, 0.8, 0.95)
 REDUNDANCY_N_COPIES = 50
+assert KTSP_MAX_P >= PREFILTER_P0 + REDUNDANCY_N_COPIES, "KTSP_MAX_P phải chứa P0 + số bản sao của E5a (QĐ24)"
 REDUNDANCY_FRACTION = 0.7
 SEED_VARIABILITY_SEEDS = (0, 1, 2, 3, 4)
 SEED_VARIABILITY_METHODS = ("rf_importance", "stability_selection")   # + WRAPPER_METHODS ở WRAPPER_K
