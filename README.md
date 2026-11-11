@@ -1,3 +1,11 @@
+> **Readers of the paper (Data Mining and Knowledge Discovery submission).** The tag `survey-v3-dmkd.1` holds the code,
+> result files, splits and figure sources of the survey *Efficient, Stable and Transferable Gene Selection under a Panel
+> Budget*. Start with [REPRODUCE.md](REPRODUCE.md) (English): contents of the tag, result files, and the commands that
+> regenerate every table and result figure. Licences: [LICENSE](LICENSE) (MIT, code) and
+> [LICENSE-DATA.md](LICENSE-DATA.md) (CC BY 4.0, results, splits and figure sources). The rest of this README is the
+> internal working note of the project, in Vietnamese. Its note that data and results are kept outside Git does not
+> apply to this tag, which contains `results/`, `splits/`, `paper_scripts/` and `paper_figure_sources/`.
+
 # RNA-Seq FS Survey – chọn gen có ràng buộc ngân sách cho dữ liệu biểu hiện gen ung thư phổi
 
 Mã nguồn khóa luận: chọn/trích xuất đặc trưng, phân loại, permutation test (bài toán phụ: giai đoạn sớm/muộn) và RQ0′–RQ4 (bài toán chính: LUAD vs LUSC, chuyển giao TCGA → cohort GEO).
