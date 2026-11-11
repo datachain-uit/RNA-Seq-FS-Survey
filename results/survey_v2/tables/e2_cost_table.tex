@@ -1,0 +1,38 @@
+\begin{table*}[t]
+  \centering
+  \caption{E2: cost of the selection step at fixed points ($n$ = training part, $p$ = 5000, $k \in \{10, 50\}$; median of 3 runs, one Kaggle machine type with cross-session calibration, BLAS single-threaded; peak memory = max RSS of an isolated process).}
+  \label{tab:e2_cost}
+  \small
+  \begin{tabular}{lllllllllllll}
+    \toprule
+    session & method & family & n & p & k & wall\_s & cpu\_s & maxrss\_isolated\_mb & peak\_source & repeats & pop & generations \\
+    \midrule
+    E2\_E3\_ref & f\_test & filter & 812 & 5000 & 10 & 0.059 & 0.059 & 158.496 & VmHWM & 3 &  &  \\
+    E2\_E3\_ref & mutual\_info & filter & 812 & 5000 & 10 & 23.573 & 23.533 & 204.902 & VmHWM & 3 &  &  \\
+    E2\_E3\_ref & mrmr & filter & 812 & 5000 & 10 & 0.972 & 0.971 & 185.719 & VmHWM & 3 &  &  \\
+    E2\_E3\_ref & relieff & filter & 812 & 5000 & 10 & 141.586 & 141.303 & 184.441 & VmHWM & 3 &  &  \\
+    E2\_E3\_ref & l1\_lr & embedded & 812 & 5000 & 10 & 11.165 & 11.135 & 267.797 & VmHWM & 3 &  &  \\
+    E2\_E3\_ref & elastic\_net & embedded & 812 & 5000 & 10 & 892.146 & 889.224 & 142.617 & VmHWM & 3 &  &  \\
+    E2\_E3\_ref & rf\_importance & embedded & 812 & 5000 & 10 & 22.917 & 22.883 & 123.238 & VmHWM & 3 &  &  \\
+    E2\_E3\_ref & svm\_rfe & embedded & 812 & 5000 & 10 & 4.078 & 4.049 & 267.121 & VmHWM & 3 &  &  \\
+    E2\_E3\_ref & abess & constrained & 812 & 5000 & 10 & 0.363 & 0.362 & 268.180 & VmHWM & 3 &  &  \\
+    E2\_E3\_ref & stability\_selection & constrained & 812 & 5000 & 10 & 31.455 & 31.325 & 267.656 & VmHWM & 3 &  &  \\
+    E2\_E3\_ref & ktsp & rank-based & 812 & 5000 & 10 & 43.309 & 43.219 & 796.898 & VmHWM & 3 &  &  \\
+    E2\_E3\_ref & ga & wrapper & 812 & 5000 & 10 & 18.010 & 17.952 & 82.961 & VmHWM & 3 & 30.000 & 50.000 \\
+    E2\_E3\_ref & bpso & wrapper & 812 & 5000 & 10 & 23.386 & 23.310 & 94.203 & VmHWM & 3 & 30.000 & 50.000 \\
+    E2\_E3\_ref & f\_test & filter & 812 & 5000 & 50 & 0.062 & 0.062 & 158.547 & VmHWM & 3 &  &  \\
+    E2\_E3\_ref & mutual\_info & filter & 812 & 5000 & 50 & 23.356 & 23.302 & 204.387 & VmHWM & 3 &  &  \\
+    E2\_E3\_ref & mrmr & filter & 812 & 5000 & 50 & 4.262 & 4.250 & 185.418 & VmHWM & 3 &  &  \\
+    E2\_E3\_ref & relieff & filter & 812 & 5000 & 50 & 141.400 & 141.066 & 184.906 & VmHWM & 3 &  &  \\
+    E2\_E3\_ref & l1\_lr & embedded & 812 & 5000 & 50 & 11.954 & 11.908 & 267.121 & VmHWM & 3 &  &  \\
+    E2\_E3\_ref & elastic\_net & embedded & 812 & 5000 & 50 & 958.084 & 947.721 & 143.242 & VmHWM & 3 &  &  \\
+    E2\_E3\_ref & rf\_importance & embedded & 812 & 5000 & 50 & 24.594 & 24.215 & 122.875 & VmHWM & 3 &  &  \\
+    E2\_E3\_ref & svm\_rfe & embedded & 812 & 5000 & 50 & 4.299 & 4.226 & 267.219 & VmHWM & 3 &  &  \\
+    E2\_E3\_ref & abess & constrained & 812 & 5000 & 50 & 0.551 & 0.534 & 267.922 & VmHWM & 3 &  &  \\
+    E2\_E3\_ref & stability\_selection & constrained & 812 & 5000 & 50 & 34.406 & 34.025 & 267.031 & VmHWM & 3 &  &  \\
+    E2\_E3\_ref & ktsp & rank-based & 812 & 5000 & 50 & 45.273 & 44.816 & 797.121 & VmHWM & 3 &  &  \\
+    E2\_E3\_ref & ga & wrapper & 812 & 5000 & 50 & 40.882 & 40.367 & 86.160 & VmHWM & 3 & 30.000 & 50.000 \\
+    E2\_E3\_ref & bpso & wrapper & 812 & 5000 & 50 & 44.133 & 43.715 & 95.762 & VmHWM & 3 & 30.000 & 50.000 \\
+    \bottomrule
+  \end{tabular}
+\end{table*}

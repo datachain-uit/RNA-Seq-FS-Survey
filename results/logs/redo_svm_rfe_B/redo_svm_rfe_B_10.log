@@ -1,0 +1,5 @@
+[tcga_luad_lusc_primary_tumor] 1016 mẫu × 19938 gen
+[tcga_luad_lusc_primary_tumor] --redo-methods ['svm_rfe']: đã bỏ 9090 dòng cũ, sẽ chọn lại
+[tcga_luad_lusc_primary_tumor] E4: 90 (fraction, subsample) cần chạy
+[tcga_luad_lusc_primary_tumor] E4 xong: 278 dòng ổn định
+[tcga_luad_lusc_primary_tumor] xong, ghi vào /kaggle/working/kltn_data/results/survey_v2/E4_E5/tcga_luad_lusc_primary_tumor

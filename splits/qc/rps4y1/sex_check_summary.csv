@@ -1,0 +1,2 @@
+dataset,n,mode,male_axis,metadata_sex_column,xist_threshold,y_threshold,match,inconclusive,opposite,n_intermediate,n_quarantine
+tcga_luad_lusc_primary_tumor,1018,single-axis (Y only),RPS4Y1,sex,,3.855401314531062,899,117,2,15,2

@@ -1,0 +1,13 @@
+{
+  "job": "e1_phaseB_wrappers",
+  "commit_hash": "9b2d6a57610a2e0d7d75ec97dace030dec51d516",
+  "exit_code": 0,
+  "restored": [
+    "/kaggle/input/datasets/lfreedom2750/kq-phasea/e1_phaseB_geo_results/results",
+    "/kaggle/input/datasets/lfreedom2750/kq-phasea/wrap_gse10245_results/results",
+    "/kaggle/input/datasets/lfreedom2750/kq-phasea/wrap_gse30219_results/results",
+    "/kaggle/input/datasets/lfreedom2750/kq-phasea/wrap_gse37745_results/results"
+  ],
+  "hours": 0.07,
+  "finished_at": "2026-10-31 06:59:14 UTC"
+}

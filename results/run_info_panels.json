@@ -1,0 +1,10 @@
+{
+  "job": "panels",
+  "commit_hash": "d870008111f5199789cf21c5d7feecaa21ee9f7a",
+  "exit_code": 0,
+  "restored": [
+    "/kaggle/input/datasets/lfreedom2750/kq-phasea/upload_kaggle/redo_svm_rfe_B_results/results"
+  ],
+  "hours": 0.08,
+  "finished_at": "2026-11-02 16:51:43 UTC"
+}

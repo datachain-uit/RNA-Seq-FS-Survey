@@ -1,0 +1,69 @@
+{
+  "generator": "scripts/build_v3_splits.py",
+  "generator_commit": "380d01f1d14429becdf631e8550e772599eadb81",
+  "repeat_seeds": [
+    42,
+    43,
+    44,
+    45,
+    46
+  ],
+  "protocol": "5 repeats x 5 patient-grouped outer folds",
+  "files": [
+    {
+      "dataset": "tcga_luad_lusc_primary_tumor",
+      "path": "experiment-data-perm\\tcga_luad_lusc_primary_tumor\\repeated_splits.csv",
+      "rows": 25400,
+      "sha256": "ff909fd90415014e8dce4c1692346baa4873bee0e533932515880a5ed18cb6ce",
+      "n_per_class": [
+        515,
+        501
+      ],
+      "patient_id_assumed_from_sample_id": false
+    },
+    {
+      "dataset": "gse10245",
+      "path": "experiment-data-geo-target\\gse10245\\repeated_splits.csv",
+      "rows": 1375,
+      "sha256": "823637702262a5fea795a52e9d2972f7857d9b75156d0667b1f7cac769496d5e",
+      "n_per_class": [
+        37,
+        18
+      ],
+      "patient_id_assumed_from_sample_id": false
+    },
+    {
+      "dataset": "gse30219",
+      "path": "experiment-data-geo-target\\gse30219\\repeated_splits.csv",
+      "rows": 3525,
+      "sha256": "de92722bd27a853fef77abe4fda22bcd64886ef2724c298ac386b0bfd9b979bc",
+      "n_per_class": [
+        81,
+        60
+      ],
+      "patient_id_assumed_from_sample_id": false
+    },
+    {
+      "dataset": "gse37745",
+      "path": "experiment-data-geo-target\\gse37745\\repeated_splits.csv",
+      "rows": 4225,
+      "sha256": "18dc9577a10b86f9dec236cefad6beac48fb43db4c9d1383fed547b80712fd20",
+      "n_per_class": [
+        104,
+        65
+      ],
+      "patient_id_assumed_from_sample_id": false
+    },
+    {
+      "dataset": "gse42127",
+      "path": "experiment-data-geo-target\\gse42127\\repeated_splits.csv",
+      "rows": 4175,
+      "sha256": "6a0f194aa586b94f3836019b273d12ac2bc8abbdfe0151e612c876be073fd959",
+      "n_per_class": [
+        126,
+        41
+      ],
+      "patient_id_assumed_from_sample_id": false
+    }
+  ]
+}

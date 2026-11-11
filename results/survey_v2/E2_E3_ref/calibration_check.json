@@ -1,0 +1,12 @@
+{
+  "methods": [
+    "l1_lr",
+    "svm_rfe",
+    "rf_importance"
+  ],
+  "max_drift_allowed": 0.1,
+  "reference": null,
+  "drift": {},
+  "max_drift": null,
+  "calibration_ok": null
+}

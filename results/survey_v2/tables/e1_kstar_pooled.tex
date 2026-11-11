@@ -1,0 +1,29 @@
+\begin{table*}[t]
+  \centering
+  \caption{E1: minimum non-inferior panel size $k^*$ per method pooled over gse10245, gse30219, gse37745 (QĐ11: IVW with Nadeau--Bengio variance and equal weights; fixed sequence).}
+  \label{tab:e1_kstar}
+  \small
+  \begin{tabular}{llllll}
+    \toprule
+    method & k\_star\_ivw & k\_star\_both & verdict\_vs\_b0 & k\_sequence\_used & cohorts \\
+    \midrule
+    abess & 10.000 &  & ủng hộ một phần (chỉ bản IVW đạt; ghi rõ cohort chi phối) & 50>25>10>5>4>3>2>1 & gse10245,gse30219,gse37745 \\
+    elastic\_net & 4.000 & 25.000 & ủng hộ một phần (chỉ bản IVW đạt; ghi rõ cohort chi phối) & 50>25>10>5>4>3>2>1 & gse10245,gse30219,gse37745 \\
+    f\_test & 4.000 &  & ủng hộ một phần (chỉ bản IVW đạt; ghi rõ cohort chi phối) & 50>25>10>5>4>3>2>1 & gse10245,gse30219,gse37745 \\
+    ihc\_2 & 2.000 &  & ủng hộ một phần (chỉ bản IVW đạt; ghi rõ cohort chi phối) & 2 & gse10245,gse30219,gse37745 \\
+    ihc\_4 & 4.000 & 4.000 & ủng hộ (k*\_gộp <= 10 theo cả hai cách gộp) & 4 & gse10245,gse30219,gse37745 \\
+    ktsp & 4.000 & 10.000 & ủng hộ (k*\_gộp <= 10 theo cả hai cách gộp) & 50>10>4>2 & gse10245,gse30219,gse37745 \\
+    l1\_lr & 10.000 & 10.000 & ủng hộ (k*\_gộp <= 10 theo cả hai cách gộp) & 50>25>10>5>4>3>2>1 & gse10245,gse30219,gse37745 \\
+    mrmr & 10.000 & 25.000 & ủng hộ một phần (chỉ bản IVW đạt; ghi rõ cohort chi phối) & 50>25>10>5>4>3>2>1 & gse10245,gse30219,gse37745 \\
+    mutual\_info & 10.000 &  & ủng hộ một phần (chỉ bản IVW đạt; ghi rõ cohort chi phối) & 50>25>10>5>4>3>2>1 & gse10245,gse30219,gse37745 \\
+    relieff & 3.000 &  & ủng hộ một phần (chỉ bản IVW đạt; ghi rõ cohort chi phối) & 50>25>10>5>4>3>2>1 & gse10245,gse30219,gse37745 \\
+    rf\_importance & 4.000 & 25.000 & ủng hộ một phần (chỉ bản IVW đạt; ghi rõ cohort chi phối) & 50>25>10>5>4>3>2>1 & gse10245,gse30219,gse37745 \\
+    stability\_selection & 10.000 & 10.000 & ủng hộ (k*\_gộp <= 10 theo cả hai cách gộp) & 50>25>10>5>4>3>2>1 & gse10245,gse30219,gse37745 \\
+    bpso & 50.000 & 50.000 & bác bỏ (chuỗi không tới được k = 25) & 50>10>5 & gse10245,gse30219,gse37745 \\
+    ga & 10.000 &  & ủng hộ một phần (chỉ bản IVW đạt; ghi rõ cohort chi phối) & 50>10>5 & gse10245,gse30219,gse37745 \\
+    svm\_rfe & 10.000 & 10.000 & ủng hộ (k*\_gộp <= 10 theo cả hai cách gộp) & 50>25>10>5>4>3>2>1 & gse10245,gse30219,gse37745 \\
+    panel\_girard2016 &  &  & không xác định (không đạt ở các k đã thử) &  & gse10245,gse30219,gse37745 \\
+    panel\_wilkerson2013 &  &  & không xác định (không đạt ở các k đã thử) &  & gse10245,gse30219,gse37745 \\
+    \bottomrule
+  \end{tabular}
+\end{table*}

@@ -1,0 +1,3 @@
+sample_id,reason,decision,verdict,category
+TCGA-49-4505-01A,"QĐ22b sex check: opposite — gen Y (bỏ phiếu từng gen; bộ không có XIST) trái metadata (meta_sex = female, biểu hiện = M-like(Y)); nhãn mô học cùng dòng metadata nên không tin được",QĐ22 2026-10-29,opposite,M-like(Y)
+TCGA-49-AARN-01A,"QĐ22b sex check: opposite — gen Y (bỏ phiếu từng gen; bộ không có XIST) trái metadata (meta_sex = female, biểu hiện = M-like(Y)); nhãn mô học cùng dòng metadata nên không tin được",QĐ22 2026-10-29,opposite,M-like(Y)

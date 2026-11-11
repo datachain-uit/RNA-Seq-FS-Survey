@@ -1,0 +1,2 @@
+﻿cohort,role,n,p,k,selector,auroc_real,auroc_real_folds,n_perm,null_mean,null_q95,p_perm,n_random,random_mean,random_q95,p_random,gain_vs_random,signal_present,selection_useful,min_p
+gse37745,target_main,169,16479,10,f_test,0.9885347985347985,1.0000;0.9927;1.0000;1.0000;0.9500,200,0.508528021978022,0.6089578754578755,0.004975124378109453,100,0.928893772893773,0.9593681318681319,0.009900990099009901,0.05964102564102558,True,True,0.004975124378109453

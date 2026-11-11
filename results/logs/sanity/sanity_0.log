@@ -1,0 +1,31 @@
+[tcga_normal_vs_tumor_sanity] 1128 mẫu × 19938 gen | 1019 bệnh nhân | 25 fold
+  repeat 0 fold 0: f_test 0.999, l1_lr 1.000, rf_importance 1.000
+  repeat 0 fold 1: f_test 0.996, l1_lr 0.998, rf_importance 0.998
+  repeat 0 fold 2: f_test 0.995, l1_lr 0.999, rf_importance 0.998
+  repeat 0 fold 3: f_test 0.998, l1_lr 0.994, rf_importance 0.999
+  repeat 0 fold 4: f_test 0.998, l1_lr 1.000, rf_importance 0.999
+  repeat 1 fold 0: f_test 0.999, l1_lr 1.000, rf_importance 1.000
+  repeat 1 fold 1: f_test 0.993, l1_lr 0.998, rf_importance 0.999
+  repeat 1 fold 2: f_test 0.997, l1_lr 0.998, rf_importance 0.996
+  repeat 1 fold 3: f_test 0.998, l1_lr 0.999, rf_importance 0.999
+  repeat 1 fold 4: f_test 1.000, l1_lr 1.000, rf_importance 1.000
+  repeat 2 fold 0: f_test 0.997, l1_lr 0.998, rf_importance 0.998
+  repeat 2 fold 1: f_test 0.998, l1_lr 0.999, rf_importance 1.000
+  repeat 2 fold 2: f_test 0.996, l1_lr 0.997, rf_importance 0.999
+  repeat 2 fold 3: f_test 0.999, l1_lr 1.000, rf_importance 0.999
+  repeat 2 fold 4: f_test 0.996, l1_lr 0.998, rf_importance 0.999
+  repeat 3 fold 0: f_test 0.996, l1_lr 0.998, rf_importance 0.998
+  repeat 3 fold 1: f_test 0.998, l1_lr 0.999, rf_importance 0.997
+  repeat 3 fold 2: f_test 1.000, l1_lr 1.000, rf_importance 1.000
+  repeat 3 fold 3: f_test 0.998, l1_lr 1.000, rf_importance 1.000
+  repeat 3 fold 4: f_test 0.999, l1_lr 0.999, rf_importance 1.000
+  repeat 4 fold 0: f_test 1.000, l1_lr 1.000, rf_importance 1.000
+  repeat 4 fold 1: f_test 0.998, l1_lr 0.999, rf_importance 0.999
+  repeat 4 fold 2: f_test 0.996, l1_lr 0.997, rf_importance 0.997
+  repeat 4 fold 3: f_test 0.999, l1_lr 0.995, rf_importance 0.997
+  repeat 4 fold 4: f_test 0.999, l1_lr 0.999, rf_importance 1.000
+                     cohort        method  k  auroc_mean  auroc_sd  auroc_min  bacc_mean  mcc_mean  n_folds  pass
+tcga_normal_vs_tumor_sanity        f_test 10    0.997670  0.001739   0.992967   0.986220  0.898153       25  True
+tcga_normal_vs_tumor_sanity         l1_lr 10    0.998556  0.001542   0.994207   0.990295  0.934890       25  True
+tcga_normal_vs_tumor_sanity rf_importance 10    0.998866  0.001124   0.996418   0.988180  0.944050       25  True
+SANITY ĐẠT (ngưỡng AUROC trung bình ≥ 0.99)

@@ -1,0 +1,9 @@
+{
+  "geo_accession": "GSE10245",
+  "source_field": "Sample_characteristics_ch1",
+  "mapping": {
+    "disease state: adenocarcinoma": {"class": "LUAD", "label": 0, "n_samples": 40},
+    "disease state: squamous cell carcinoma": {"class": "LUSC", "label": 1, "n_samples": 18}
+  },
+  "verification": "Source values were checked against the GEO series-matrix sample IDs on 2026-10-27."
+}

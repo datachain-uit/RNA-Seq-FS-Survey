@@ -1,0 +1,33 @@
+[tcga_luad_lusc_primary_tumor] 1016 mẫu × 19938 gen; train fold 0 = 812
+Máy: Intel(R) Xeon(R) CPU @ 2.20GHz | RAM GB: 31.35
+[hiệu chuẩn] l1_lr: wall 10.966s
+[hiệu chuẩn] svm_rfe: wall 3.865s
+[hiệu chuẩn] rf_importance: wall 22.894s
+[bộ nhớ] mức nền của tiến trình con: 132 MB (VmHWM)
+E2 f_test k=10 ... wall 0.06s cpu 0.06s maxrss_isolated 158MB
+E2 mutual_info k=10 ... wall 23.57s cpu 23.53s maxrss_isolated 205MB
+E2 mrmr k=10 ... wall 0.97s cpu 0.97s maxrss_isolated 186MB
+E2 relieff k=10 ... wall 141.59s cpu 141.30s maxrss_isolated 184MB
+E2 l1_lr k=10 ... wall 11.17s cpu 11.13s maxrss_isolated 268MB
+E2 elastic_net k=10 ... wall 892.15s cpu 889.22s maxrss_isolated 143MB
+E2 rf_importance k=10 ... wall 22.92s cpu 22.88s maxrss_isolated 123MB
+E2 svm_rfe k=10 ... wall 4.08s cpu 4.05s maxrss_isolated 267MB
+E2 abess k=10 ... wall 0.36s cpu 0.36s maxrss_isolated 268MB
+E2 stability_selection k=10 ... wall 31.45s cpu 31.32s maxrss_isolated 268MB
+E2 ktsp k=10 ... wall 43.31s cpu 43.22s maxrss_isolated 797MB
+E2 ga (30x50) k=10 ... wall 18.0s
+E2 bpso (30x50) k=10 ... wall 23.4s
+E2 f_test k=50 ... wall 0.06s cpu 0.06s maxrss_isolated 159MB
+E2 mutual_info k=50 ... wall 23.36s cpu 23.30s maxrss_isolated 204MB
+E2 mrmr k=50 ... wall 4.26s cpu 4.25s maxrss_isolated 185MB
+E2 relieff k=50 ... wall 141.40s cpu 141.07s maxrss_isolated 185MB
+E2 l1_lr k=50 ... wall 11.95s cpu 11.91s maxrss_isolated 267MB
+E2 elastic_net k=50 ... wall 958.08s cpu 947.72s maxrss_isolated 143MB
+E2 rf_importance k=50 ... wall 24.59s cpu 24.22s maxrss_isolated 123MB
+E2 svm_rfe k=50 ... wall 4.30s cpu 4.23s maxrss_isolated 267MB
+E2 abess k=50 ... wall 0.55s cpu 0.53s maxrss_isolated 268MB
+E2 stability_selection k=50 ... wall 34.41s cpu 34.03s maxrss_isolated 267MB
+E2 ktsp k=50 ... wall 45.27s cpu 44.82s maxrss_isolated 797MB
+E2 ga (30x50) k=50 ... wall 40.9s
+E2 bpso (30x50) k=50 ... wall 44.1s
+xong: /kaggle/working/kltn_data/results/survey_v2/E2_E3_ref

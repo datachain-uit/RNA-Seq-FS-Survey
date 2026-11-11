@@ -1,0 +1,134 @@
+  ghi e0_signal_check: 5 dòng
+  ghi e1_summary: 715 dòng
+  ghi e1_auroc_table: 86 dòng
+  ghi e1_b0_table: 5 dòng
+  ghi e1_tests_vs_random_b0: 458 dòng
+  ghi e1_kstar_pooled_by_k: 92 dòng
+  ghi e1_kstar_pooled: 17 dòng
+  ghi e1_kstar_per_cohort: 85 dòng
+  ghi e1_bayes_rope: 157 dòng
+  ghi e1_bayes_rope_matrix_k10: 169 dòng
+  ghi e1_random_k_per_fold: 1000 dòng
+  ghi e1_ablation_noihc: 465 dòng
+  ghi e1_ablation_noihc_table: 35 dòng
+  ghi e1b_learning_curves: 1088 dòng
+  ghi e1b_learning_curves_table: 256 dòng
+  ghi e1b_stability: 969 dòng
+  ghi e7_transfer_table: 165 dòng
+  ghi e2_cost_table: 26 dòng
+  ghi e3_exponents_vs_table5: 11 dòng
+  ghi e4_stability: 556 dòng
+  ghi e4_nogueira_table: 76 dòng
+/usr/local/lib/python3.13/dist-packages/matplotlib/cbook.py:1709: FutureWarning: Calling float on a single element Series is deprecated and will raise a TypeError in the future. Use float(ser.iloc[0]) instead
+  return math.isfinite(val)
+/usr/local/lib/python3.13/dist-packages/matplotlib/cbook.py:1709: FutureWarning: Calling float on a single element Series is deprecated and will raise a TypeError in the future. Use float(ser.iloc[0]) instead
+  return math.isfinite(val)
+  ghi e5a_redundancy: 276 dòng
+  ghi e5a_redundancy_table: 276 dòng
+  ghi e5b_seed_variability: 18 dòng
+  ghi e5c_overlap_k10_gse37745: 13 dòng
+  ghi e5c_overlap_k10_tcga_luad_lusc_primary_tumor: 11 dòng
+  ghi e6_tradeoff: 498 dòng
+  ghi e6_pareto_front: 70 dòng
+/kaggle/working/RNA-Seq-FS-Survey/scripts/make_survey_tables.py:638: UserWarning: You passed a edgecolor/edgecolors ('none') for an unfilled marker ('+').  Matplotlib is ignoring the edgecolor in favor of the facecolor.  This behavior may change in the future.
+  ax.scatter([r.nogueira], [r.auroc_mean], s=size, color=FAMILY_COLOR[fam], marker=METHOD_MARKER.get(r.method, "o"),
+/kaggle/working/RNA-Seq-FS-Survey/scripts/make_survey_tables.py:638: UserWarning: You passed a edgecolor/edgecolors ('none') for an unfilled marker ('+').  Matplotlib is ignoring the edgecolor in favor of the facecolor.  This behavior may change in the future.
+  ax.scatter([r.nogueira], [r.auroc_mean], s=size, color=FAMILY_COLOR[fam], marker=METHOD_MARKER.get(r.method, "o"),
+{
+ "E0": [
+  "gse10245",
+  "gse30219",
+  "gse37745",
+  "gse42127",
+  "tcga_luad_lusc_primary_tumor"
+ ],
+ "E1": {
+  "cohorts": [
+   "gse10245",
+   "gse30219",
+   "gse37745",
+   "gse42127",
+   "tcga_luad_lusc_primary_tumor"
+  ],
+  "methods": [
+   "abess",
+   "b0",
+   "bpso",
+   "elastic_net",
+   "f_test",
+   "ga",
+   "ihc_2",
+   "ihc_4",
+   "ktsp",
+   "l1_lr",
+   "mrmr",
+   "mutual_info",
+   "panel_girard2016",
+   "panel_wilkerson2013",
+   "random_k",
+   "relieff",
+   "rf_importance",
+   "stability_selection",
+   "svm_rfe"
+  ],
+  "n_rows": 17575,
+  "kstar_cohorts": [
+   "gse10245",
+   "gse30219",
+   "gse37745"
+  ]
+ },
+ "ablation_IHC": {
+  "cohorts": [
+   "gse10245",
+   "gse30219",
+   "gse37745",
+   "gse42127",
+   "tcga_luad_lusc_primary_tumor"
+  ],
+  "n_rows": 465
+ },
+ "E1b": [
+  "gse10245",
+  "gse30219",
+  "gse37745",
+  "gse42127"
+ ],
+ "E7": [
+  "gse10245",
+  "gse30219",
+  "gse37745",
+  "gse42127"
+ ],
+ "E2_E3": {
+  "methods": [
+   "abess",
+   "bpso",
+   "elastic_net",
+   "f_test",
+   "ga",
+   "ktsp",
+   "l1_lr",
+   "mrmr",
+   "mutual_info",
+   "relieff",
+   "rf_importance",
+   "stability_selection",
+   "svm_rfe"
+  ]
+ },
+ "E4": {
+  "cohorts": [
+   "gse37745",
+   "tcga_luad_lusc_primary_tumor"
+  ]
+ },
+ "E5a": "có",
+ "E5b": "có",
+ "E5c": [
+  "gse37745",
+  "tcga_luad_lusc_primary_tumor"
+ ],
+ "E6": "có"
+}
+xong: /kaggle/working/kltn_data/results/survey_v2/tables | /kaggle/working/kltn_data/results/survey_v2/figures

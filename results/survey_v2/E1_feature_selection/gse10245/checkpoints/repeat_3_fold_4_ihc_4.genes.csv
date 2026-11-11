@@ -1,0 +1,5 @@
+cohort,repeat,fold,method,k,rank,gene
+gse10245,3,4,ihc_4,4,1,NKX2-1
+gse10245,3,4,ihc_4,4,2,TP63
+gse10245,3,4,ihc_4,4,3,NAPSA
+gse10245,3,4,ihc_4,4,4,KRT5

@@ -1,0 +1,217 @@
+{
+  "experiment": "E7_k2_evidence",
+  "request": "YEU-CAU-DOI-CODE-2026-11-09 Việc 1 (Y62 phần 1)",
+  "source": "tcga_luad_lusc_primary_tumor",
+  "datasets": [
+    "gse10245",
+    "gse30219",
+    "gse37745",
+    "gse42127"
+  ],
+  "k": 2,
+  "strategy": "source_only",
+  "extra_genes": [
+    "DSC3",
+    "HNF1B",
+    "ARHGEF38"
+  ],
+  "scale": {
+    "tcga_luad_lusc_primary_tumor": "log2(TPM+1)",
+    "gse10245": "log2 gcRMA",
+    "gse30219": "log2 RMA",
+    "gse37745": "log2 RMA",
+    "gse42127": "log2 MBCB (Illumina GPL6884)"
+  },
+  "e7_dir": "/kaggle/working/kltn_data/results/survey_v2/E7",
+  "e7_per_run_sha256": {
+    "gse10245": "ec43befc029a876947c45a6229abdd0dbb87db5cef76eba108af144ecfbe834b",
+    "gse30219": "91a52e66d65daf4e72463afc1d441dc744e4b098d14643956f054a800596a69b",
+    "gse37745": "d94a042f117ff802d285e14a0c6fd1b11c45f1b249ab6b047b241ed8ff5ef49d",
+    "gse42127": "5897556e05c4bd8718b917bd10cf97a0ea569af8e9c3bec5f02996cbf7d381c2"
+  },
+  "e7_config_commit": {
+    "gse10245": "9b2d6a57610a2e0d7d75ec97dace030dec51d516",
+    "gse30219": "9b2d6a57610a2e0d7d75ec97dace030dec51d516",
+    "gse37745": "9b2d6a57610a2e0d7d75ec97dace030dec51d516",
+    "gse42127": "9b2d6a57610a2e0d7d75ec97dace030dec51d516"
+  },
+  "source_sha256": {
+    "expression.h5": "41bf54bda90aae286eab2ceec7e705aeaa778cd77eb85587ab7ff8aaa75c2cff",
+    "metadata.csv": "ee65ea8b4075967867ce4f7fa8383122449d6ba2e10dd5e178a33b27b5ea7b26"
+  },
+  "fewshot_splits_sha256": {
+    "/kaggle/working/kltn_data/experiment-data-geo-target/gse10245/fewshot_splits.csv": "b31efa81e03b21454e23d455d58e05100234fd1fd09029e1d655cff22d5b30d5",
+    "/kaggle/working/kltn_data/experiment-data-geo-target/gse30219/fewshot_splits.csv": "88667258ebb2d5150a45971e121bbd8d36b2a722f4986a9d2d48dc3ae48aeb7b",
+    "/kaggle/working/kltn_data/experiment-data-geo-target/gse37745/fewshot_splits.csv": "ede2fd00f8dbff7ace0cac6b48761aafbab1601878e5f1ab2967b3889ae95a74",
+    "/kaggle/working/kltn_data/experiment-data-geo-target/gse42127/fewshot_splits.csv": "5cfec85ebf3b88981ba081114fdd2777ff6d65dc9085dac31859ecaeb34a5f01"
+  },
+  "outputs": [
+    "e7_k2_gene_directions.csv",
+    "e7_k2_source_coefficient.csv",
+    "e7_k2_zero_shot_per_run.csv",
+    "e7_k2_zero_shot_summary.csv",
+    "e7_k2_zero_shot_summary_by_n_t.csv",
+    "e7_k2_checks.json"
+  ],
+  "checks": {
+    "expected": {
+      "zero_shot_mean": {
+        "gse10245": 0.8,
+        "gse30219": 0.607,
+        "gse37745": 0.343,
+        "gse42127": 0.828
+      },
+      "phi_auroc_tcga": 0.155
+    },
+    "source_panel_k2": {
+      "gse10245": [
+        "DSG3",
+        "KRT5"
+      ],
+      "gse30219": [
+        "DSG3",
+        "KRT5"
+      ],
+      "gse37745": [
+        "DSG3",
+        "KRT5"
+      ],
+      "gse42127": [
+        "DSG3",
+        "KRT5"
+      ]
+    },
+    "source_panel_k2_same_for_all_cohorts": true,
+    "e7_commit_hash": {
+      "gse10245": "9b2d6a57610a2e0d7d75ec97dace030dec51d516",
+      "gse30219": "9b2d6a57610a2e0d7d75ec97dace030dec51d516",
+      "gse37745": "9b2d6a57610a2e0d7d75ec97dace030dec51d516",
+      "gse42127": "9b2d6a57610a2e0d7d75ec97dace030dec51d516"
+    },
+    "e7_traceable": {
+      "gse10245": true,
+      "gse30219": true,
+      "gse37745": true,
+      "gse42127": true
+    },
+    "source_sha256_matches_e7": {
+      "gse10245": true,
+      "gse30219": true,
+      "gse37745": true,
+      "gse42127": true
+    },
+    "panel_genes_higher_in_lusc_all_cohorts": true,
+    "phi_auroc_tcga": [
+      0.154529775400655
+    ],
+    "zero_shot_mean_matches_expected_3dp": {
+      "gse10245": true,
+      "gse30219": true,
+      "gse37745": true,
+      "gse42127": true
+    },
+    "n_runs_below_0_5": {
+      "gse10245": 0,
+      "gse30219": 0,
+      "gse37745": 60,
+      "gse42127": 0
+    },
+    "max_abs_diff_vs_transfer_table": 1.1102230246251565e-16,
+    "transfer_table_sha256": "cd5dc0c25a63f9ff749ceacb3a7723e8da3f9ca26a8987327335bb6a82c4ddb6",
+    "coef_phi_negative_all": true,
+    "reproduces_e7_per_run": true
+  },
+  "elapsed_s": 9.050939798355103,
+  "versions": {
+    "numpy": "2.1.3",
+    "pandas": "2.3.3",
+    "scipy": "1.16.3",
+    "scikit-learn": "1.6.1",
+    "tables": "3.10.2",
+    "skrebate": "0.8.4",
+    "joblib": "1.6.0",
+    "threadpoolctl": "3.7.0",
+    "psutil": "5.9.5",
+    "xgboost": "3.4.1",
+    "lightgbm": "4.6.0",
+    "codecarbon": null
+  },
+  "generated_at": "2026-11-09T08:56:01+00:00",
+  "commit_hash": "06ba993a54da6b5db1baa910007572be6d5ce12d",
+  "provenance": {
+    "schema": "kltn-provenance/1",
+    "commit_hash": "06ba993a54da6b5db1baa910007572be6d5ce12d",
+    "tracked": true,
+    "dirty": false,
+    "branch": "HEAD",
+    "remote": "https://github.com/datachain-uit/RNA-Seq-FS-Survey.git",
+    "untracked_reason": null,
+    "script": "scripts/run_e7_k2_evidence.py",
+    "code_root": "/kaggle/working/RNA-Seq-FS-Survey",
+    "data_root": "/kaggle/working/kltn_data",
+    "argv": [],
+    "started_at": "2026-11-09T08:55:51+00:00",
+    "python": "3.13.18",
+    "packages": {
+      "numpy": "2.1.3",
+      "pandas": "2.3.3",
+      "scikit-learn": "1.6.1",
+      "scipy": "1.16.3",
+      "tables": "3.10.2",
+      "openpyxl": "3.1.5",
+      "requests": "2.34.2",
+      "xgboost": "3.4.1",
+      "lightgbm": "4.6.0",
+      "abess": "0.4.11"
+    },
+    "machine": {
+      "platform": "Linux-6.18.55+-x86_64-with-glibc2.39",
+      "processor": "x86_64",
+      "machine": "x86_64",
+      "cpu_count": 4,
+      "hostname": "1d5d692d5f5a"
+    },
+    "data_sha256": {
+      "/kaggle/input/datasets/lfreedom2750/experiment-data-v3/experiment-data-perm/tcga_luad_lusc_primary_tumor/expression.h5": "41bf54bda90aae286eab2ceec7e705aeaa778cd77eb85587ab7ff8aaa75c2cff",
+      "/kaggle/input/datasets/lfreedom2750/experiment-data-v3/experiment-data-perm/tcga_luad_lusc_primary_tumor/metadata.csv": "ee65ea8b4075967867ce4f7fa8383122449d6ba2e10dd5e178a33b27b5ea7b26",
+      "$KLTN_DATA_ROOT/results/survey_v2/E7/gse10245/e7_per_run.csv": "ec43befc029a876947c45a6229abdd0dbb87db5cef76eba108af144ecfbe834b",
+      "$KLTN_DATA_ROOT/results/survey_v2/E7/gse30219/e7_per_run.csv": "91a52e66d65daf4e72463afc1d441dc744e4b098d14643956f054a800596a69b",
+      "$KLTN_DATA_ROOT/results/survey_v2/E7/gse37745/e7_per_run.csv": "d94a042f117ff802d285e14a0c6fd1b11c45f1b249ab6b047b241ed8ff5ef49d",
+      "$KLTN_DATA_ROOT/results/survey_v2/E7/gse42127/e7_per_run.csv": "5897556e05c4bd8718b917bd10cf97a0ea569af8e9c3bec5f02996cbf7d381c2",
+      "/kaggle/input/datasets/lfreedom2750/experiment-data-v3/experiment-data-geo-target/gse10245/fewshot_splits.csv": "b31efa81e03b21454e23d455d58e05100234fd1fd09029e1d655cff22d5b30d5",
+      "/kaggle/input/datasets/lfreedom2750/experiment-data-v3/experiment-data-geo-target/gse30219/fewshot_splits.csv": "88667258ebb2d5150a45971e121bbd8d36b2a722f4986a9d2d48dc3ae48aeb7b",
+      "/kaggle/input/datasets/lfreedom2750/experiment-data-v3/experiment-data-geo-target/gse37745/fewshot_splits.csv": "ede2fd00f8dbff7ace0cac6b48761aafbab1601878e5f1ab2967b3889ae95a74",
+      "/kaggle/input/datasets/lfreedom2750/experiment-data-v3/experiment-data-geo-target/gse42127/fewshot_splits.csv": "5cfec85ebf3b88981ba081114fdd2777ff6d65dc9085dac31859ecaeb34a5f01",
+      "/kaggle/input/datasets/lfreedom2750/experiment-data-v3/experiment-data-geo-target/gse10245/expression.h5": "7cb29e07d6c1489dbd90ad81ebfa9675548bac729289f70cf04766f2119226ea",
+      "/kaggle/input/datasets/lfreedom2750/experiment-data-v3/experiment-data-geo-target/gse10245/metadata.csv": "571f9d0ce2fc78275f41d09aa57a71f7a49ac3c6f1814c5b6f5b0002c12c2e26",
+      "/kaggle/input/datasets/lfreedom2750/experiment-data-v3/experiment-data-geo-target/gse30219/expression.h5": "6c2f7377ad802a7df3d804473884ad64fa08beadfa44ecb5232343801230e2d9",
+      "/kaggle/input/datasets/lfreedom2750/experiment-data-v3/experiment-data-geo-target/gse30219/metadata.csv": "570923f3f20216def97dfc47ca06a2e78f30669f4b7829f59b6426d7a32501bc",
+      "/kaggle/input/datasets/lfreedom2750/experiment-data-v3/experiment-data-geo-target/gse37745/expression.h5": "f5dcaf11d7f36defc37ad67cf47da30b2f85823e3360fef2f8f4d0ab96a34ec7",
+      "/kaggle/input/datasets/lfreedom2750/experiment-data-v3/experiment-data-geo-target/gse37745/metadata.csv": "568b557e43c09daee94f8959f0144db642064502d73cb6493e8f5ff77c031328",
+      "/kaggle/input/datasets/lfreedom2750/experiment-data-v3/experiment-data-geo-target/gse42127/expression.h5": "6595946619c4a39def08b957725a2883358bbc8228ff0626799444ceb91532c8",
+      "/kaggle/input/datasets/lfreedom2750/experiment-data-v3/experiment-data-geo-target/gse42127/metadata.csv": "8b18fd7f004f6fdfacbb4fbc8b93f89def8384152f559cdaad1c388570fe3d55"
+    },
+    "params": {
+      "datasets": [
+        "gse10245",
+        "gse30219",
+        "gse37745",
+        "gse42127"
+      ],
+      "source": "tcga_luad_lusc_primary_tumor",
+      "e7_dir": null,
+      "transfer_table": null,
+      "extra_genes": [
+        "DSC3",
+        "HNF1B",
+        "ARHGEF38"
+      ],
+      "splits_root": null,
+      "out": "E7_k2_evidence"
+    },
+    "traceable": true,
+    "traceable_errors": []
+  },
+  "traceable": true,
+  "traceable_errors": []
+}

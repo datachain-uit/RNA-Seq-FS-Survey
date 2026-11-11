@@ -1,0 +1,68 @@
+{
+  "expected": {
+    "zero_shot_mean": {
+      "gse10245": 0.8,
+      "gse30219": 0.607,
+      "gse37745": 0.343,
+      "gse42127": 0.828
+    },
+    "phi_auroc_tcga": 0.155
+  },
+  "source_panel_k2": {
+    "gse10245": [
+      "DSG3",
+      "KRT5"
+    ],
+    "gse30219": [
+      "DSG3",
+      "KRT5"
+    ],
+    "gse37745": [
+      "DSG3",
+      "KRT5"
+    ],
+    "gse42127": [
+      "DSG3",
+      "KRT5"
+    ]
+  },
+  "source_panel_k2_same_for_all_cohorts": true,
+  "e7_commit_hash": {
+    "gse10245": "9b2d6a57610a2e0d7d75ec97dace030dec51d516",
+    "gse30219": "9b2d6a57610a2e0d7d75ec97dace030dec51d516",
+    "gse37745": "9b2d6a57610a2e0d7d75ec97dace030dec51d516",
+    "gse42127": "9b2d6a57610a2e0d7d75ec97dace030dec51d516"
+  },
+  "e7_traceable": {
+    "gse10245": true,
+    "gse30219": true,
+    "gse37745": true,
+    "gse42127": true
+  },
+  "source_sha256_matches_e7": {
+    "gse10245": true,
+    "gse30219": true,
+    "gse37745": true,
+    "gse42127": true
+  },
+  "panel_genes_higher_in_lusc_all_cohorts": true,
+  "phi_auroc_tcga": [
+    0.154529775400655
+  ],
+  "zero_shot_mean_matches_expected_3dp": {
+    "gse10245": true,
+    "gse30219": true,
+    "gse37745": true,
+    "gse42127": true
+  },
+  "n_runs_below_0_5": {
+    "gse10245": 0,
+    "gse30219": 0,
+    "gse37745": 60,
+    "gse42127": 0
+  },
+  "max_abs_diff_vs_transfer_table": 1.1102230246251565e-16,
+  "transfer_table_sha256": "cd5dc0c25a63f9ff749ceacb3a7723e8da3f9ca26a8987327335bb6a82c4ddb6",
+  "coef_phi_negative_all": true,
+  "reproduces_e7_per_run": true
+}

@@ -1,0 +1,59 @@
+cohort,sample_id,title,source_value,label_from_series_matrix,status,qc_decision,in_metadata,label_metadata,match
+gse10245,GSM258551,NSCLC_AC_10,disease state: adenocarcinoma,0,giu,,True,0,True
+gse10245,GSM258552,NSCLC_AC_16,disease state: adenocarcinoma,0,giu,,True,0,True
+gse10245,GSM258553,NSCLC_SCC_22,disease state: squamous cell carcinoma,1,giu,,True,1,True
+gse10245,GSM258554,NSCLC_AC_24,disease state: adenocarcinoma,0,giu,,True,0,True
+gse10245,GSM258555,NSCLC_SCC_25,disease state: squamous cell carcinoma,1,giu,,True,1,True
+gse10245,GSM258556,NSCLC_SCC_30,disease state: squamous cell carcinoma,1,giu,,True,1,True
+gse10245,GSM258557,NSCLC_SCC_37,disease state: squamous cell carcinoma,1,giu,,True,1,True
+gse10245,GSM258558,NSCLC_AC_40,disease state: adenocarcinoma,0,giu,,True,0,True
+gse10245,GSM258559,NSCLC_AC_49,disease state: adenocarcinoma,0,giu,,True,0,True
+gse10245,GSM258560,NSCLC_AC_51,disease state: adenocarcinoma,0,giu,,True,0,True
+gse10245,GSM258561,NSCLC_AC_53,disease state: adenocarcinoma,0,giu,,True,0,True
+gse10245,GSM258562,NSCLC_SCC_55,disease state: squamous cell carcinoma,1,giu,,True,1,True
+gse10245,GSM258563,NSCLC_SCC_65,disease state: squamous cell carcinoma,1,giu,,True,1,True
+gse10245,GSM258564,NSCLC_AC_70,disease state: adenocarcinoma,0,giu,,True,0,True
+gse10245,GSM258565,NSCLC_SCC_75,disease state: squamous cell carcinoma,1,giu,,True,1,True
+gse10245,GSM258566,NSCLC_SCC_77,disease state: squamous cell carcinoma,1,giu,,True,1,True
+gse10245,GSM258567,NSCLC_AC_84,disease state: adenocarcinoma,0,giu,,True,0,True
+gse10245,GSM258568,NSCLC_AC_88,disease state: adenocarcinoma,0,giu,,True,0,True
+gse10245,GSM258569,NSCLC_AC_89,disease state: adenocarcinoma,0,giu,,True,0,True
+gse10245,GSM258570,NSCLC_SCC_95,disease state: squamous cell carcinoma,1,giu,,True,1,True
+gse10245,GSM258571,NSCLC_AC_97,disease state: adenocarcinoma,0,giu,,True,0,True
+gse10245,GSM258572,NSCLC_AC_113,disease state: adenocarcinoma,0,cach_ly_QC,QĐ22 2026-10-29,False,,True
+gse10245,GSM258573,NSCLC_AC_136,disease state: adenocarcinoma,0,giu,,True,0,True
+gse10245,GSM258574,NSCLC_AC_137,disease state: adenocarcinoma,0,cach_ly_QC,QĐ22 2026-10-29,False,,True
+gse10245,GSM258575,NSCLC_AC_147,disease state: adenocarcinoma,0,giu,,True,0,True
+gse10245,GSM258576,NSCLC_AC_148,disease state: adenocarcinoma,0,giu,,True,0,True
+gse10245,GSM258577,NSCLC_AC_161,disease state: adenocarcinoma,0,giu,,True,0,True
+gse10245,GSM258578,NSCLC_SCC_165,disease state: squamous cell carcinoma,1,giu,,True,1,True
+gse10245,GSM258579,NSCLC_AC_169,disease state: adenocarcinoma,0,giu,,True,0,True
+gse10245,GSM258580,NSCLC_SCC_188,disease state: squamous cell carcinoma,1,giu,,True,1,True
+gse10245,GSM258581,NSCLC_AC_202,disease state: adenocarcinoma,0,giu,,True,0,True
+gse10245,GSM258582,NSCLC_AC_210,disease state: adenocarcinoma,0,giu,,True,0,True
+gse10245,GSM258583,NSCLC_SCC_215,disease state: squamous cell carcinoma,1,giu,,True,1,True
+gse10245,GSM258584,NSCLC_AC_233,disease state: adenocarcinoma,0,giu,,True,0,True
+gse10245,GSM258585,NSCLC_SCC_248,disease state: squamous cell carcinoma,1,giu,,True,1,True
+gse10245,GSM258586,NSCLC_AC_271,disease state: adenocarcinoma,0,giu,,True,0,True
+gse10245,GSM258587,NSCLC_AC_273,disease state: adenocarcinoma,0,giu,,True,0,True
+gse10245,GSM258588,NSCLC_AC_276,disease state: adenocarcinoma,0,giu,,True,0,True
+gse10245,GSM258589,NSCLC_AC_282,disease state: adenocarcinoma,0,giu,,True,0,True
+gse10245,GSM258590,NSCLC_SCC_301,disease state: squamous cell carcinoma,1,giu,,True,1,True
+gse10245,GSM258591,NSCLC_AC_331,disease state: adenocarcinoma,0,giu,,True,0,True
+gse10245,GSM258592,NSCLC_AC_334,disease state: adenocarcinoma,0,giu,,True,0,True
+gse10245,GSM258593,NSCLC_AC_342,disease state: adenocarcinoma,0,cach_ly_QC,QĐ22 2026-10-29,False,,True
+gse10245,GSM258594,NSCLC_SCC_347,disease state: squamous cell carcinoma,1,giu,,True,1,True
+gse10245,GSM258595,NSCLC_AC_348,disease state: adenocarcinoma,0,giu,,True,0,True
+gse10245,GSM258596,NSCLC_SCC_364,disease state: squamous cell carcinoma,1,giu,,True,1,True
+gse10245,GSM258597,NSCLC_AC_368,disease state: adenocarcinoma,0,giu,,True,0,True
+gse10245,GSM258598,NSCLC_AC_378,disease state: adenocarcinoma,0,giu,,True,0,True
+gse10245,GSM258599,NSCLC_SCC_390,disease state: squamous cell carcinoma,1,giu,,True,1,True
+gse10245,GSM258600,NSCLC_AC_397,disease state: adenocarcinoma,0,giu,,True,0,True
+gse10245,GSM258601,NSCLC_AC_400,disease state: adenocarcinoma,0,giu,,True,0,True
+gse10245,GSM258602,NSCLC_AC_402,disease state: adenocarcinoma,0,giu,,True,0,True
+gse10245,GSM258603,NSCLC_SCC_412,disease state: squamous cell carcinoma,1,giu,,True,1,True
+gse10245,GSM258604,NSCLC_AC_426,disease state: adenocarcinoma,0,giu,,True,0,True
+gse10245,GSM258605,NSCLC_AC_434,disease state: adenocarcinoma,0,giu,,True,0,True
+gse10245,GSM258606,NSCLC_AC_445,disease state: adenocarcinoma,0,giu,,True,0,True
+gse10245,GSM258607,NSCLC_AC_489,disease state: adenocarcinoma,0,giu,,True,0,True
+gse10245,GSM258608,NSCLC_AC_492,disease state: adenocarcinoma,0,giu,,True,0,True

@@ -1,0 +1,18 @@
+{
+  "commit_hash": "5facab36019d844c3b1a586f13dcf4d8952123a0",
+  "dirty": false,
+  "dirty_files": [],
+  "script_tracked": true,
+  "pushed": true,
+  "run_at": "2026-10-29T11:46:25+07:00",
+  "data_root": "D:\\KLTN\\20_Du-lieu\\experiment-data-v3",
+  "rz_threshold": 0.9,
+  "raw_threshold": 0.99,
+  "cohorts": [
+    "gse10245",
+    "gse30219",
+    "gse37745",
+    "gse42127"
+  ],
+  "r_z": "Pearson between samples after z-scoring each gene within its cohort; between cohorts on genes shared by all cohorts"
+}

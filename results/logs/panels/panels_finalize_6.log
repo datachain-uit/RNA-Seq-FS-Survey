@@ -1,0 +1,3 @@
+[gse30219] --redo-methods ['panel_girard2016', 'panel_wilkerson2013']: đã bỏ 0 dòng cũ, sẽ chạy lại
+[gse30219] E1b: 100 lần chạy (split, subset, n_t) cần làm
+[gse30219] xong: 6400 dòng; ổn định 285 dòng

@@ -1,0 +1,12 @@
+{
+  "job": "e4e5_gse37745",
+  "commit_hash": "68e7c7dacd08d9e1719ecf098318977abe641bf6",
+  "exit_code": 0,
+  "restored": [
+    "/kaggle/input/datasets/lfreedom2750/kq-phasea/e4e5_gse37745_results/results",
+    "/kaggle/input/datasets/lfreedom2750/kq-phasea/e1_phaseA_geo_results/results",
+    "/kaggle/input/datasets/lfreedom2750/kq-phasea/wrap_gse37745_results/results"
+  ],
+  "hours": 0.07,
+  "finished_at": "2026-10-31 05:36:49 UTC"
+}

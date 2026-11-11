@@ -1,0 +1,138 @@
+{
+  "experiment": "E1_feature_selection",
+  "dataset": "gse30219",
+  "role": "target_main",
+  "protocol": "precomputed patient-grouped repeated 5x5 outer train/test; selection and label-free variance prefilter use outer train only",
+  "split_file": "/kaggle/working/kltn_data/experiment-data-geo-target/gse30219/repeated_splits.csv",
+  "split_sha256": "de92722bd27a853fef77abe4fda22bcd64886ef2724c298ac386b0bfd9b979bc",
+  "methods": [
+    "ga",
+    "bpso"
+  ],
+  "methods_skipped": [],
+  "fixed_panels": {},
+  "k_grid": [
+    5,
+    10,
+    50
+  ],
+  "prefilter_p0": 5000,
+  "gene_space": {
+    "patient_id_assumed_from_sample_id": false,
+    "gene_space": "intersection with tcga_luad_lusc_primary_tumor",
+    "n_genes_before_gene_space": 20848,
+    "data_dir": "/kaggle/working/kltn_data/experiment-data-geo-target/gse30219",
+    "n_per_class": [
+      81,
+      60
+    ],
+    "n_per_class_expected": [
+      81,
+      60
+    ],
+    "n_matches_expected": true,
+    "n_genes_dropped": 4369
+  },
+  "n_samples": 141,
+  "n_genes": 16479,
+  "metrics": [
+    "n_selected",
+    "exact_k",
+    "n_filled",
+    "selection_time_s (descriptive, not E2)",
+    "cpu_time_s",
+    "rss_delta_mb (descriptive)",
+    "emissions_kg_co2 (optional estimate)",
+    "n_eval",
+    "best_fitness",
+    "pairwise_jaccard (descriptive; E4 is the CI version)"
+  ],
+  "versions": {
+    "numpy": "2.1.3",
+    "pandas": "2.3.3",
+    "scipy": "1.16.3",
+    "scikit-learn": "1.6.1",
+    "tables": "3.10.2",
+    "skrebate": "0.8.4",
+    "joblib": "1.6.0",
+    "threadpoolctl": "3.6.0",
+    "psutil": "5.9.5",
+    "xgboost": "3.4.1",
+    "lightgbm": "4.6.0",
+    "codecarbon": null
+  },
+  "generated_at": "2026-10-29T10:04:17+00:00",
+  "commit_hash": "9b2d6a57610a2e0d7d75ec97dace030dec51d516",
+  "provenance": {
+    "schema": "kltn-provenance/1",
+    "commit_hash": "9b2d6a57610a2e0d7d75ec97dace030dec51d516",
+    "tracked": true,
+    "dirty": false,
+    "branch": "survey-v2-code",
+    "remote": "https://github.com/datachain-uit/RNA-Seq-FS-Survey.git",
+    "untracked_reason": null,
+    "script": "scripts/run_e1_wrappers_all_cohorts.py",
+    "code_root": "/kaggle/working/RNA-Seq-FS-Survey",
+    "data_root": "/kaggle/working/kltn_data",
+    "argv": [
+      "--datasets",
+      "gse30219"
+    ],
+    "started_at": "2026-10-29T10:04:16+00:00",
+    "python": "3.13.15",
+    "packages": {
+      "numpy": "2.1.3",
+      "pandas": "2.3.3",
+      "scikit-learn": "1.6.1",
+      "scipy": "1.16.3",
+      "tables": "3.10.2",
+      "openpyxl": "3.1.5",
+      "requests": "2.34.2",
+      "xgboost": "3.4.1",
+      "lightgbm": "4.6.0",
+      "abess": "0.4.11"
+    },
+    "machine": {
+      "platform": "Linux-6.18.55+-x86_64-with-glibc2.39",
+      "processor": "x86_64",
+      "machine": "x86_64",
+      "cpu_count": 4,
+      "hostname": "baf889619778"
+    },
+    "data_sha256": {
+      "/kaggle/input/datasets/lfreedom2750/experiment-data-v3/experiment-data-geo-target/gse30219/expression.h5": "6c2f7377ad802a7df3d804473884ad64fa08beadfa44ecb5232343801230e2d9",
+      "/kaggle/input/datasets/lfreedom2750/experiment-data-v3/experiment-data-geo-target/gse30219/metadata.csv": "570923f3f20216def97dfc47ca06a2e78f30669f4b7829f59b6426d7a32501bc",
+      "/kaggle/input/datasets/lfreedom2750/experiment-data-v3/experiment-data-geo-target/gse30219/repeated_splits.csv": "de92722bd27a853fef77abe4fda22bcd64886ef2724c298ac386b0bfd9b979bc"
+    },
+    "params": {
+      "datasets": [
+        "gse30219"
+      ],
+      "methods": [
+        "ga",
+        "bpso"
+      ],
+      "k": [
+        5,
+        10,
+        50
+      ],
+      "repeats": [
+        0,
+        1,
+        2
+      ],
+      "prefilter": 5000,
+      "splits_root": null,
+      "out": "E1_wrapper_feature_selection",
+      "pop": 30,
+      "generations": 50,
+      "exclude_genes": null,
+      "track_emissions": false
+    },
+    "traceable": true,
+    "traceable_errors": []
+  },
+  "traceable": true,
+  "traceable_errors": []
+}

@@ -1,0 +1,10 @@
+{
+  "job": "e3_p2",
+  "commit_hash": "6ea47e85e25e48bcf543e4e736ebe7ba6588fdc5",
+  "exit_code": 0,
+  "restored": [
+    "/kaggle/input/datasets/lfreedom2750/kq-phasea/e2_ref_results/results"
+  ],
+  "hours": 4.59,
+  "finished_at": "2026-11-02 00:21:18 UTC"
+}

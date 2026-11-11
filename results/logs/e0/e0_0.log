@@ -1,0 +1,5 @@
+[tcga_luad_lusc_primary_tumor] AUROC 0.978 | p_perm 0.0050 (null 0.499) | p_random 0.0099 (random 0.934, gain +0.044) | signal True useful True
+[gse10245] AUROC 0.944 | p_perm 0.0050 (null 0.503) | p_random 0.0297 (random 0.874, gain +0.070) | signal True useful True
+[gse30219] AUROC 0.989 | p_perm 0.0050 (null 0.498) | p_random 0.0099 (random 0.950, gain +0.039) | signal True useful True
+[gse37745] AUROC 0.989 | p_perm 0.0050 (null 0.509) | p_random 0.0099 (random 0.929, gain +0.060) | signal True useful True
+[gse42127] AUROC 0.943 | p_perm 0.0050 (null 0.501) | p_random 0.0099 (random 0.810, gain +0.133) | signal True useful True

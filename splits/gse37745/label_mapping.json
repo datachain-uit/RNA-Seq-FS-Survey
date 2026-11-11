@@ -1,0 +1,10 @@
+{
+  "geo_accession": "GSE37745",
+  "source_field": "Sample_characteristics_ch1_3",
+  "mapping": {
+    "histology: adeno": {"class": "LUAD", "label": 0, "n_samples": 106},
+    "histology: squamous": {"class": "LUSC", "label": 1, "n_samples": 66}
+  },
+  "excluded_histology": "Samples not explicitly marked adeno or squamous are not included.",
+  "verification": "Source values were checked against the GEO series-matrix sample IDs on 2026-10-27."
+}

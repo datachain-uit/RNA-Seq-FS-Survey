@@ -1,0 +1,16 @@
+{
+  "methods": [
+    "l1_lr",
+    "svm_rfe",
+    "rf_importance"
+  ],
+  "max_drift_allowed": 0.1,
+  "reference": "/kaggle/working/kltn_data/results/survey_v2/E2_E3_ref/calibration.csv",
+  "drift": {
+    "l1_lr": 0.03757844634125317,
+    "svm_rfe": 0.03547539982957746,
+    "rf_importance": 0.05261771996966536
+  },
+  "max_drift": 0.05261771996966536,
+  "calibration_ok": true
+}

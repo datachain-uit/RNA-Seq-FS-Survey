@@ -1,0 +1,48 @@
+<mxfile host="app.diagrams.net" modified="2026-11-04T00:00:00.000Z" agent="make_drawio.py" version="24.0.0">
+<diagram name="Figure 4 cost landscape" id="d1">
+<mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="1">
+<root>
+<mxCell id="0"/>
+<mxCell id="1" parent="0"/>
+<mxCell id="c2" value="cost of scoring one candidate ↑" style="text;html=1;align=center;verticalAlign=middle;fontSize=10;fontColor=#555555;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="20" y="10" width="260" height="20" as="geometry"/></mxCell>
+<mxCell id="c3" value="candidate space explored to fill a budget of k genes →" style="text;html=1;align=center;verticalAlign=middle;fontSize=10;fontColor=#555555;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="400" y="640" width="500" height="20" as="geometry"/></mxCell>
+<mxCell id="c4" value="one pass over p genes (ranking prefix)" style="text;html=1;align=center;verticalAlign=middle;fontSize=10;fontColor=#555555;" vertex="1" parent="1"><mxGeometry x="80" y="600" width="220" height="30" as="geometry"/></mxCell>
+<mxCell id="c5" value="greedy steps or pairs over p genes" style="text;html=1;align=center;verticalAlign=middle;fontSize=10;fontColor=#555555;" vertex="1" parent="1"><mxGeometry x="380" y="600" width="220" height="30" as="geometry"/></mxCell>
+<mxCell id="c6" value="regularisation path or ℓ0 support of size k" style="text;html=1;align=center;verticalAlign=middle;fontSize=10;fontColor=#555555;" vertex="1" parent="1"><mxGeometry x="680" y="600" width="220" height="30" as="geometry"/></mxCell>
+<mxCell id="c7" value="population search over C(p,k) panels (N_eval)" style="text;html=1;align=center;verticalAlign=middle;fontSize=10;fontColor=#555555;" vertex="1" parent="1"><mxGeometry x="980" y="600" width="220" height="30" as="geometry"/></mxCell>
+<mxCell id="c8" value="univariate statistic O(n) per gene" style="text;html=1;align=center;verticalAlign=middle;fontSize=10;fontColor=#555555;" vertex="1" parent="1"><mxGeometry x="10" y="520" width="160" height="30" as="geometry"/></mxCell>
+<mxCell id="c9" value="one model fit O(npt)" style="text;html=1;align=center;verticalAlign=middle;fontSize=10;fontColor=#555555;" vertex="1" parent="1"><mxGeometry x="10" y="360" width="160" height="30" as="geometry"/></mxCell>
+<mxCell id="c10" value="repeated model fits (B or L fits)" style="text;html=1;align=center;verticalAlign=middle;fontSize=10;fontColor=#555555;" vertex="1" parent="1"><mxGeometry x="10" y="180" width="160" height="30" as="geometry"/></mxCell>
+<mxCell id="c11" value="F-test
+0.83 / 1.17" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#666666;fontSize=10;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1"><mxGeometry x="160" y="530" width="190" height="44" as="geometry"/></mxCell>
+<mxCell id="c12" value="MI (kNN)
+0.35 / 1.03" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#666666;fontSize=10;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1"><mxGeometry x="290" y="480" width="190" height="44" as="geometry"/></mxCell>
+<mxCell id="c13" value="ReliefF (m = 10)
+1.02 / 1.05" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#666666;fontSize=10;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1"><mxGeometry x="420" y="420" width="190" height="44" as="geometry"/></mxCell>
+<mxCell id="c14" value="mRMR (greedy, k steps)
+0.94 / 1.04" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#666666;fontSize=10;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1"><mxGeometry x="560" y="530" width="190" height="44" as="geometry"/></mxCell>
+<mxCell id="c15" value="k-TSP (pair scores)
+0.61 / 2.06" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#666666;fontSize=10;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1"><mxGeometry x="470" y="570" width="190" height="44" as="geometry"/></mxCell>
+<mxCell id="c16" value="L1-LR (path, L ≤ 26)
+1.15 / 1.14" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#666666;fontSize=10;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1"><mxGeometry x="770" y="360" width="190" height="44" as="geometry"/></mxCell>
+<mxCell id="c17" value="Elastic Net (saga path)
+1.04 / 1.28" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#666666;fontSize=10;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1"><mxGeometry x="790" y="230" width="190" height="44" as="geometry"/></mxCell>
+<mxCell id="c18" value="RF importance (B = 500, √p)
+1.18 / 0.46" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#666666;fontSize=10;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1"><mxGeometry x="270" y="260" width="190" height="44" as="geometry"/></mxCell>
+<mxCell id="c19" value="SVM-RFE (linear, 10%/round)
+1.10 / 1.09" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#666666;fontSize=10;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1"><mxGeometry x="540" y="310" width="190" height="44" as="geometry"/></mxCell>
+<mxCell id="c20" value="abess (L0 splicing)
+1.04 / 0.92" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#666666;fontSize=10;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1"><mxGeometry x="960" y="380" width="190" height="44" as="geometry"/></mxCell>
+<mxCell id="c21" value="Stability selection (B = 100)
+1.19 / 1.14" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#666666;fontSize=10;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1"><mxGeometry x="950" y="160" width="190" height="44" as="geometry"/></mxCell>
+<mxCell id="c22" value="GA, BPSO (P = 30, T = 50)
+time ∝ N_eval · C_eval(k)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#666666;fontSize=10;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1"><mxGeometry x="1180" y="110" width="190" height="44" as="geometry"/></mxCell>
+<mxCell id="c23" value="Chi², Fisher, Pearson" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#666666;fontSize=10;align=center;verticalAlign=middle;spacing=4;dashed=1;" vertex="1" parent="1"><mxGeometry x="220" y="410" width="150" height="34" as="geometry"/></mxCell>
+<mxCell id="c24" value="CFS, FCBF" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#666666;fontSize=10;align=center;verticalAlign=middle;spacing=4;dashed=1;" vertex="1" parent="1"><mxGeometry x="620" y="400" width="150" height="34" as="geometry"/></mxCell>
+<mxCell id="c25" value="Decision tree" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#666666;fontSize=10;align=center;verticalAlign=middle;spacing=4;dashed=1;" vertex="1" parent="1"><mxGeometry x="160" y="360" width="150" height="34" as="geometry"/></mxCell>
+<mxCell id="c26" value="PSO, SA, ACO, DE" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#666666;fontSize=10;align=center;verticalAlign=middle;spacing=4;dashed=1;" vertex="1" parent="1"><mxGeometry x="1200" y="260" width="150" height="34" as="geometry"/></mxCell>
+<mxCell id="c27" value="numbers: measured α_n / α_p (E3, e3_exponents_vs_table5.csv)" style="text;html=1;align=center;verticalAlign=middle;fontSize=10;fontColor=#555555;" vertex="1" parent="1"><mxGeometry x="820" y="40" width="420" height="20" as="geometry"/></mxCell>
+</root>
+</mxGraphModel>
+</diagram>
+</mxfile>

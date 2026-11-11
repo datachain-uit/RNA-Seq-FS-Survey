@@ -1,0 +1,4 @@
+cohort,repeat,seed,fold,method,k,n_train,p0,n_selected,exact_k,n_filled,selector_param,n_eval,best_fitness,selection_time_s,cpu_time_s,rss_delta_mb,emissions_kg_co2,missing_genes
+gse37745,0,42,0,bpso,5,135,5000,5,True,0,,1142,0.9992997198879552,78.15833360400006,77.76721921600002,0.578125,,
+gse37745,0,42,0,bpso,10,135,5000,10,True,0,,1440,1.0,78.15833360400006,77.76721921600002,0.578125,,
+gse37745,0,42,0,bpso,50,135,5000,50,True,0,,1530,1.0,78.15833360400006,77.76721921600002,0.578125,,

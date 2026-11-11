@@ -1,0 +1,13 @@
+{
+  "job": "redo_svm_rfe_A",
+  "commit_hash": "6ea47e85e25e48bcf543e4e736ebe7ba6588fdc5",
+  "exit_code": 0,
+  "restored": [
+    "/kaggle/input/datasets/lfreedom2750/kq-phasea/e1_phaseA_geo_results/results",
+    "/kaggle/input/datasets/lfreedom2750/kq-phasea/e1_phaseB_tcga_results/results",
+    "/kaggle/input/datasets/lfreedom2750/kq-phasea/ablation_phaseA_geo_results/results",
+    "/kaggle/input/datasets/lfreedom2750/kq-phasea/ablation_phaseA_tcga_results/results"
+  ],
+  "hours": 0.08,
+  "finished_at": "2026-11-01 16:05:06 UTC"
+}

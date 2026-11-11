@@ -1,0 +1,3 @@
+[gse10245] --redo-methods ['svm_rfe']: đã bỏ 1740 dòng cũ, sẽ chạy lại
+[gse10245] E1b: 60 lần chạy (split, subset, n_t) cần làm
+[gse10245] xong: 3720 dòng; ổn định 165 dòng

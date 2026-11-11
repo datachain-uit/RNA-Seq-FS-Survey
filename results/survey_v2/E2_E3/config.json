@@ -1,0 +1,322 @@
+{
+  "experiment": "E2_E3",
+  "e2_from": "E2_E3_ref",
+  "e3_merged_from": [
+    "E2_E3_p1",
+    "E2_E3_p2",
+    "E2_E3_p3"
+  ],
+  "merged_by": "scripts/kaggle_jobs.py merge-e2e3",
+  "sources_commit_hash": "6ea47e85e25e48bcf543e4e736ebe7ba6588fdc5",
+  "calibration_ok": true,
+  "calibration": {
+    "E2_E3_ref": {
+      "methods": [
+        "l1_lr",
+        "svm_rfe",
+        "rf_importance"
+      ],
+      "max_drift_allowed": 0.1,
+      "reference": null,
+      "drift": {},
+      "max_drift": null,
+      "calibration_ok": null
+    },
+    "E2_E3_p1": {
+      "methods": [
+        "l1_lr",
+        "svm_rfe",
+        "rf_importance"
+      ],
+      "max_drift_allowed": 0.1,
+      "reference": "/kaggle/working/kltn_data/results/survey_v2/E2_E3_ref/calibration.csv",
+      "drift": {
+        "l1_lr": 0.03757844634125317,
+        "svm_rfe": 0.03547539982957746,
+        "rf_importance": 0.05261771996966536
+      },
+      "max_drift": 0.05261771996966536,
+      "calibration_ok": true
+    },
+    "E2_E3_p2": {
+      "methods": [
+        "l1_lr",
+        "svm_rfe",
+        "rf_importance"
+      ],
+      "max_drift_allowed": 0.1,
+      "reference": "/kaggle/working/kltn_data/results/survey_v2/E2_E3_ref/calibration.csv",
+      "drift": {
+        "l1_lr": 0.010578902497929149,
+        "svm_rfe": 0.007552419562822089,
+        "rf_importance": 0.014000283526354781
+      },
+      "max_drift": 0.014000283526354781,
+      "calibration_ok": true
+    },
+    "E2_E3_p3": {
+      "methods": [
+        "l1_lr",
+        "svm_rfe",
+        "rf_importance"
+      ],
+      "max_drift_allowed": 0.1,
+      "reference": "/kaggle/working/kltn_data/results/survey_v2/E2_E3_ref/calibration.csv",
+      "drift": {
+        "l1_lr": 0.04606331324530242,
+        "svm_rfe": 0.024800882228897675,
+        "rf_importance": 0.04291730518552571
+      },
+      "max_drift": 0.04606331324530242,
+      "calibration_ok": true
+    }
+  },
+  "machine": {
+    "E2_E3_ref": {
+      "platform": "Linux-6.18.55+-x86_64-with-glibc2.39",
+      "machine": "x86_64",
+      "processor": "x86_64",
+      "cpu_count": 4,
+      "python": "3.13.15",
+      "blas_threads_env": {
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1",
+        "MKL_NUM_THREADS": "1"
+      },
+      "ram_gb": 31.35,
+      "cpu_freq_mhz": 0.0,
+      "threadpools": [
+        {
+          "internal_api": "openblas",
+          "num_threads": 1,
+          "version": "0.3.27"
+        },
+        {
+          "internal_api": "openblas",
+          "num_threads": 1,
+          "version": "0.3.29.dev"
+        },
+        {
+          "internal_api": "openmp",
+          "num_threads": 1,
+          "version": null
+        }
+      ],
+      "cpu_model": "Intel(R) Xeon(R) CPU @ 2.20GHz"
+    },
+    "E2_E3_p1": {
+      "platform": "Linux-6.18.55+-x86_64-with-glibc2.39",
+      "machine": "x86_64",
+      "processor": "x86_64",
+      "cpu_count": 4,
+      "python": "3.13.15",
+      "blas_threads_env": {
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1",
+        "MKL_NUM_THREADS": "1"
+      },
+      "ram_gb": 31.35,
+      "cpu_freq_mhz": 0.0,
+      "threadpools": [
+        {
+          "internal_api": "openblas",
+          "num_threads": 1,
+          "version": "0.3.27"
+        },
+        {
+          "internal_api": "openblas",
+          "num_threads": 1,
+          "version": "0.3.29.dev"
+        },
+        {
+          "internal_api": "openmp",
+          "num_threads": 1,
+          "version": null
+        }
+      ],
+      "cpu_model": "Intel(R) Xeon(R) CPU @ 2.20GHz"
+    },
+    "E2_E3_p2": {
+      "platform": "Linux-6.18.55+-x86_64-with-glibc2.39",
+      "machine": "x86_64",
+      "processor": "x86_64",
+      "cpu_count": 4,
+      "python": "3.13.15",
+      "blas_threads_env": {
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1",
+        "MKL_NUM_THREADS": "1"
+      },
+      "ram_gb": 31.35,
+      "cpu_freq_mhz": 0.0,
+      "threadpools": [
+        {
+          "internal_api": "openblas",
+          "num_threads": 1,
+          "version": "0.3.27"
+        },
+        {
+          "internal_api": "openblas",
+          "num_threads": 1,
+          "version": "0.3.29.dev"
+        },
+        {
+          "internal_api": "openmp",
+          "num_threads": 1,
+          "version": null
+        }
+      ],
+      "cpu_model": "Intel(R) Xeon(R) CPU @ 2.20GHz"
+    },
+    "E2_E3_p3": {
+      "platform": "Linux-6.18.55+-x86_64-with-glibc2.39",
+      "machine": "x86_64",
+      "processor": "x86_64",
+      "cpu_count": 4,
+      "python": "3.13.15",
+      "blas_threads_env": {
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1",
+        "MKL_NUM_THREADS": "1"
+      },
+      "ram_gb": 31.35,
+      "cpu_freq_mhz": 0.0,
+      "threadpools": [
+        {
+          "internal_api": "openblas",
+          "num_threads": 1,
+          "version": "0.3.27"
+        },
+        {
+          "internal_api": "openblas",
+          "num_threads": 1,
+          "version": "0.3.29.dev"
+        },
+        {
+          "internal_api": "openmp",
+          "num_threads": 1,
+          "version": null
+        }
+      ],
+      "cpu_model": "Intel(R) Xeon(R) CPU @ 2.20GHz"
+    }
+  },
+  "methods": {
+    "E2_E3_ref": [
+      "f_test",
+      "mutual_info",
+      "mrmr",
+      "relieff",
+      "l1_lr",
+      "elastic_net",
+      "rf_importance",
+      "svm_rfe",
+      "abess",
+      "stability_selection",
+      "ktsp"
+    ],
+    "E2_E3_p1": [
+      "f_test",
+      "mutual_info",
+      "mrmr",
+      "l1_lr",
+      "ktsp",
+      "abess"
+    ],
+    "E2_E3_p2": [
+      "elastic_net",
+      "rf_importance",
+      "stability_selection"
+    ],
+    "E2_E3_p3": [
+      "relieff",
+      "svm_rfe"
+    ]
+  },
+  "dataset": "tcga_luad_lusc_primary_tumor",
+  "split": {
+    "repeat": 0,
+    "seed": 42,
+    "fold": 0,
+    "n_train": 812
+  },
+  "k": [
+    10,
+    50
+  ],
+  "k_e3": 10,
+  "p_fixed": 5000,
+  "n_grid": [
+    100,
+    200,
+    400,
+    null
+  ],
+  "p_grid": [
+    1000,
+    2000,
+    5000,
+    10000,
+    null
+  ],
+  "e3_max_p": {
+    "elastic_net": 10000
+  },
+  "repeats": 3,
+  "isolate_memory": true,
+  "peak_source": "VmHWM",
+  "timing_tracemalloc": false,
+  "note": "E2 = phiên tham chiếu (một phiên, mọi phương pháp); E3 = các phần đo ở phiên riêng, hiệu chuẩn với phiên tham chiếu (QĐ18); cột session ghi phần.",
+  "generated_at": "2026-11-02T02:51:54+00:00",
+  "commit_hash": "6ea47e85e25e48bcf543e4e736ebe7ba6588fdc5",
+  "provenance": {
+    "schema": "kltn-provenance/1",
+    "commit_hash": "6ea47e85e25e48bcf543e4e736ebe7ba6588fdc5",
+    "tracked": true,
+    "dirty": false,
+    "branch": "HEAD",
+    "remote": "https://github.com/datachain-uit/RNA-Seq-FS-Survey.git",
+    "untracked_reason": null,
+    "script": "scripts/kaggle_jobs.py",
+    "code_root": "/kaggle/working/RNA-Seq-FS-Survey",
+    "data_root": "/kaggle/working/kltn_data",
+    "argv": [
+      "merge-e2e3"
+    ],
+    "started_at": "2026-11-02T02:51:54+00:00",
+    "python": "3.13.15",
+    "packages": {
+      "numpy": "2.1.3",
+      "pandas": "2.3.3",
+      "scikit-learn": "1.6.1",
+      "scipy": "1.16.3",
+      "tables": "3.10.2",
+      "openpyxl": "3.1.5",
+      "requests": "2.34.2",
+      "xgboost": "3.4.1",
+      "lightgbm": "4.6.0",
+      "abess": "0.4.11"
+    },
+    "machine": {
+      "platform": "Linux-6.18.55+-x86_64-with-glibc2.39",
+      "processor": "x86_64",
+      "machine": "x86_64",
+      "cpu_count": 4,
+      "hostname": "eb9a35f5aa22"
+    },
+    "data_sha256": {},
+    "params": {
+      "merge": "e2e3",
+      "ref": "E2_E3_ref",
+      "parts": [
+        "E2_E3_p1",
+        "E2_E3_p2",
+        "E2_E3_p3"
+      ]
+    },
+    "traceable": true,
+    "traceable_errors": []
+  },
+  "traceable": true,
+  "traceable_errors": []
+}

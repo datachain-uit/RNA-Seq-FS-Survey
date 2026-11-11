@@ -1,0 +1,4 @@
+sample_id,reason,decision,verdict,category
+GSM1019246,"near-duplicate pair, r = 0,9925; sex by expression (female) contradicts metadata of GSM1019247 (male); conflicting histology labels; both excluded (QĐ21, 29/10)",QĐ21 2026-10-29,,
+GSM1019247,"near-duplicate pair, r = 0,9925; sex by expression (female) contradicts metadata of GSM1019247 (male); conflicting histology labels; both excluded (QĐ21, 29/10)",QĐ21 2026-10-29,,
+GSM1019197,QĐ22 sex check: inconsistent — XIST và gen Y cùng cao (meta_sex = male); không xác minh được danh tính mẫu,QĐ22 2026-10-29,inconsistent,both-high

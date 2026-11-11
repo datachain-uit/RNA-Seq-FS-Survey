@@ -1,0 +1,10 @@
+{
+  "job": "ablation_phaseB",
+  "commit_hash": "6ea47e85e25e48bcf543e4e736ebe7ba6588fdc5",
+  "exit_code": 0,
+  "restored": [
+    "/kaggle/input/datasets/lfreedom2750/kq-phasea/redo_svm_rfe_A_results/results"
+  ],
+  "hours": 4.86,
+  "finished_at": "2026-11-01 22:03:26 UTC"
+}

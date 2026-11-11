@@ -1,0 +1,7 @@
+[gse37745] 169 mẫu × 16479 gen
+[gse37745] E4: 0 (fraction, subsample) cần chạy
+[gse37745] E4 xong: 278 dòng ổn định
+[gse37745] E5a: 0 (rho, subsample) cần chạy
+[gse37745] E5a xong: 276 dòng
+[gse37745] E5b: 0 (method, seed) cần chạy
+[gse37745] xong, ghi vào /kaggle/working/kltn_data/results/survey_v2/E4_E5/gse37745

@@ -1,0 +1,100 @@
+{
+  "experiment": "sanity_Y10",
+  "dataset": "tcga_normal_vs_tumor_sanity",
+  "n_samples": 1128,
+  "n_genes": 19938,
+  "n_patients": 1019,
+  "methods": [
+    "f_test",
+    "l1_lr",
+    "rf_importance"
+  ],
+  "k": 10,
+  "repeats": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "threshold": 0.99,
+  "pass": true,
+  "versions": {
+    "numpy": "2.1.3",
+    "pandas": "2.3.3",
+    "scipy": "1.16.3",
+    "scikit-learn": "1.6.1",
+    "tables": "3.10.2",
+    "skrebate": "0.8.4",
+    "joblib": "1.6.0",
+    "threadpoolctl": "3.6.0",
+    "psutil": "5.9.5",
+    "xgboost": "3.4.1",
+    "lightgbm": "4.6.0",
+    "codecarbon": null
+  },
+  "elapsed_s": 638.4859304428101,
+  "generated_at": "2026-10-29T09:39:32+00:00",
+  "commit_hash": "9b2d6a57610a2e0d7d75ec97dace030dec51d516",
+  "provenance": {
+    "schema": "kltn-provenance/1",
+    "commit_hash": "9b2d6a57610a2e0d7d75ec97dace030dec51d516",
+    "tracked": true,
+    "dirty": false,
+    "branch": "HEAD",
+    "remote": "https://github.com/datachain-uit/RNA-Seq-FS-Survey.git",
+    "untracked_reason": null,
+    "script": "scripts/run_sanity_auroc.py",
+    "code_root": "/kaggle/working/RNA-Seq-FS-Survey",
+    "data_root": "/kaggle/working/kltn_data",
+    "argv": [],
+    "started_at": "2026-10-29T09:28:49+00:00",
+    "python": "3.13.15",
+    "packages": {
+      "numpy": "2.1.3",
+      "pandas": "2.3.3",
+      "scikit-learn": "1.6.1",
+      "scipy": "1.16.3",
+      "tables": "3.10.2",
+      "openpyxl": "3.1.5",
+      "requests": "2.34.2",
+      "xgboost": "3.4.1",
+      "lightgbm": "4.6.0",
+      "abess": "0.4.11"
+    },
+    "machine": {
+      "platform": "Linux-6.18.55+-x86_64-with-glibc2.39",
+      "processor": "x86_64",
+      "machine": "x86_64",
+      "cpu_count": 4,
+      "hostname": "e0bbaff5b4c5"
+    },
+    "data_sha256": {
+      "/kaggle/input/datasets/lfreedom2750/experiment-data-v3/experiment-data-perm/tcga_normal_vs_tumor_sanity/expression.h5": "c3ff53ff5353a4b64374204603275d653d6cf5b991a4e8baf01b710cb73f4254",
+      "/kaggle/input/datasets/lfreedom2750/experiment-data-v3/experiment-data-perm/tcga_normal_vs_tumor_sanity/metadata.csv": "17b5830f45e82807d9899dd10307bbb7c7eced3c3da8fd35de6faa9f008af91e"
+    },
+    "params": {
+      "dataset": "tcga_normal_vs_tumor_sanity",
+      "methods": [
+        "f_test",
+        "l1_lr",
+        "rf_importance"
+      ],
+      "k": 10,
+      "repeats": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "prefilter": 5000,
+      "threshold": 0.99,
+      "out": "sanity"
+    },
+    "traceable": true,
+    "traceable_errors": []
+  },
+  "traceable": true,
+  "traceable_errors": []
+}

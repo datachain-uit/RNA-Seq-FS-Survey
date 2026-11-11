@@ -1,0 +1,25 @@
+[tcga_luad_lusc_primary_tumor] 1016 mẫu × 19938 gen; train fold 0 = 812
+Máy: Intel(R) Xeon(R) CPU @ 2.20GHz | RAM GB: 31.35
+[hiệu chuẩn] l1_lr: wall 10.461s
+[hiệu chuẩn] svm_rfe: wall 3.769s
+[hiệu chuẩn] rf_importance: wall 21.912s
+[hiệu chuẩn] lệch so với phiên tham chiếu: {'l1_lr': 0.04606331324530242, 'svm_rfe': 0.024800882228897675, 'rf_importance': 0.04291730518552571} -> ok = True
+E3 n= 100 relieff              wall 16.59s
+E3 n= 100 svm_rfe              wall 0.43s
+E3 n= 200 relieff              wall 32.25s
+E3 n= 200 svm_rfe              wall 0.73s
+E3 n= 400 relieff              wall 69.78s
+E3 n= 400 svm_rfe              wall 1.77s
+E3 n= 812 relieff              wall 138.61s
+E3 n= 812 svm_rfe              wall 4.06s
+E3 p=  1000 relieff              wall 27.70s
+E3 p=  1000 svm_rfe              wall 0.77s
+E3 p=  2000 relieff              wall 54.75s
+E3 p=  2000 svm_rfe              wall 1.34s
+E3 p=  5000 relieff              wall 133.16s
+E3 p=  5000 svm_rfe              wall 3.82s
+E3 p= 10000 relieff              wall 274.38s
+E3 p= 10000 svm_rfe              wall 9.52s
+E3 p= 19938 relieff              wall 677.36s
+E3 p= 19938 svm_rfe              wall 17.88s
+xong: /kaggle/working/kltn_data/results/survey_v2/E2_E3_p3

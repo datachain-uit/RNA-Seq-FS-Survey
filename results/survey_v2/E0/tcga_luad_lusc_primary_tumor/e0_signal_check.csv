@@ -1,0 +1,2 @@
+﻿cohort,role,n,p,k,selector,auroc_real,auroc_real_folds,n_perm,null_mean,null_q95,p_perm,n_random,random_mean,random_q95,p_random,gain_vs_random,signal_present,selection_useful,min_p
+tcga_luad_lusc_primary_tumor,large_n_reference,1016,19938,10,f_test,0.9776483706623089,0.9816;0.9675;0.9859;0.9691;0.9841,200,0.49899444583293273,0.5386007305584927,0.004975124378109453,100,0.9340292953955589,0.956450148995482,0.009900990099009901,0.04361907526675002,True,True,0.004975124378109453
