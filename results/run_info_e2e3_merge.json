@@ -1,0 +1,13 @@
+{
+  "job": "e2e3_merge",
+  "commit_hash": "6ea47e85e25e48bcf543e4e736ebe7ba6588fdc5",
+  "exit_code": 0,
+  "restored": [
+    "/kaggle/input/datasets/lfreedom2750/kq-phasea/e2_ref_results/results",
+    "/kaggle/input/datasets/lfreedom2750/kq-phasea/e3_p1_results/results",
+    "/kaggle/input/datasets/lfreedom2750/kq-phasea/e3_p2_results/results",
+    "/kaggle/input/datasets/lfreedom2750/kq-phasea/e3_p3_results/results"
+  ],
+  "hours": 0.02,
+  "finished_at": "2026-11-02 02:51:58 UTC"
+}

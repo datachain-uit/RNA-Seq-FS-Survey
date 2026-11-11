@@ -1,0 +1,101 @@
+{
+  "generator": "scripts/build_v3_splits.py",
+  "generator_commit": "380d01f1d14429becdf631e8550e772599eadb81",
+  "repeat_seeds": [
+    42,
+    43,
+    44,
+    45,
+    46
+  ],
+  "protocol": "5 splits test_T/pool_T (1/3:2/3, stratified) x 4 nested subsets per n_T per class",
+  "test_fraction": 0.3333333333333333,
+  "n_t_grid": [
+    5,
+    10,
+    20,
+    40,
+    "pool"
+  ],
+  "n_t_limit": {
+    "gse10245": [
+      5,
+      10
+    ]
+  },
+  "files": [
+    {
+      "dataset": "gse10245",
+      "path": "experiment-data-geo-target\\gse10245\\fewshot_splits.csv",
+      "rows": 2460,
+      "sha256": "b31efa81e03b21454e23d455d58e05100234fd1fd09029e1d655cff22d5b30d5",
+      "n_t_levels": [
+        "5",
+        "10",
+        "pool"
+      ],
+      "n_splits": 5,
+      "n_subsets": 4,
+      "n_per_class": [
+        37,
+        18
+      ]
+    },
+    {
+      "dataset": "gse30219",
+      "path": "experiment-data-geo-target\\gse30219\\fewshot_splits.csv",
+      "rows": 9580,
+      "sha256": "88667258ebb2d5150a45971e121bbd8d36b2a722f4986a9d2d48dc3ae48aeb7b",
+      "n_t_levels": [
+        "5",
+        "10",
+        "20",
+        "40",
+        "pool"
+      ],
+      "n_splits": 5,
+      "n_subsets": 4,
+      "n_per_class": [
+        81,
+        60
+      ]
+    },
+    {
+      "dataset": "gse37745",
+      "path": "experiment-data-geo-target\\gse37745\\fewshot_splits.csv",
+      "rows": 10940,
+      "sha256": "ede2fd00f8dbff7ace0cac6b48761aafbab1601878e5f1ab2967b3889ae95a74",
+      "n_t_levels": [
+        "5",
+        "10",
+        "20",
+        "40",
+        "pool"
+      ],
+      "n_splits": 5,
+      "n_subsets": 4,
+      "n_per_class": [
+        104,
+        65
+      ]
+    },
+    {
+      "dataset": "gse42127",
+      "path": "experiment-data-geo-target\\gse42127\\fewshot_splits.csv",
+      "rows": 8100,
+      "sha256": "5cfec85ebf3b88981ba081114fdd2777ff6d65dc9085dac31859ecaeb34a5f01",
+      "n_t_levels": [
+        "5",
+        "10",
+        "20",
+        "pool"
+      ],
+      "n_splits": 5,
+      "n_subsets": 4,
+      "n_per_class": [
+        126,
+        41
+      ]
+    }
+  ]
+}

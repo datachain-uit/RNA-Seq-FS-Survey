@@ -1,0 +1,17 @@
+\begin{table*}[t]
+  \centering
+  \caption{E0: signal check per cohort (F-test $\to$ LR-L2 at $k$ = 10; label permutations and random-$k$ panels).}
+  \label{tab:e0}
+  \small
+  \begin{tabular}{llllllllllllllllllll}
+    \toprule
+    cohort & role & n & p & k & selector & auroc\_real & auroc\_real\_folds & n\_perm & null\_mean & null\_q95 & p\_perm & n\_random & random\_mean & random\_q95 & p\_random & gain\_vs\_random & signal\_present & selection\_useful & min\_p \\
+    \midrule
+    gse10245 & target\_small & 55 & 16479 & 10 & f\_test & 0.944 & 0.7917;1.0000;1.0000;1.0000;0.9286 & 200 & 0.503 & 0.702 & 0.005 & 100 & 0.874 & 0.932 & 0.030 & 0.070 & True & True & 0.005 \\
+    gse30219 & target\_main & 141 & 16479 & 10 & f\_test & 0.989 & 1.0000;0.9948;0.9844;1.0000;0.9635 & 200 & 0.498 & 0.609 & 0.005 & 100 & 0.950 & 0.978 & 0.010 & 0.039 & True & True & 0.005 \\
+    gse37745 & target\_main & 169 & 16479 & 10 & f\_test & 0.989 & 1.0000;0.9927;1.0000;1.0000;0.9500 & 200 & 0.509 & 0.609 & 0.005 & 100 & 0.929 & 0.959 & 0.010 & 0.060 & True & True & 0.005 \\
+    gse42127 & target\_second\_platform & 167 & 17235 & 10 & f\_test & 0.943 & 0.9231;1.0000;0.8600;0.9850;0.9450 & 200 & 0.501 & 0.613 & 0.005 & 100 & 0.810 & 0.857 & 0.010 & 0.133 & True & True & 0.005 \\
+    tcga\_luad\_lusc\_primary\_tumor & large\_n\_reference & 1016 & 19938 & 10 & f\_test & 0.978 & 0.9816;0.9675;0.9859;0.9691;0.9841 & 200 & 0.499 & 0.539 & 0.005 & 100 & 0.934 & 0.956 & 0.010 & 0.044 & True & True & 0.005 \\
+    \bottomrule
+  \end{tabular}
+\end{table*}

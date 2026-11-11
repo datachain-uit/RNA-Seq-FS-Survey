@@ -1,0 +1,9 @@
+{
+  "geo_accession": "GSE42127",
+  "source_field": "Sample_characteristics_ch1_7",
+  "mapping": {
+    "histology: Adenocarcinoma": {"class": "LUAD", "label": 0, "n_samples": 133},
+    "histology: Squamous": {"class": "LUSC", "label": 1, "n_samples": 43}
+  },
+  "verification": "Source values were checked against the GEO series-matrix sample IDs on 2026-10-27."
+}

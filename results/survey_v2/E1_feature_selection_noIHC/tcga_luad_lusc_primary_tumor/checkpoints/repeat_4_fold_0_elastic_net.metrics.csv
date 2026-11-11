@@ -1,0 +1,9 @@
+cohort,repeat,seed,fold,method,k,n_train,p0,n_selected,exact_k,n_filled,selector_param,n_eval,best_fitness,selection_time_s,cpu_time_s,rss_delta_mb,emissions_kg_co2,missing_genes
+tcga_luad_lusc_primary_tumor,4,46,0,elastic_net,1,812,5000,1,True,0,0.0014125375446227548,,,951.2394488789996,950.674643911,0.078125,,
+tcga_luad_lusc_primary_tumor,4,46,0,elastic_net,2,812,5000,2,True,0,0.001496235656094434,,,951.2394488789996,950.674643911,0.078125,,
+tcga_luad_lusc_primary_tumor,4,46,0,elastic_net,3,812,5000,3,True,0,0.001562248081465291,,,951.2394488789996,950.674643911,0.078125,,
+tcga_luad_lusc_primary_tumor,4,46,0,elastic_net,4,812,5000,4,True,0,0.001584893192461114,,,951.2394488789996,950.674643911,0.078125,,
+tcga_luad_lusc_primary_tumor,4,46,0,elastic_net,5,812,5000,5,True,0,0.0016311729092278388,,,951.2394488789996,950.674643911,0.078125,,
+tcga_luad_lusc_primary_tumor,4,46,0,elastic_net,10,812,5000,10,True,0,0.0017782794100389232,,,951.2394488789996,950.674643911,0.078125,,
+tcga_luad_lusc_primary_tumor,4,46,0,elastic_net,25,812,5000,25,True,0,0.0027781135966425353,,,951.2394488789996,950.674643911,0.078125,,
+tcga_luad_lusc_primary_tumor,4,46,0,elastic_net,50,812,5000,50,True,0,0.005956621435290103,,,951.2394488789996,950.674643911,0.078125,,

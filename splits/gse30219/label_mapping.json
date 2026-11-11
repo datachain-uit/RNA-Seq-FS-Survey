@@ -1,0 +1,10 @@
+{
+  "geo_accession": "GSE30219",
+  "source_field": "histology_raw",
+  "mapping": {
+    "ADC": {"class": "LUAD", "label": 0, "n_samples": 85},
+    "SQC": {"class": "LUSC", "label": 1, "n_samples": 61}
+  },
+  "exclusion_policy": "Only exact ADC and SQC records are included in the R5 dataset.",
+  "verification": "Source values were checked against the GEO series-matrix sample IDs on 2026-10-27."
+}

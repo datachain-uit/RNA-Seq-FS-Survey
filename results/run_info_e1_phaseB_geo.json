@@ -1,0 +1,10 @@
+{
+  "job": "e1_phaseB_geo",
+  "commit_hash": "9b2d6a57610a2e0d7d75ec97dace030dec51d516",
+  "exit_code": 0,
+  "restored": [
+    "/kaggle/input/datasets/lfreedom2750/kq-phasea/e1_phaseA_geo_results/results"
+  ],
+  "hours": 1.65,
+  "finished_at": "2026-10-30 04:36:13 UTC"
+}

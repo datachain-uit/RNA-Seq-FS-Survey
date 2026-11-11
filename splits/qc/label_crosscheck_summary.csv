@@ -1,0 +1,5 @@
+cohort,series_matrix,label_key,n_series_matrix,n_luad_lusc_before_qc,n_declared_in_label_mapping,n_excluded_qc,n_derived_after_qc,n_metadata,expected_n,only_in_series_matrix,only_in_metadata,label_mismatch,excluded_not_in_series_matrix,duplicate_titles,other_values,pass,checked_at_utc
+gse10245,GSE10245_series_matrix.txt.gz,disease state,58,40/18,40/18,3,37/18,55,37/18,,,,,0,,True,2026-11-02T04:17:24+00:00
+gse30219,GSE30219_series_matrix.txt.gz,histology,307,85/61,85/61,5,81/60,141,81/60,,,,,0,histology: BAS (39); histology: CARCI (24); histology: LCC (3); histology: LCNE (56); histology: NTL (14); histology: Other (4); histology: SCC (21),True,2026-11-02T04:17:24+00:00
+gse37745,GSE37745_series_matrix.txt.gz,histology,196,106/66,106/66,3,104/65,169,104/65,,,,,0,histology: large (24),True,2026-11-02T04:17:24+00:00
+gse42127,GSE42127_series_matrix.txt.gz,histology,176,133/43,133/43,9,126/41,167,126/41,,,,,0,,True,2026-11-02T04:17:24+00:00

@@ -1,0 +1,16 @@
+{
+  "job": "redo_svm_rfe_B",
+  "commit_hash": "6ea47e85e25e48bcf543e4e736ebe7ba6588fdc5",
+  "exit_code": 0,
+  "restored": [
+    "/kaggle/input/datasets/lfreedom2750/kq-phasea/fewshot_e1b_results/results",
+    "/kaggle/input/datasets/lfreedom2750/kq-phasea/e1_phaseB_geo_results/results",
+    "/kaggle/input/datasets/lfreedom2750/kq-phasea/e1_phaseB_tcga_results/results",
+    "/kaggle/input/datasets/lfreedom2750/kq-phasea/e4_tcga_results/results",
+    "/kaggle/input/datasets/lfreedom2750/kq-phasea/e4e5_gse37745_results/results",
+    "/kaggle/input/datasets/lfreedom2750/kq-phasea/e1_phaseB_wrappers_results/results",
+    "/kaggle/input/datasets/lfreedom2750/kq-phasea/redo_svm_rfe_A_results/results"
+  ],
+  "hours": 0.63,
+  "finished_at": "2026-11-01 17:35:47 UTC"
+}

@@ -1,0 +1,16 @@
+{
+  "job": "tables",
+  "commit_hash": "e15fb7c997e7ca3d2f43ae635c3a145ae9183b7e",
+  "exit_code": 0,
+  "restored": [
+    "/kaggle/input/datasets/lfreedom2750/kq-phasea/upload_kaggle/e0_results/results",
+    "/kaggle/input/datasets/lfreedom2750/kq-phasea/upload_kaggle/sanity_results/results",
+    "/kaggle/input/datasets/lfreedom2750/kq-phasea/upload_kaggle/e7_results/results",
+    "/kaggle/input/datasets/lfreedom2750/kq-phasea/e2e3_merge_results/results",
+    "/kaggle/input/datasets/lfreedom2750/kq-phasea/upload_kaggle/ablation_phaseB_results/results",
+    "/kaggle/input/datasets/lfreedom2750/kq-phasea/upload_kaggle/redo_svm_rfe_B_results/results",
+    "/kaggle/input/datasets/lfreedom2750/kq-phasea/panels_results/results"
+  ],
+  "hours": 0.05,
+  "finished_at": "2026-11-02 18:27:24 UTC"
+}

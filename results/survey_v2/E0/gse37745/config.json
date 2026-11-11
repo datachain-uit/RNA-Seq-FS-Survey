@@ -1,0 +1,127 @@
+{
+  "experiment": "E0_signal_check",
+  "dataset": "gse37745",
+  "cohort": "gse37745",
+  "role": "target_main",
+  "n": 169,
+  "p": 16479,
+  "k": 10,
+  "selector": "f_test",
+  "auroc_real": 0.9885347985347985,
+  "n_perm": 200,
+  "null_mean": 0.508528021978022,
+  "null_q95": 0.6089578754578755,
+  "p_perm": 0.004975124378109453,
+  "n_random": 100,
+  "random_mean": 0.928893772893773,
+  "random_q95": 0.9593681318681319,
+  "p_random": 0.009900990099009901,
+  "gain_vs_random": 0.05964102564102558,
+  "signal_present": true,
+  "selection_useful": true,
+  "min_p": 0.004975124378109453,
+  "rule": "signal if p_perm < 0.05; selection useful if p_random < 0.05 and gain >= 0.02 (P0 rule, Review 11/10)",
+  "p_formula": "(b + 1) / (B + 1), Phipson & Smyth 2010",
+  "cv": "5-fold, seed 42, patient-grouped if needed",
+  "gene_space": {
+    "patient_id_assumed_from_sample_id": false,
+    "gene_space": "intersection with tcga_luad_lusc_primary_tumor",
+    "n_genes_before_gene_space": 20848,
+    "data_dir": "/kaggle/working/kltn_data/experiment-data-geo-target/gse37745",
+    "n_per_class": [
+      104,
+      65
+    ],
+    "n_per_class_expected": [
+      104,
+      65
+    ],
+    "n_matches_expected": true,
+    "n_genes_dropped": 4369
+  },
+  "elapsed_s": 226.98666501045227,
+  "versions": {
+    "numpy": "2.1.3",
+    "pandas": "2.3.3",
+    "scipy": "1.16.3",
+    "scikit-learn": "1.6.1",
+    "tables": "3.10.2",
+    "skrebate": "0.8.4",
+    "joblib": "1.6.0",
+    "threadpoolctl": "3.6.0",
+    "psutil": "5.9.5",
+    "xgboost": "3.4.1",
+    "lightgbm": "4.6.0",
+    "codecarbon": null
+  },
+  "generated_at": "2026-10-29T09:38:33+00:00",
+  "commit_hash": "9b2d6a57610a2e0d7d75ec97dace030dec51d516",
+  "provenance": {
+    "schema": "kltn-provenance/1",
+    "commit_hash": "9b2d6a57610a2e0d7d75ec97dace030dec51d516",
+    "tracked": true,
+    "dirty": false,
+    "branch": "survey-v2-code",
+    "remote": "https://github.com/datachain-uit/RNA-Seq-FS-Survey.git",
+    "untracked_reason": null,
+    "script": "scripts/run_survey_e0_signal_check.py",
+    "code_root": "/kaggle/working/RNA-Seq-FS-Survey",
+    "data_root": "/kaggle/working/kltn_data",
+    "argv": [
+      "--n-jobs",
+      "4"
+    ],
+    "started_at": "2026-10-29T09:34:46+00:00",
+    "python": "3.13.15",
+    "packages": {
+      "numpy": "2.1.3",
+      "pandas": "2.3.3",
+      "scikit-learn": "1.6.1",
+      "scipy": "1.16.3",
+      "tables": "3.10.2",
+      "openpyxl": "3.1.5",
+      "requests": "2.34.2",
+      "xgboost": "3.4.1",
+      "lightgbm": "4.6.0",
+      "abess": "0.4.11"
+    },
+    "machine": {
+      "platform": "Linux-6.18.55+-x86_64-with-glibc2.39",
+      "processor": "x86_64",
+      "machine": "x86_64",
+      "cpu_count": 4,
+      "hostname": "c250d3e56b42"
+    },
+    "data_sha256": {
+      "/kaggle/input/datasets/lfreedom2750/experiment-data-v3/experiment-data-perm/tcga_luad_lusc_primary_tumor/expression.h5": "41bf54bda90aae286eab2ceec7e705aeaa778cd77eb85587ab7ff8aaa75c2cff",
+      "/kaggle/input/datasets/lfreedom2750/experiment-data-v3/experiment-data-perm/tcga_luad_lusc_primary_tumor/metadata.csv": "ee65ea8b4075967867ce4f7fa8383122449d6ba2e10dd5e178a33b27b5ea7b26",
+      "/kaggle/input/datasets/lfreedom2750/experiment-data-v3/experiment-data-geo-target/gse10245/expression.h5": "7cb29e07d6c1489dbd90ad81ebfa9675548bac729289f70cf04766f2119226ea",
+      "/kaggle/input/datasets/lfreedom2750/experiment-data-v3/experiment-data-geo-target/gse10245/metadata.csv": "571f9d0ce2fc78275f41d09aa57a71f7a49ac3c6f1814c5b6f5b0002c12c2e26",
+      "/kaggle/input/datasets/lfreedom2750/experiment-data-v3/experiment-data-geo-target/gse30219/expression.h5": "6c2f7377ad802a7df3d804473884ad64fa08beadfa44ecb5232343801230e2d9",
+      "/kaggle/input/datasets/lfreedom2750/experiment-data-v3/experiment-data-geo-target/gse30219/metadata.csv": "570923f3f20216def97dfc47ca06a2e78f30669f4b7829f59b6426d7a32501bc",
+      "/kaggle/input/datasets/lfreedom2750/experiment-data-v3/experiment-data-geo-target/gse37745/expression.h5": "f5dcaf11d7f36defc37ad67cf47da30b2f85823e3360fef2f8f4d0ab96a34ec7",
+      "/kaggle/input/datasets/lfreedom2750/experiment-data-v3/experiment-data-geo-target/gse37745/metadata.csv": "568b557e43c09daee94f8959f0144db642064502d73cb6493e8f5ff77c031328"
+    },
+    "params": {
+      "datasets": [
+        "tcga_luad_lusc_primary_tumor",
+        "gse10245",
+        "gse30219",
+        "gse37745",
+        "gse42127"
+      ],
+      "k": 10,
+      "selector": "f_test",
+      "n_perm": 200,
+      "n_random": 100,
+      "prefilter": 5000,
+      "seed": 42,
+      "n_jobs": 4,
+      "out": "E0"
+    },
+    "traceable": true,
+    "traceable_errors": []
+  },
+  "traceable": true,
+  "traceable_errors": []
+}

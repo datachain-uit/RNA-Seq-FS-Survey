@@ -1,0 +1,159 @@
+{
+  "experiment": "tables_figures",
+  "status": {
+    "E0": [
+      "gse10245",
+      "gse30219",
+      "gse37745",
+      "gse42127",
+      "tcga_luad_lusc_primary_tumor"
+    ],
+    "E1": {
+      "cohorts": [
+        "gse10245",
+        "gse30219",
+        "gse37745",
+        "gse42127",
+        "tcga_luad_lusc_primary_tumor"
+      ],
+      "methods": [
+        "abess",
+        "b0",
+        "bpso",
+        "elastic_net",
+        "f_test",
+        "ga",
+        "ihc_2",
+        "ihc_4",
+        "ktsp",
+        "l1_lr",
+        "mrmr",
+        "mutual_info",
+        "panel_girard2016",
+        "panel_wilkerson2013",
+        "random_k",
+        "relieff",
+        "rf_importance",
+        "stability_selection",
+        "svm_rfe"
+      ],
+      "n_rows": 17575,
+      "kstar_cohorts": [
+        "gse10245",
+        "gse30219",
+        "gse37745"
+      ]
+    },
+    "ablation_IHC": {
+      "cohorts": [
+        "gse10245",
+        "gse30219",
+        "gse37745",
+        "gse42127",
+        "tcga_luad_lusc_primary_tumor"
+      ],
+      "n_rows": 465
+    },
+    "E1b": [
+      "gse10245",
+      "gse30219",
+      "gse37745",
+      "gse42127"
+    ],
+    "E7": [
+      "gse10245",
+      "gse30219",
+      "gse37745",
+      "gse42127"
+    ],
+    "E2_E3": {
+      "methods": [
+        "abess",
+        "bpso",
+        "elastic_net",
+        "f_test",
+        "ga",
+        "ktsp",
+        "l1_lr",
+        "mrmr",
+        "mutual_info",
+        "relieff",
+        "rf_importance",
+        "stability_selection",
+        "svm_rfe"
+      ]
+    },
+    "E4": {
+      "cohorts": [
+        "gse37745",
+        "tcga_luad_lusc_primary_tumor"
+      ]
+    },
+    "E5a": "có",
+    "E5b": "có",
+    "E5c": [
+      "gse37745",
+      "tcga_luad_lusc_primary_tumor"
+    ],
+    "E6": "có"
+  },
+  "classifier": "lr_l2",
+  "e6_fraction": 0.7,
+  "n_inputs": 62,
+  "generated_at": "2026-11-02T18:27:23+00:00",
+  "commit_hash": "e15fb7c997e7ca3d2f43ae635c3a145ae9183b7e",
+  "provenance": {
+    "schema": "kltn-provenance/1",
+    "commit_hash": "e15fb7c997e7ca3d2f43ae635c3a145ae9183b7e",
+    "tracked": true,
+    "dirty": false,
+    "branch": "HEAD",
+    "remote": "https://github.com/datachain-uit/RNA-Seq-FS-Survey.git",
+    "untracked_reason": null,
+    "script": "scripts/make_survey_tables.py",
+    "code_root": "/kaggle/working/RNA-Seq-FS-Survey",
+    "data_root": "/kaggle/working/kltn_data",
+    "argv": [],
+    "started_at": "2026-11-02T18:26:25+00:00",
+    "python": "3.13.15",
+    "packages": {
+      "numpy": "2.1.3",
+      "pandas": "2.3.3",
+      "scikit-learn": "1.6.1",
+      "scipy": "1.16.3",
+      "tables": "3.10.2",
+      "openpyxl": "3.1.5",
+      "requests": "2.34.2",
+      "xgboost": "3.4.1",
+      "lightgbm": "4.6.0",
+      "abess": "0.4.11"
+    },
+    "machine": {
+      "platform": "Linux-6.18.55+-x86_64-with-glibc2.39",
+      "processor": "x86_64",
+      "machine": "x86_64",
+      "cpu_count": 4,
+      "hostname": "1ac98dacfb06"
+    },
+    "data_sha256": {},
+    "params": {
+      "e1_dir": "E1_classification",
+      "e1_select_dir": "E1_feature_selection",
+      "e0_dir": "E0",
+      "e1b_dir": "E1b",
+      "e7_dir": "E7",
+      "e2e3_dir": "E2_E3",
+      "e4e5_dir": "E4_E5",
+      "e1_noihc_dir": "E1_classification_noIHC",
+      "out": "tables",
+      "fig_out": "figures",
+      "classifier": "lr_l2",
+      "e6_fraction": 0.7,
+      "no_figures": false
+    },
+    "traceable": true,
+    "traceable_errors": []
+  },
+  "traceable": true,
+  "traceable_errors": []
+}

@@ -1,0 +1,11 @@
+{
+  "job": "e4_tcga",
+  "commit_hash": "68e7c7dacd08d9e1719ecf098318977abe641bf6",
+  "exit_code": 0,
+  "restored": [
+    "/kaggle/input/datasets/lfreedom2750/kq-phasea/e1_phaseB_tcga_results/results",
+    "/kaggle/input/datasets/lfreedom2750/kq-phasea/e4_tcga_results/results"
+  ],
+  "hours": 0.01,
+  "finished_at": "2026-10-31 06:50:56 UTC"
+}

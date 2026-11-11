@@ -1,0 +1,404 @@
+{
+  "generated_at": "2026-11-02T18:27:23",
+  "script_commit": "e15fb7c997e7ca3d2f43ae635c3a145ae9183b7e",
+  "inputs": {
+    "/kaggle/working/kltn_data/results/survey_v2/E0/gse10245/e0_signal_check.csv": {
+      "sha256": "308554375acdaa5878ad1e965700d7d90c9b9385ccb612d29c1367ad94d5b773",
+      "rows": 1,
+      "commit_hash": "9b2d6a57610a2e0d7d75ec97dace030dec51d516"
+    },
+    "/kaggle/working/kltn_data/results/survey_v2/E0/gse30219/e0_signal_check.csv": {
+      "sha256": "ded19de0152cb61980fcf565e35f2f695b0a91c734384c7587740f923a7e185e",
+      "rows": 1,
+      "commit_hash": "9b2d6a57610a2e0d7d75ec97dace030dec51d516"
+    },
+    "/kaggle/working/kltn_data/results/survey_v2/E0/gse37745/e0_signal_check.csv": {
+      "sha256": "d68c51de4178fa4be8bf4c03fc553c30a4b1cbd25479dd7a42f74c4772bf78ac",
+      "rows": 1,
+      "commit_hash": "9b2d6a57610a2e0d7d75ec97dace030dec51d516"
+    },
+    "/kaggle/working/kltn_data/results/survey_v2/E0/gse42127/e0_signal_check.csv": {
+      "sha256": "2f23b616ee64bd980ae17f447ab05297c46cf76da1f1c2296be4f466989db24c",
+      "rows": 1,
+      "commit_hash": "9b2d6a57610a2e0d7d75ec97dace030dec51d516"
+    },
+    "/kaggle/working/kltn_data/results/survey_v2/E0/tcga_luad_lusc_primary_tumor/e0_signal_check.csv": {
+      "sha256": "39adb0604637ec04f9835a160b74b33316801047c857424f81ab16c0c1f99983",
+      "rows": 1,
+      "commit_hash": "9b2d6a57610a2e0d7d75ec97dace030dec51d516"
+    },
+    "/kaggle/working/kltn_data/results/survey_v2/E1_classification/gse10245/classification_per_fold.csv": {
+      "sha256": "1c68bf38fac4c6a6bd90841c4d60f4c48523aa76a00843e18b6dcfd8ddeccf1b",
+      "rows": 3575,
+      "commit_hash": "d870008111f5199789cf21c5d7feecaa21ee9f7a"
+    },
+    "/kaggle/working/kltn_data/results/survey_v2/E1_feature_selection/gse10245/selection_per_fold.csv": {
+      "sha256": "cdb5ede4e7d02a0b9fc0e1b42047668ffc2d98fc467bd7060a22f8b13c069da4",
+      "rows": 2300,
+      "commit_hash": "d870008111f5199789cf21c5d7feecaa21ee9f7a"
+    },
+    "/kaggle/working/kltn_data/results/survey_v2/E1_classification/gse10245/e1_random_k.csv": {
+      "sha256": "2781ec501456c81f32375761f5b42cbdf4fd24334164727a5f712c4ae153a58c",
+      "rows": 20000,
+      "commit_hash": "d870008111f5199789cf21c5d7feecaa21ee9f7a"
+    },
+    "/kaggle/working/kltn_data/results/survey_v2/E1_classification/gse30219/classification_per_fold.csv": {
+      "sha256": "bcdb7d77a5ba4deee4d895eed2808ce26119a136ec23a6d96bf00a95a580d637",
+      "rows": 3575,
+      "commit_hash": "d870008111f5199789cf21c5d7feecaa21ee9f7a"
+    },
+    "/kaggle/working/kltn_data/results/survey_v2/E1_feature_selection/gse30219/selection_per_fold.csv": {
+      "sha256": "a009a4bc655c510d4f0f8bf7df784e91d18e825ce4d148835863221a49ba1e15",
+      "rows": 2300,
+      "commit_hash": "d870008111f5199789cf21c5d7feecaa21ee9f7a"
+    },
+    "/kaggle/working/kltn_data/results/survey_v2/E1_classification/gse30219/e1_random_k.csv": {
+      "sha256": "b37325224df4e92e7bbbf68f5b4cd4253bc95a31b616104c7d247e6feba7d67c",
+      "rows": 20000,
+      "commit_hash": "d870008111f5199789cf21c5d7feecaa21ee9f7a"
+    },
+    "/kaggle/working/kltn_data/results/survey_v2/E1_classification/gse37745/classification_per_fold.csv": {
+      "sha256": "db21c3648700b0d1ec4f95bcf39bdfe5b92a0023e1f95b4bb83b7501bbedbe2d",
+      "rows": 3575,
+      "commit_hash": "d870008111f5199789cf21c5d7feecaa21ee9f7a"
+    },
+    "/kaggle/working/kltn_data/results/survey_v2/E1_feature_selection/gse37745/selection_per_fold.csv": {
+      "sha256": "efce26e7e8645652961e1bd2bcd62bfc5e3a6c823bb91da929fa22b99c63304e",
+      "rows": 2300,
+      "commit_hash": "d870008111f5199789cf21c5d7feecaa21ee9f7a"
+    },
+    "/kaggle/working/kltn_data/results/survey_v2/E1_classification/gse37745/e1_random_k.csv": {
+      "sha256": "08a0d2dfd974164a35b5755b66c5f52d663cd0526f5ab57d1bb4e070b6c90204",
+      "rows": 20000,
+      "commit_hash": "d870008111f5199789cf21c5d7feecaa21ee9f7a"
+    },
+    "/kaggle/working/kltn_data/results/survey_v2/E1_classification/gse42127/classification_per_fold.csv": {
+      "sha256": "94af57ca551bfa3ef7ee74fc2a9a45e6837d0870914ba464a94b9446421c1a54",
+      "rows": 3425,
+      "commit_hash": "d870008111f5199789cf21c5d7feecaa21ee9f7a"
+    },
+    "/kaggle/working/kltn_data/results/survey_v2/E1_feature_selection/gse42127/selection_per_fold.csv": {
+      "sha256": "ec5842d0aed40618abcdd8f20f6f9083616eb769a474d4a68db2aef6a6629daa",
+      "rows": 2300,
+      "commit_hash": "d870008111f5199789cf21c5d7feecaa21ee9f7a"
+    },
+    "/kaggle/working/kltn_data/results/survey_v2/E1_classification/gse42127/e1_random_k.csv": {
+      "sha256": "23a0883927e5166ff447b940bc2a63728076ab45732a1bf8027101093a80c46b",
+      "rows": 20000,
+      "commit_hash": "d870008111f5199789cf21c5d7feecaa21ee9f7a"
+    },
+    "/kaggle/working/kltn_data/results/survey_v2/E1_classification/tcga_luad_lusc_primary_tumor/classification_per_fold.csv": {
+      "sha256": "cd670e4346f4e152efd5ef01f5249dcadf52010137b74521badb1c8d2c57b019",
+      "rows": 3425,
+      "commit_hash": "d870008111f5199789cf21c5d7feecaa21ee9f7a"
+    },
+    "/kaggle/working/kltn_data/results/survey_v2/E1_feature_selection/tcga_luad_lusc_primary_tumor/selection_per_fold.csv": {
+      "sha256": "d729af9a2d90646e971b444f5cd779d86a7db52012ac89dcc7212b7b720f421d",
+      "rows": 2300,
+      "commit_hash": "d870008111f5199789cf21c5d7feecaa21ee9f7a"
+    },
+    "/kaggle/working/kltn_data/results/survey_v2/E1_classification/tcga_luad_lusc_primary_tumor/e1_random_k.csv": {
+      "sha256": "272cd84ff1f2d13b6a26d0ef0e2f2d1845e8270811e7416272b3af950246308c",
+      "rows": 20000,
+      "commit_hash": "d870008111f5199789cf21c5d7feecaa21ee9f7a"
+    },
+    "/kaggle/working/kltn_data/results/survey_v2/E1_classification_noIHC/gse10245/classification_per_fold.csv": {
+      "sha256": "393ba57e1ba6d3c5c97d92405f30d300acf76c61294cb440f2f1aa70272b0d24",
+      "rows": 2325,
+      "commit_hash": "6ea47e85e25e48bcf543e4e736ebe7ba6588fdc5"
+    },
+    "/kaggle/working/kltn_data/results/survey_v2/E1_feature_selection_noIHC/gse10245/selection_per_fold.csv": {
+      "sha256": "164b9e2edac157f715f4885c35431c531c3a93888e12875731805d0c73e26a8b",
+      "rows": 2250,
+      "commit_hash": "6ea47e85e25e48bcf543e4e736ebe7ba6588fdc5"
+    },
+    "/kaggle/working/kltn_data/results/survey_v2/E1_classification_noIHC/gse10245/e1_random_k.csv": {
+      "sha256": "3ae4e7a822dd0c1dd6641e59ca0b10a59ad46d6108ef1a6df3564e0c4609bee4",
+      "rows": 20000,
+      "commit_hash": "6ea47e85e25e48bcf543e4e736ebe7ba6588fdc5"
+    },
+    "/kaggle/working/kltn_data/results/survey_v2/E1_classification_noIHC/gse30219/classification_per_fold.csv": {
+      "sha256": "0132c634fa3a129cc6168f0245227ebee58f837a3d3f16183eaa1d207f31deb5",
+      "rows": 2325,
+      "commit_hash": "6ea47e85e25e48bcf543e4e736ebe7ba6588fdc5"
+    },
+    "/kaggle/working/kltn_data/results/survey_v2/E1_feature_selection_noIHC/gse30219/selection_per_fold.csv": {
+      "sha256": "4014f42409ec534df49f25e4ded4ce1d2d427d7efbf47fd8f6622ffc6570e7d9",
+      "rows": 2250,
+      "commit_hash": "6ea47e85e25e48bcf543e4e736ebe7ba6588fdc5"
+    },
+    "/kaggle/working/kltn_data/results/survey_v2/E1_classification_noIHC/gse30219/e1_random_k.csv": {
+      "sha256": "a6c437cec1fe2b6eb703f8ec7793bb81e4514c21a2f55f2dda3c292128fcf763",
+      "rows": 20000,
+      "commit_hash": "6ea47e85e25e48bcf543e4e736ebe7ba6588fdc5"
+    },
+    "/kaggle/working/kltn_data/results/survey_v2/E1_classification_noIHC/gse37745/classification_per_fold.csv": {
+      "sha256": "34e7f5f5ebbdc483c85157299139eecf22ab23aae13efa053444ea9590cdc0d4",
+      "rows": 2325,
+      "commit_hash": "6ea47e85e25e48bcf543e4e736ebe7ba6588fdc5"
+    },
+    "/kaggle/working/kltn_data/results/survey_v2/E1_feature_selection_noIHC/gse37745/selection_per_fold.csv": {
+      "sha256": "34859eefde1d3467782c2e9f0635b63d6542bb17e27217898d23bedafcf95128",
+      "rows": 2250,
+      "commit_hash": "6ea47e85e25e48bcf543e4e736ebe7ba6588fdc5"
+    },
+    "/kaggle/working/kltn_data/results/survey_v2/E1_classification_noIHC/gse37745/e1_random_k.csv": {
+      "sha256": "de82be952fce229164a6dd6de457ba7bc196389bb491f06f160fb2f31b284e12",
+      "rows": 20000,
+      "commit_hash": "6ea47e85e25e48bcf543e4e736ebe7ba6588fdc5"
+    },
+    "/kaggle/working/kltn_data/results/survey_v2/E1_classification_noIHC/gse42127/classification_per_fold.csv": {
+      "sha256": "a22882b9bfc2b940d70a8e60c2976ca5010c29e02a9e30edccd65d5760040f69",
+      "rows": 2325,
+      "commit_hash": "6ea47e85e25e48bcf543e4e736ebe7ba6588fdc5"
+    },
+    "/kaggle/working/kltn_data/results/survey_v2/E1_feature_selection_noIHC/gse42127/selection_per_fold.csv": {
+      "sha256": "5e0b99ae0357a4076a4763ace88bd77079a8876e5b5e42bf909d0df1a9d23228",
+      "rows": 2250,
+      "commit_hash": "6ea47e85e25e48bcf543e4e736ebe7ba6588fdc5"
+    },
+    "/kaggle/working/kltn_data/results/survey_v2/E1_classification_noIHC/gse42127/e1_random_k.csv": {
+      "sha256": "f025068e76da200cf39efc71b27bc67142f1c52b4dfd51ad6d1304ea69ef0486",
+      "rows": 20000,
+      "commit_hash": "6ea47e85e25e48bcf543e4e736ebe7ba6588fdc5"
+    },
+    "/kaggle/working/kltn_data/results/survey_v2/E1_classification_noIHC/tcga_luad_lusc_primary_tumor/classification_per_fold.csv": {
+      "sha256": "1debdbeb5a69611767c8fbb5f859572086109a2899f8519c698b550b5d2757a5",
+      "rows": 2325,
+      "commit_hash": "6ea47e85e25e48bcf543e4e736ebe7ba6588fdc5"
+    },
+    "/kaggle/working/kltn_data/results/survey_v2/E1_feature_selection_noIHC/tcga_luad_lusc_primary_tumor/selection_per_fold.csv": {
+      "sha256": "a4a8b8d2ca385a2066406ac07344fe35459929a7d7da4d285346f1b91f62f6c0",
+      "rows": 2250,
+      "commit_hash": "6ea47e85e25e48bcf543e4e736ebe7ba6588fdc5"
+    },
+    "/kaggle/working/kltn_data/results/survey_v2/E1_classification_noIHC/tcga_luad_lusc_primary_tumor/e1_random_k.csv": {
+      "sha256": "ce84cd64f21817bb6eb5f699fae8f7ec610998d1e0be9264a30b8ea426ada25a",
+      "rows": 20000,
+      "commit_hash": "6ea47e85e25e48bcf543e4e736ebe7ba6588fdc5"
+    },
+    "/kaggle/working/kltn_data/results/survey_v2/E1_feature_selection/gse10245/selected_genes.csv": {
+      "sha256": "3be04bbbc1974247a5552b6774bbd5601e9c98a8037df96fdf799cead2c5aa3e",
+      "rows": 29025,
+      "commit_hash": "d870008111f5199789cf21c5d7feecaa21ee9f7a"
+    },
+    "/kaggle/working/kltn_data/results/survey_v2/E1_feature_selection/gse30219/selected_genes.csv": {
+      "sha256": "5466c81e0d748ca3ae647710d9cca9eeb70744dd467bf79356c206a6870a0d3b",
+      "rows": 29025,
+      "commit_hash": "d870008111f5199789cf21c5d7feecaa21ee9f7a"
+    },
+    "/kaggle/working/kltn_data/results/survey_v2/E1_feature_selection/gse37745/selected_genes.csv": {
+      "sha256": "419a4a312786be8ee7ff5cdcc2b63e111e6daf1366a7a5598dd872d8ffcd9ace",
+      "rows": 29025,
+      "commit_hash": "d870008111f5199789cf21c5d7feecaa21ee9f7a"
+    },
+    "/kaggle/working/kltn_data/results/survey_v2/E1_feature_selection/gse42127/selected_genes.csv": {
+      "sha256": "c05ba642d8f74627b54c9f69ac7afd081e418dec38d2032767af90e91050271f",
+      "rows": 29125,
+      "commit_hash": "d870008111f5199789cf21c5d7feecaa21ee9f7a"
+    },
+    "/kaggle/working/kltn_data/results/survey_v2/E1_feature_selection/tcga_luad_lusc_primary_tumor/selected_genes.csv": {
+      "sha256": "d1718eb3940598fd0368ef1661fbb7ffcc2ef857b72a145fb8430c434aba75ed",
+      "rows": 29150,
+      "commit_hash": "d870008111f5199789cf21c5d7feecaa21ee9f7a"
+    },
+    "/kaggle/working/kltn_data/results/survey_v2/E1b/gse10245/e1b_per_run.csv": {
+      "sha256": "90779b05c81a98273c4a75b3c4ce92b240e676155b19c00ec05cfba1d84dba5d",
+      "rows": 3840,
+      "commit_hash": "d870008111f5199789cf21c5d7feecaa21ee9f7a"
+    },
+    "/kaggle/working/kltn_data/results/survey_v2/E1b/gse10245/e1b_stability.csv": {
+      "sha256": "3eb8f9527f53597c4dbc24b1d19341ea0febe2a9d9362ea5cbcd39243342ba63",
+      "rows": 171,
+      "commit_hash": "d870008111f5199789cf21c5d7feecaa21ee9f7a"
+    },
+    "/kaggle/working/kltn_data/results/survey_v2/E1b/gse30219/e1b_per_run.csv": {
+      "sha256": "77699117f8df24275123f1328d77afb4f705fc6482226dfc106a74e92a3ac7db",
+      "rows": 6400,
+      "commit_hash": "d870008111f5199789cf21c5d7feecaa21ee9f7a"
+    },
+    "/kaggle/working/kltn_data/results/survey_v2/E1b/gse30219/e1b_stability.csv": {
+      "sha256": "5ea6555cc2b65f3c1768a3e70dde1897e1997719c651ce1354da5a5b692b9c77",
+      "rows": 285,
+      "commit_hash": "d870008111f5199789cf21c5d7feecaa21ee9f7a"
+    },
+    "/kaggle/working/kltn_data/results/survey_v2/E1b/gse37745/e1b_per_run.csv": {
+      "sha256": "481d47e92d75da44d22f29adf821e603fbfa81a3fd89fb199e124d6597c7bd2f",
+      "rows": 6400,
+      "commit_hash": "d870008111f5199789cf21c5d7feecaa21ee9f7a"
+    },
+    "/kaggle/working/kltn_data/results/survey_v2/E1b/gse37745/e1b_stability.csv": {
+      "sha256": "1647b766f84468321412096befadfa0d5e30ca0ad683e7712291e0737ed5fcef",
+      "rows": 285,
+      "commit_hash": "d870008111f5199789cf21c5d7feecaa21ee9f7a"
+    },
+    "/kaggle/working/kltn_data/results/survey_v2/E1b/gse42127/e1b_per_run.csv": {
+      "sha256": "6e9cc38fcc12bc4f1c605503ad8c619e7210ed5bd23d42e9009b37d8b7b1f6da",
+      "rows": 5120,
+      "commit_hash": "d870008111f5199789cf21c5d7feecaa21ee9f7a"
+    },
+    "/kaggle/working/kltn_data/results/survey_v2/E1b/gse42127/e1b_stability.csv": {
+      "sha256": "416885650df7c2c40b5bf9cdb6cfde7d6e120397ac29a8bb89bbe1adc9882ccb",
+      "rows": 228,
+      "commit_hash": "d870008111f5199789cf21c5d7feecaa21ee9f7a"
+    },
+    "/kaggle/working/kltn_data/results/survey_v2/E7/gse10245/e7_per_run.csv": {
+      "sha256": "ec43befc029a876947c45a6229abdd0dbb87db5cef76eba108af144ecfbe834b",
+      "rows": 800,
+      "commit_hash": "9b2d6a57610a2e0d7d75ec97dace030dec51d516"
+    },
+    "/kaggle/working/kltn_data/results/survey_v2/E7/gse30219/e7_per_run.csv": {
+      "sha256": "91a52e66d65daf4e72463afc1d441dc744e4b098d14643956f054a800596a69b",
+      "rows": 1200,
+      "commit_hash": "9b2d6a57610a2e0d7d75ec97dace030dec51d516"
+    },
+    "/kaggle/working/kltn_data/results/survey_v2/E7/gse37745/e7_per_run.csv": {
+      "sha256": "d94a042f117ff802d285e14a0c6fd1b11c45f1b249ab6b047b241ed8ff5ef49d",
+      "rows": 1200,
+      "commit_hash": "9b2d6a57610a2e0d7d75ec97dace030dec51d516"
+    },
+    "/kaggle/working/kltn_data/results/survey_v2/E7/gse42127/e7_per_run.csv": {
+      "sha256": "5897556e05c4bd8718b917bd10cf97a0ea569af8e9c3bec5f02996cbf7d381c2",
+      "rows": 1200,
+      "commit_hash": "9b2d6a57610a2e0d7d75ec97dace030dec51d516"
+    },
+    "/kaggle/working/kltn_data/results/survey_v2/E2_E3/e2_cost_point.csv": {
+      "sha256": "467d351285b820d1f87c5b38b97c5b40d83ee57b3b2f64acaef1acc404a965b6",
+      "rows": 26,
+      "commit_hash": "6ea47e85e25e48bcf543e4e736ebe7ba6588fdc5"
+    },
+    "/kaggle/working/kltn_data/results/survey_v2/E2_E3/e3_scaling_n.csv": {
+      "sha256": "7574fafcbb33d0636948c14c514143c9eba76046e79ce64d44cad47e009540eb",
+      "rows": 44,
+      "commit_hash": "6ea47e85e25e48bcf543e4e736ebe7ba6588fdc5"
+    },
+    "/kaggle/working/kltn_data/results/survey_v2/E2_E3/e3_scaling_p.csv": {
+      "sha256": "3b61855161554d1a051d4355139c1759c87884af926517dccbb6df8bfae1d99e",
+      "rows": 52,
+      "commit_hash": "6ea47e85e25e48bcf543e4e736ebe7ba6588fdc5"
+    },
+    "/kaggle/working/kltn_data/results/survey_v2/E2_E3/e3_exponents.csv": {
+      "sha256": "d3efbf994cb7a8440c85c2960ae5984ca20c8223eba673b144953fe6e8a091d6",
+      "rows": 11,
+      "commit_hash": "6ea47e85e25e48bcf543e4e736ebe7ba6588fdc5"
+    },
+    "/kaggle/working/kltn_data/results/survey_v2/E4_E5/gse37745/e4_stability.csv": {
+      "sha256": "116f5e3a7208977e4f131bb6e13cd23585a1ac5032301420f991eed4b8b4a4ee",
+      "rows": 278,
+      "commit_hash": "6ea47e85e25e48bcf543e4e736ebe7ba6588fdc5"
+    },
+    "/kaggle/working/kltn_data/results/survey_v2/E4_E5/gse37745/e5a_redundancy.csv": {
+      "sha256": "dc57e0bc676dc933486fbe87a15f70252fc4eaf00364ba4b9652e8442696a6cf",
+      "rows": 276,
+      "commit_hash": "6ea47e85e25e48bcf543e4e736ebe7ba6588fdc5"
+    },
+    "/kaggle/working/kltn_data/results/survey_v2/E4_E5/gse37745/e5b_seed_stability.csv": {
+      "sha256": "1b46eae8c82168eea8089cafda2bf56fc540c480cf44dba6fa82e52cc8968ba6",
+      "rows": 18,
+      "commit_hash": "6ea47e85e25e48bcf543e4e736ebe7ba6588fdc5"
+    },
+    "/kaggle/working/kltn_data/results/survey_v2/E4_E5/gse37745/e5c_overlap_k10.csv": {
+      "sha256": "aefb27c72c9904112c03cd92475aa49c8a8a8c3c163e54abd07b1b2b6b4075c2",
+      "rows": 13,
+      "commit_hash": "6ea47e85e25e48bcf543e4e736ebe7ba6588fdc5"
+    },
+    "/kaggle/working/kltn_data/results/survey_v2/E4_E5/tcga_luad_lusc_primary_tumor/e4_stability.csv": {
+      "sha256": "5cbf2d0d2bd6cafc30640a860d865bfcea24473120ddc6ffb32742204e1d14fa",
+      "rows": 278,
+      "commit_hash": "6ea47e85e25e48bcf543e4e736ebe7ba6588fdc5"
+    },
+    "/kaggle/working/kltn_data/results/survey_v2/E4_E5/tcga_luad_lusc_primary_tumor/e5c_overlap_k10.csv": {
+      "sha256": "f433804f36e90b6fc52c53c488c764c70d7955b87a76525e1d8ec44844090252",
+      "rows": 11,
+      "commit_hash": "6ea47e85e25e48bcf543e4e736ebe7ba6588fdc5"
+    }
+  },
+  "outputs": [
+    "/kaggle/working/kltn_data/results/survey_v2/figures/fig_e1_auroc_vs_k_gse10245.pdf",
+    "/kaggle/working/kltn_data/results/survey_v2/figures/fig_e1_auroc_vs_k_gse10245.png",
+    "/kaggle/working/kltn_data/results/survey_v2/figures/fig_e1_auroc_vs_k_gse30219.pdf",
+    "/kaggle/working/kltn_data/results/survey_v2/figures/fig_e1_auroc_vs_k_gse30219.png",
+    "/kaggle/working/kltn_data/results/survey_v2/figures/fig_e1_auroc_vs_k_gse37745.pdf",
+    "/kaggle/working/kltn_data/results/survey_v2/figures/fig_e1_auroc_vs_k_gse37745.png",
+    "/kaggle/working/kltn_data/results/survey_v2/figures/fig_e1_auroc_vs_k_gse42127.pdf",
+    "/kaggle/working/kltn_data/results/survey_v2/figures/fig_e1_auroc_vs_k_gse42127.png",
+    "/kaggle/working/kltn_data/results/survey_v2/figures/fig_e1_auroc_vs_k_tcga_luad_lusc_primary_tumor.pdf",
+    "/kaggle/working/kltn_data/results/survey_v2/figures/fig_e1_auroc_vs_k_tcga_luad_lusc_primary_tumor.png",
+    "/kaggle/working/kltn_data/results/survey_v2/figures/fig_e1b_learning_curve_gse10245.pdf",
+    "/kaggle/working/kltn_data/results/survey_v2/figures/fig_e1b_learning_curve_gse10245.png",
+    "/kaggle/working/kltn_data/results/survey_v2/figures/fig_e1b_learning_curve_gse30219.pdf",
+    "/kaggle/working/kltn_data/results/survey_v2/figures/fig_e1b_learning_curve_gse30219.png",
+    "/kaggle/working/kltn_data/results/survey_v2/figures/fig_e1b_learning_curve_gse37745.pdf",
+    "/kaggle/working/kltn_data/results/survey_v2/figures/fig_e1b_learning_curve_gse37745.png",
+    "/kaggle/working/kltn_data/results/survey_v2/figures/fig_e1b_learning_curve_gse42127.pdf",
+    "/kaggle/working/kltn_data/results/survey_v2/figures/fig_e1b_learning_curve_gse42127.png",
+    "/kaggle/working/kltn_data/results/survey_v2/figures/fig_e3_scaling.pdf",
+    "/kaggle/working/kltn_data/results/survey_v2/figures/fig_e3_scaling.png",
+    "/kaggle/working/kltn_data/results/survey_v2/figures/fig_e4_stability_gse37745.pdf",
+    "/kaggle/working/kltn_data/results/survey_v2/figures/fig_e4_stability_gse37745.png",
+    "/kaggle/working/kltn_data/results/survey_v2/figures/fig_e4_stability_tcga_luad_lusc_primary_tumor.pdf",
+    "/kaggle/working/kltn_data/results/survey_v2/figures/fig_e4_stability_tcga_luad_lusc_primary_tumor.png",
+    "/kaggle/working/kltn_data/results/survey_v2/figures/fig_e5c_overlap_gse37745.pdf",
+    "/kaggle/working/kltn_data/results/survey_v2/figures/fig_e5c_overlap_gse37745.png",
+    "/kaggle/working/kltn_data/results/survey_v2/figures/fig_e5c_overlap_tcga_luad_lusc_primary_tumor.pdf",
+    "/kaggle/working/kltn_data/results/survey_v2/figures/fig_e5c_overlap_tcga_luad_lusc_primary_tumor.png",
+    "/kaggle/working/kltn_data/results/survey_v2/figures/fig_e6_tradeoff_gse37745.pdf",
+    "/kaggle/working/kltn_data/results/survey_v2/figures/fig_e6_tradeoff_gse37745.png",
+    "/kaggle/working/kltn_data/results/survey_v2/figures/fig_e6_tradeoff_tcga_luad_lusc_primary_tumor.pdf",
+    "/kaggle/working/kltn_data/results/survey_v2/figures/fig_e6_tradeoff_tcga_luad_lusc_primary_tumor.png",
+    "/kaggle/working/kltn_data/results/survey_v2/figures/fig_e7_transfer_gse10245.pdf",
+    "/kaggle/working/kltn_data/results/survey_v2/figures/fig_e7_transfer_gse10245.png",
+    "/kaggle/working/kltn_data/results/survey_v2/figures/fig_e7_transfer_gse30219.pdf",
+    "/kaggle/working/kltn_data/results/survey_v2/figures/fig_e7_transfer_gse30219.png",
+    "/kaggle/working/kltn_data/results/survey_v2/figures/fig_e7_transfer_gse37745.pdf",
+    "/kaggle/working/kltn_data/results/survey_v2/figures/fig_e7_transfer_gse37745.png",
+    "/kaggle/working/kltn_data/results/survey_v2/figures/fig_e7_transfer_gse42127.pdf",
+    "/kaggle/working/kltn_data/results/survey_v2/figures/fig_e7_transfer_gse42127.png",
+    "/kaggle/working/kltn_data/results/survey_v2/tables/e0_signal_check.csv",
+    "/kaggle/working/kltn_data/results/survey_v2/tables/e0_signal_check.tex",
+    "/kaggle/working/kltn_data/results/survey_v2/tables/e1_ablation_noihc.csv",
+    "/kaggle/working/kltn_data/results/survey_v2/tables/e1_ablation_noihc_table.csv",
+    "/kaggle/working/kltn_data/results/survey_v2/tables/e1_ablation_noihc_table.tex",
+    "/kaggle/working/kltn_data/results/survey_v2/tables/e1_auroc_table.csv",
+    "/kaggle/working/kltn_data/results/survey_v2/tables/e1_auroc_table.tex",
+    "/kaggle/working/kltn_data/results/survey_v2/tables/e1_b0_table.csv",
+    "/kaggle/working/kltn_data/results/survey_v2/tables/e1_b0_table.tex",
+    "/kaggle/working/kltn_data/results/survey_v2/tables/e1_bayes_rope.csv",
+    "/kaggle/working/kltn_data/results/survey_v2/tables/e1_bayes_rope_matrix_k10.csv",
+    "/kaggle/working/kltn_data/results/survey_v2/tables/e1_kstar_per_cohort.csv",
+    "/kaggle/working/kltn_data/results/survey_v2/tables/e1_kstar_pooled.csv",
+    "/kaggle/working/kltn_data/results/survey_v2/tables/e1_kstar_pooled.tex",
+    "/kaggle/working/kltn_data/results/survey_v2/tables/e1_kstar_pooled_by_k.csv",
+    "/kaggle/working/kltn_data/results/survey_v2/tables/e1_random_k_per_fold.csv",
+    "/kaggle/working/kltn_data/results/survey_v2/tables/e1_summary.csv",
+    "/kaggle/working/kltn_data/results/survey_v2/tables/e1_tests_vs_random_b0.csv",
+    "/kaggle/working/kltn_data/results/survey_v2/tables/e1b_learning_curves.csv",
+    "/kaggle/working/kltn_data/results/survey_v2/tables/e1b_learning_curves_table.csv",
+    "/kaggle/working/kltn_data/results/survey_v2/tables/e1b_learning_curves_table.tex",
+    "/kaggle/working/kltn_data/results/survey_v2/tables/e1b_stability.csv",
+    "/kaggle/working/kltn_data/results/survey_v2/tables/e2_cost_table.csv",
+    "/kaggle/working/kltn_data/results/survey_v2/tables/e2_cost_table.tex",
+    "/kaggle/working/kltn_data/results/survey_v2/tables/e3_exponents_vs_table5.csv",
+    "/kaggle/working/kltn_data/results/survey_v2/tables/e3_exponents_vs_table5.tex",
+    "/kaggle/working/kltn_data/results/survey_v2/tables/e4_nogueira_table.csv",
+    "/kaggle/working/kltn_data/results/survey_v2/tables/e4_nogueira_table.tex",
+    "/kaggle/working/kltn_data/results/survey_v2/tables/e4_stability.csv",
+    "/kaggle/working/kltn_data/results/survey_v2/tables/e5a_redundancy.csv",
+    "/kaggle/working/kltn_data/results/survey_v2/tables/e5a_redundancy_table.csv",
+    "/kaggle/working/kltn_data/results/survey_v2/tables/e5a_redundancy_table.tex",
+    "/kaggle/working/kltn_data/results/survey_v2/tables/e5b_seed_variability.csv",
+    "/kaggle/working/kltn_data/results/survey_v2/tables/e5b_seed_variability.tex",
+    "/kaggle/working/kltn_data/results/survey_v2/tables/e5c_overlap_k10_gse37745.csv",
+    "/kaggle/working/kltn_data/results/survey_v2/tables/e5c_overlap_k10_tcga_luad_lusc_primary_tumor.csv",
+    "/kaggle/working/kltn_data/results/survey_v2/tables/e6_pareto_front.csv",
+    "/kaggle/working/kltn_data/results/survey_v2/tables/e6_pareto_front.tex",
+    "/kaggle/working/kltn_data/results/survey_v2/tables/e6_tradeoff.csv",
+    "/kaggle/working/kltn_data/results/survey_v2/tables/e7_transfer_table.csv",
+    "/kaggle/working/kltn_data/results/survey_v2/tables/e7_transfer_table.tex"
+  ],
+  "input_commit_hashes": [
+    "6ea47e85e25e48bcf543e4e736ebe7ba6588fdc5",
+    "9b2d6a57610a2e0d7d75ec97dace030dec51d516",
+    "d870008111f5199789cf21c5d7feecaa21ee9f7a"
+  ]
+}

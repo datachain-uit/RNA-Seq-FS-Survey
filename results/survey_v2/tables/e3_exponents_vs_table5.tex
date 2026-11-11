@@ -1,0 +1,23 @@
+\begin{table*}[t]
+  \centering
+  \caption{E3: empirical log--log exponents of wall time in $n$ and $p$ versus the theoretical orders of Table~\ref{tab:fs_complexity}.}
+  \label{tab:e3_exponents}
+  \small
+  \begin{tabular}{lllllllllll}
+    \toprule
+    method & family & alpha\_n\_measured & alpha\_n\_table5 & alpha\_p\_measured & alpha\_p\_large\_measured & alpha\_p\_table5 & complexity\_table5 & n\_range & p\_range & wall\_spread\_max\_rel \\
+    \midrule
+    f\_test & filter & 0.833 & 1 & 1.166 & 1.185 & 1 & O(np) & 100-812 & 1000-19938 & 0.160 \\
+    mutual\_info & filter & 0.352 & 1 & 1.027 & 1.034 & 1 & O(np) & 100-812 & 1000-19938 & 0.066 \\
+    mrmr & filter & 0.940 & 1 & 1.035 & 1.048 & 2 & O(p^2 n) [cài đặt tham lam k gen: O(k n p) -> kỳ vọng alpha\_p = 1] & 100-812 & 1000-19938 & 0.070 \\
+    l1\_lr & embedded & 1.147 & 1 & 1.138 & 1.138 & 1 & O(n p t) & 100-812 & 1000-19938 & 0.040 \\
+    ktsp & rank-based & 0.610 & 1 & 2.056 &  & 2 & O(n p^2) [pair scores on the pre-filtered genes] & 100-812 & 1000-5000 & 0.009 \\
+    abess & constrained & 1.039 & 1 & 0.922 & 0.895 & 1 & O(n p · iterations) [splicing; Zhu et al. 2020] & 100-812 & 1000-19938 & 0.273 \\
+    elastic\_net & embedded & 1.044 & 1 & 1.284 & 1.244 & 1 & O(n p t) & 100-812 & 1000-10000 & 0.038 \\
+    rf\_importance & embedded & 1.181 & 1 & 0.459 & 0.454 & 1 & O(B n p log n) & 100-812 & 1000-19938 & 0.061 \\
+    stability\_selection & constrained & 1.186 & 1 & 1.142 & 1.078 & 1 & O(B · n p t) [B = 100 L1 fits] & 100-812 & 1000-19938 & 0.222 \\
+    relieff & filter & 1.024 & 2 & 1.052 & 1.085 & 1 & O(n^2 p) & 100-812 & 1000-19938 & 0.099 \\
+    svm\_rfe & embedded & 1.096 & 2 & 1.087 & 1.145 & 2 & O(n^2 p^2) [loại 10\%/vòng: ~O(n^2 p) hoặc O(n p^2) tùy n, p] & 100-812 & 1000-19938 & 0.061 \\
+    \bottomrule
+  \end{tabular}
+\end{table*}

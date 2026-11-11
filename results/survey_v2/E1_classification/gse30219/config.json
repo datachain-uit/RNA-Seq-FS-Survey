@@ -1,0 +1,195 @@
+{
+  "experiment": "E1_classification",
+  "dataset": "gse30219",
+  "role": "target_main",
+  "protocol": "fixed Phase-A panels; precomputed patient-grouped repeated 5x5 outer tests; C and threshold by inner 3-fold CV on outer train only; b0 = LR-L2 on all genes; random_k = mean over draws inside the label-free prefilter of the outer train",
+  "selection_roots": [
+    "/kaggle/working/kltn_data/results/survey_v2/E1_feature_selection",
+    "/kaggle/working/kltn_data/results/survey_v2/E1_wrapper_feature_selection"
+  ],
+  "split_file": "/kaggle/working/kltn_data/experiment-data-geo-target/gse30219/repeated_splits.csv",
+  "split_sha256": "de92722bd27a853fef77abe4fda22bcd64886ef2724c298ac386b0bfd9b979bc",
+  "classifiers_main": [
+    "lr_l2"
+  ],
+  "classifiers_secondary": [],
+  "secondary_k": [
+    5,
+    25
+  ],
+  "random_k_draws": 100,
+  "prefilter_p0": 5000,
+  "small_n_rule": "C = 1.0 fixed and threshold 0.5 when the smaller class has <= 10 training samples (M5)",
+  "metrics": [
+    "auroc",
+    "bacc",
+    "mcc",
+    "logloss",
+    "brier"
+  ],
+  "inner_cv_folds": 3,
+  "gene_space": {
+    "patient_id_assumed_from_sample_id": false,
+    "gene_space": "intersection with tcga_luad_lusc_primary_tumor",
+    "n_genes_before_gene_space": 20848,
+    "data_dir": "/kaggle/working/kltn_data/experiment-data-geo-target/gse30219",
+    "n_per_class": [
+      81,
+      60
+    ],
+    "n_per_class_expected": [
+      81,
+      60
+    ],
+    "n_matches_expected": true,
+    "n_genes_dropped": 4369
+  },
+  "n_samples": 141,
+  "n_genes": 16479,
+  "methods_found": [
+    "panel_girard2016",
+    "panel_wilkerson2013"
+  ],
+  "note": "no best-classifier-by-test file (O19); extended zoo only in classification_extended_per_fold.csv",
+  "methods_in_results": [
+    "abess",
+    "b0",
+    "bpso",
+    "elastic_net",
+    "f_test",
+    "ga",
+    "ihc_2",
+    "ihc_4",
+    "ktsp",
+    "l1_lr",
+    "mrmr",
+    "mutual_info",
+    "panel_girard2016",
+    "panel_wilkerson2013",
+    "random_k",
+    "relieff",
+    "rf_importance",
+    "stability_selection",
+    "svm_rfe"
+  ],
+  "redo_methods": [
+    "panel_girard2016",
+    "panel_wilkerson2013"
+  ],
+  "rows_reused_from_commit": "6ea47e85e25e48bcf543e4e736ebe7ba6588fdc5",
+  "legacy_rows_realigned": 450,
+  "versions": {
+    "numpy": "2.1.3",
+    "pandas": "2.3.3",
+    "scipy": "1.16.3",
+    "scikit-learn": "1.6.1",
+    "tables": "3.10.2",
+    "skrebate": "0.8.4",
+    "joblib": "1.6.0",
+    "threadpoolctl": "3.6.0",
+    "psutil": "5.9.5",
+    "xgboost": "3.4.1",
+    "lightgbm": "4.6.0",
+    "codecarbon": null
+  },
+  "generated_at": "2026-11-02T16:49:50+00:00",
+  "resumed_from": [
+    {
+      "commit_hash": "9b2d6a57610a2e0d7d75ec97dace030dec51d516",
+      "generated_at": "2026-10-31T06:59:05+00:00",
+      "note": "các dòng/checkpoint không tính lại trong lần chạy này được tạo ở commit này"
+    },
+    {
+      "commit_hash": "6ea47e85e25e48bcf543e4e736ebe7ba6588fdc5",
+      "generated_at": "2026-11-01T17:24:53+00:00",
+      "note": "các dòng/checkpoint không tính lại trong lần chạy này được tạo ở commit này"
+    }
+  ],
+  "commit_hash": "d870008111f5199789cf21c5d7feecaa21ee9f7a",
+  "provenance": {
+    "schema": "kltn-provenance/1",
+    "commit_hash": "d870008111f5199789cf21c5d7feecaa21ee9f7a",
+    "tracked": true,
+    "dirty": false,
+    "branch": "HEAD",
+    "remote": "https://github.com/datachain-uit/RNA-Seq-FS-Survey.git",
+    "untracked_reason": null,
+    "script": "scripts/run_e1_classification.py",
+    "code_root": "/kaggle/working/RNA-Seq-FS-Survey",
+    "data_root": "/kaggle/working/kltn_data",
+    "argv": [
+      "--datasets",
+      "gse30219",
+      "--no-references",
+      "--methods",
+      "panel_girard2016",
+      "panel_wilkerson2013",
+      "--redo-methods",
+      "panel_girard2016",
+      "panel_wilkerson2013"
+    ],
+    "started_at": "2026-11-02T16:49:39+00:00",
+    "python": "3.13.15",
+    "packages": {
+      "numpy": "2.1.3",
+      "pandas": "2.3.3",
+      "scikit-learn": "1.6.1",
+      "scipy": "1.16.3",
+      "tables": "3.10.2",
+      "openpyxl": "3.1.5",
+      "requests": "2.34.2",
+      "xgboost": "3.4.1",
+      "lightgbm": "4.6.0",
+      "abess": "0.4.11"
+    },
+    "machine": {
+      "platform": "Linux-6.18.55+-x86_64-with-glibc2.39",
+      "processor": "x86_64",
+      "machine": "x86_64",
+      "cpu_count": 4,
+      "hostname": "8f5c12418885"
+    },
+    "data_sha256": {
+      "/kaggle/input/datasets/lfreedom2750/experiment-data-v3/experiment-data-geo-target/gse30219/expression.h5": "6c2f7377ad802a7df3d804473884ad64fa08beadfa44ecb5232343801230e2d9",
+      "/kaggle/input/datasets/lfreedom2750/experiment-data-v3/experiment-data-geo-target/gse30219/metadata.csv": "570923f3f20216def97dfc47ca06a2e78f30669f4b7829f59b6426d7a32501bc",
+      "/kaggle/input/datasets/lfreedom2750/experiment-data-v3/experiment-data-geo-target/gse30219/repeated_splits.csv": "de92722bd27a853fef77abe4fda22bcd64886ef2724c298ac386b0bfd9b979bc"
+    },
+    "params": {
+      "datasets": [
+        "gse30219"
+      ],
+      "methods": [
+        "panel_girard2016",
+        "panel_wilkerson2013"
+      ],
+      "k": null,
+      "repeats": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "selection_roots": null,
+      "selection_root": null,
+      "splits_root": null,
+      "out": "E1_classification",
+      "secondary": false,
+      "references": false,
+      "random_draws": 100,
+      "prefilter": 5000,
+      "save_scores": false,
+      "exclude_genes": null,
+      "models_extended": false,
+      "quick": false,
+      "redo_methods": [
+        "panel_girard2016",
+        "panel_wilkerson2013"
+      ]
+    },
+    "traceable": true,
+    "traceable_errors": []
+  },
+  "traceable": true,
+  "traceable_errors": []
+}

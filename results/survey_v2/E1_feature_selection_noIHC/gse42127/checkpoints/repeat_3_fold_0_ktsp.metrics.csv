@@ -1,0 +1,9 @@
+cohort,repeat,seed,fold,method,k,n_train,p0,n_selected,exact_k,n_filled,selector_param,n_eval,best_fitness,selection_time_s,cpu_time_s,rss_delta_mb,emissions_kg_co2,missing_genes
+gse42127,3,45,0,ktsp,1,133,5000,0,False,0,,,,19.65863859199999,19.526396372999443,0.0,,ktsp: k must be even
+gse42127,3,45,0,ktsp,2,133,5000,2,True,0,,,,19.65863859199999,19.526396372999443,0.0,,
+gse42127,3,45,0,ktsp,3,133,5000,0,False,0,,,,19.65863859199999,19.526396372999443,0.0,,ktsp: k must be even
+gse42127,3,45,0,ktsp,4,133,5000,4,True,0,,,,19.65863859199999,19.526396372999443,0.0,,
+gse42127,3,45,0,ktsp,5,133,5000,0,False,0,,,,19.65863859199999,19.526396372999443,0.0,,ktsp: k must be even
+gse42127,3,45,0,ktsp,10,133,5000,10,True,0,,,,19.65863859199999,19.526396372999443,0.0,,
+gse42127,3,45,0,ktsp,25,133,5000,0,False,0,,,,19.65863859199999,19.526396372999443,0.0,,ktsp: k must be even
+gse42127,3,45,0,ktsp,50,133,5000,50,True,0,,,,19.65863859199999,19.526396372999443,0.0,,

@@ -1,0 +1,6 @@
+sample_id,reason,decision,verdict,category
+GSM748065,QĐ22 sex check: inconsistent — XIST và gen Y cùng cao (meta_sex = male); không xác minh được danh tính mẫu,QĐ22 2026-10-29,inconsistent,both-high
+GSM748078,"QĐ22 sex check: opposite — XIST và gen Y đều trái metadata (meta_sex = male, biểu hiện = F-like); nhãn mô học cùng dòng metadata nên không tin được",QĐ22 2026-10-29,opposite,F-like
+GSM748240,QĐ22 sex check: inconsistent — XIST và gen Y cùng cao (meta_sex = male); không xác minh được danh tính mẫu,QĐ22 2026-10-29,inconsistent,both-high
+GSM748278,QĐ22 sex check: inconsistent — XIST và gen Y cùng cao (meta_sex = male); không xác minh được danh tính mẫu,QĐ22 2026-10-29,inconsistent,both-high
+GSM748279,QĐ22 sex check: inconsistent — XIST và gen Y cùng cao (meta_sex = male); không xác minh được danh tính mẫu,QĐ22 2026-10-29,inconsistent,both-high

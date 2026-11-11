@@ -1,0 +1,6 @@
+dataset,n,mode,metadata_sex_column,xist_threshold,y_threshold,gene_thresholds,threshold_rule,match,inconclusive,opposite,n_intermediate,n_quarantine,no-metadata,inconsistent
+tcga_luad_lusc_primary_tumor,1018,single-axis (Y vote),sex,,,"{'RPS4Y1': 2.7211899772286414, 'DDX3Y': 1.1034482579678297, 'KDM5D': 0.6622827591374517, 'UTY': 0.3054268724285066, 'EIF1AY': 0.619014842249453}","midpoint(female q95, male q05)",1011.0,5.0,2.0,5,2,,
+gse10245,58,"two-axis (XIST, Y)",sex,7.022457598784734,5.70220712884551,,,,,,0,3,55.0,3.0
+gse30219,146,"two-axis (XIST, Y)",sex,7.717729769868903,5.919595844805741,,,132.0,9.0,1.0,0,5,,4.0
+gse37745,172,"two-axis (XIST, Y)",sex,8.513236293624733,6.296491660115518,,,169.0,1.0,1.0,1,2,,1.0
+gse42127,176,"two-axis (XIST, Y)",sex,7.067996781891052,5.804746995461198,,,161.0,6.0,7.0,5,9,,2.0

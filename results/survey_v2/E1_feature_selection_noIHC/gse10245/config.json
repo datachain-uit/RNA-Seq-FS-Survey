@@ -1,0 +1,233 @@
+{
+  "experiment": "E1_feature_selection",
+  "dataset": "gse10245",
+  "role": "target_small",
+  "protocol": "precomputed patient-grouped repeated 5x5 outer train/test; selection and label-free variance prefilter use outer train only",
+  "split_file": "/kaggle/working/kltn_data/experiment-data-geo-target/gse10245/repeated_splits.csv",
+  "split_sha256": "823637702262a5fea795a52e9d2972f7857d9b75156d0667b1f7cac769496d5e",
+  "methods": [
+    "f_test",
+    "mutual_info",
+    "mrmr",
+    "relieff",
+    "l1_lr",
+    "elastic_net",
+    "rf_importance",
+    "svm_rfe",
+    "abess",
+    "stability_selection",
+    "ktsp",
+    "ihc_2",
+    "ihc_4"
+  ],
+  "methods_skipped": [],
+  "fixed_panels": {
+    "ihc_2": [
+      "NKX2-1",
+      "TP63"
+    ],
+    "ihc_4": [
+      "NKX2-1",
+      "TP63",
+      "NAPSA",
+      "KRT5"
+    ]
+  },
+  "k_grid": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    10,
+    25,
+    50
+  ],
+  "prefilter_p0": 5000,
+  "gene_space": {
+    "patient_id_assumed_from_sample_id": false,
+    "gene_space": "intersection with tcga_luad_lusc_primary_tumor",
+    "n_genes_before_gene_space": 20848,
+    "data_dir": "/kaggle/working/kltn_data/experiment-data-geo-target/gse10245",
+    "n_per_class": [
+      37,
+      18
+    ],
+    "n_per_class_expected": [
+      37,
+      18
+    ],
+    "n_matches_expected": true,
+    "n_genes_dropped": 4369,
+    "excluded_genes": [
+      "KRT5",
+      "NAPSA",
+      "NKX2-1",
+      "TP63"
+    ],
+    "excluded_genes_not_found": []
+  },
+  "n_samples": 55,
+  "n_genes": 16475,
+  "metrics": [
+    "n_selected",
+    "exact_k",
+    "n_filled",
+    "selection_time_s (descriptive, not E2)",
+    "cpu_time_s",
+    "rss_delta_mb (descriptive)",
+    "emissions_kg_co2 (optional estimate)",
+    "n_eval",
+    "best_fitness",
+    "pairwise_jaccard (descriptive; E4 is the CI version)"
+  ],
+  "methods_in_results": [
+    "abess",
+    "elastic_net",
+    "f_test",
+    "ihc_2",
+    "ihc_4",
+    "ktsp",
+    "l1_lr",
+    "mrmr",
+    "mutual_info",
+    "relieff",
+    "rf_importance",
+    "stability_selection",
+    "svm_rfe"
+  ],
+  "redo_methods": [
+    "svm_rfe"
+  ],
+  "checkpoints_reused_from_commit": "9b2d6a57610a2e0d7d75ec97dace030dec51d516",
+  "versions": {
+    "numpy": "2.1.3",
+    "pandas": "2.3.3",
+    "scipy": "1.16.3",
+    "scikit-learn": "1.6.1",
+    "tables": "3.10.2",
+    "skrebate": "0.8.4",
+    "joblib": "1.6.0",
+    "threadpoolctl": "3.6.0",
+    "psutil": "5.9.5",
+    "xgboost": "3.4.1",
+    "lightgbm": "4.6.0",
+    "codecarbon": null
+  },
+  "generated_at": "2026-11-01T16:03:23+00:00",
+  "resumed_from": [
+    {
+      "commit_hash": "9b2d6a57610a2e0d7d75ec97dace030dec51d516",
+      "generated_at": "2026-10-29T11:48:48+00:00",
+      "note": "các dòng/checkpoint không tính lại trong lần chạy này được tạo ở commit này"
+    }
+  ],
+  "commit_hash": "6ea47e85e25e48bcf543e4e736ebe7ba6588fdc5",
+  "provenance": {
+    "schema": "kltn-provenance/1",
+    "commit_hash": "6ea47e85e25e48bcf543e4e736ebe7ba6588fdc5",
+    "tracked": true,
+    "dirty": false,
+    "branch": "HEAD",
+    "remote": "https://github.com/datachain-uit/RNA-Seq-FS-Survey.git",
+    "untracked_reason": null,
+    "script": "scripts/run_e1_feature_selection.py",
+    "code_root": "/kaggle/working/RNA-Seq-FS-Survey",
+    "data_root": "/kaggle/working/kltn_data",
+    "argv": [
+      "--datasets",
+      "gse10245",
+      "--exclude-genes",
+      "NKX2-1",
+      "TP63",
+      "NAPSA",
+      "KRT5",
+      "--out",
+      "E1_feature_selection_noIHC",
+      "--redo-methods",
+      "svm_rfe"
+    ],
+    "started_at": "2026-11-01T16:03:08+00:00",
+    "python": "3.13.15",
+    "packages": {
+      "numpy": "2.1.3",
+      "pandas": "2.3.3",
+      "scikit-learn": "1.6.1",
+      "scipy": "1.16.3",
+      "tables": "3.10.2",
+      "openpyxl": "3.1.5",
+      "requests": "2.34.2",
+      "xgboost": "3.4.1",
+      "lightgbm": "4.6.0",
+      "abess": "0.4.11"
+    },
+    "machine": {
+      "platform": "Linux-6.18.55+-x86_64-with-glibc2.39",
+      "processor": "x86_64",
+      "machine": "x86_64",
+      "cpu_count": 4,
+      "hostname": "f63847a2e189"
+    },
+    "data_sha256": {
+      "/kaggle/input/datasets/lfreedom2750/experiment-data-v3/experiment-data-geo-target/gse10245/expression.h5": "7cb29e07d6c1489dbd90ad81ebfa9675548bac729289f70cf04766f2119226ea",
+      "/kaggle/input/datasets/lfreedom2750/experiment-data-v3/experiment-data-geo-target/gse10245/metadata.csv": "571f9d0ce2fc78275f41d09aa57a71f7a49ac3c6f1814c5b6f5b0002c12c2e26",
+      "/kaggle/input/datasets/lfreedom2750/experiment-data-v3/experiment-data-geo-target/gse10245/repeated_splits.csv": "823637702262a5fea795a52e9d2972f7857d9b75156d0667b1f7cac769496d5e"
+    },
+    "params": {
+      "datasets": [
+        "gse10245"
+      ],
+      "methods": [
+        "f_test",
+        "mutual_info",
+        "mrmr",
+        "relieff",
+        "l1_lr",
+        "elastic_net",
+        "rf_importance",
+        "svm_rfe",
+        "abess",
+        "stability_selection",
+        "ktsp",
+        "ihc_2",
+        "ihc_4"
+      ],
+      "k": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        10,
+        25,
+        50
+      ],
+      "repeats": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "prefilter": 5000,
+      "splits_root": null,
+      "out": "E1_feature_selection_noIHC",
+      "pop": 30,
+      "generations": 50,
+      "exclude_genes": [
+        "NKX2-1",
+        "TP63",
+        "NAPSA",
+        "KRT5"
+      ],
+      "track_emissions": false,
+      "redo_methods": [
+        "svm_rfe"
+      ]
+    },
+    "traceable": true,
+    "traceable_errors": []
+  },
+  "traceable": true,
+  "traceable_errors": []
+}

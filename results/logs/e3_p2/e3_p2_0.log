@@ -1,0 +1,34 @@
+[tcga_luad_lusc_primary_tumor] 1016 mẫu × 19938 gen; train fold 0 = 812
+Máy: Intel(R) Xeon(R) CPU @ 2.20GHz | RAM GB: 31.35
+[hiệu chuẩn] l1_lr: wall 10.850s
+[hiệu chuẩn] svm_rfe: wall 3.836s
+[hiệu chuẩn] rf_importance: wall 22.574s
+[hiệu chuẩn] lệch so với phiên tham chiếu: {'l1_lr': 0.010578902497929149, 'svm_rfe': 0.007552419562822089, 'rf_importance': 0.014000283526354781} -> ok = True
+E3 n= 100 elastic_net          wall 102.44s
+E3 n= 100 rf_importance        wall 2.00s
+E3 n= 100 stability_selection  wall 2.49s
+E3 n= 200 elastic_net          wall 193.23s
+E3 n= 200 rf_importance        wall 4.16s
+E3 n= 200 stability_selection  wall 6.51s
+E3 n= 400 elastic_net          wall 427.01s
+E3 n= 400 rf_importance        wall 9.21s
+E3 n= 400 stability_selection  wall 14.95s
+E3 n= 812 elastic_net          wall 891.39s
+E3 n= 812 rf_importance        wall 23.83s
+E3 n= 812 stability_selection  wall 29.77s
+E3 p=  1000 elastic_net          wall 107.74s
+E3 p=  1000 rf_importance        wall 10.79s
+E3 p=  1000 stability_selection  wall 4.10s
+E3 p=  2000 elastic_net          wall 280.82s
+E3 p=  2000 rf_importance        wall 14.61s
+E3 p=  2000 stability_selection  wall 10.91s
+E3 p=  5000 elastic_net          wall 911.19s
+E3 p=  5000 rf_importance        wall 23.27s
+E3 p=  5000 stability_selection  wall 30.24s
+E3 p= 10000 elastic_net          wall 2072.04s
+E3 p= 10000 rf_importance        wall 33.37s
+E3 p= 10000 stability_selection  wall 63.27s
+E3 p= 19938 elastic_net          bỏ qua (E3_MAX_P = 10000)
+E3 p= 19938 rf_importance        wall 40.59s
+E3 p= 19938 stability_selection  wall 130.13s
+xong: /kaggle/working/kltn_data/results/survey_v2/E2_E3_p2
