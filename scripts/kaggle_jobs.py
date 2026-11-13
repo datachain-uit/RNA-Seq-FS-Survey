@@ -225,6 +225,12 @@ def build_jobs() -> dict[str, Job]:
                  requires=[f"E1_feature_selection_noIHC/{d}/selected_genes.csv" for d in C.MAIN_DATASETS],
                  requires_cfg=[(f"E1_feature_selection_noIHC/{d}/config.json", "redo_methods", "svm_rfe") for d in C.MAIN_DATASETS],
                  restore_from=["ablation_phaseA_geo", "ablation_phaseA_tcga", "redo_svm_rfe_A"], hours="3–6"))
+    # ----------------------------------------------------------------- B7 bước 1 (QĐ188, Review 13/11; nhánh dmkd-revision; cần Internet)
+    J.append(Job("b7_step1", "R3 · 15/11", "B7 bước 1: dựng tcga_luad_egfr (MAF mở GDC) và gse31210_egfr (GEO), QC, bản chia 5×5, data card, "
+                 "E0, B0 và random-k ở k = 10, bảng cổng G1/G2; chép hai bộ vào B7_data/. Bật Internet của phiên Kaggle",
+                 [["scripts/run_b7_step1.py", "--n-jobs", "4"]],
+                 [f"E0_b7/{d}" for d in C.B7_DATASETS] + [f"E1_classification_b7/{d}" for d in C.B7_DATASETS] + ["B7_gate", "B7_data"],
+                 parallel=1, hours="1–3"))
     return {j.name: j for j in J}
 
 

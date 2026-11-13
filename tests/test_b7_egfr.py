@@ -164,6 +164,24 @@ def test_gate_row_pass_and_fail():
         g.gate_row("tcga_luad_egfr", e0.assign(cohort="tcga_luad_egfr"), pf.iloc[:-2].assign(cohort="tcga_luad_egfr"), None)
 
 
+def test_step1_driver_order_and_job(capsys):
+    sys.path.insert(0, str(REPO / "scripts"))
+    for m in ("run_b7_step1", "kaggle_jobs"):
+        sys.modules.pop(m, None)
+    drv = importlib.import_module("run_b7_step1")
+    plan = drv.steps("QC", 4)
+    names = [" ".join(s[:2]) for s in plan]
+    assert len(plan) == 12 and plan[0][1] == "tcga" and plan[1][1] == "gse31210" and plan[-1][1] == "pack"
+    assert names.index("scripts/b7_gate.py --e0-dir") > names.index("scripts/run_e1_classification.py --datasets")
+    assert plan[9][plan[9].index("--k") + 1] == "10" and "--save-scores" in plan[9]
+    assert drv.main(["--list"]) == 0 and capsys.readouterr().out.count("python scripts/") == 12
+    job = importlib.import_module("kaggle_jobs").JOBS["b7_step1"]
+    assert job.shards == [["scripts/run_b7_step1.py", "--n-jobs", "4"]] and "B7_gate" in job.outputs and "B7_data" in job.outputs
+    nb = json.loads((REPO / "notebooks" / "kaggle" / "kaggle_B7_step1.ipynb").read_text(encoding="utf-8"))
+    cfg = "".join(nb["cells"][1]["source"])
+    assert "REPO_BRANCH = 'dmkd-revision'" in cfg and "JOB = 'b7_step1'" in cfg
+
+
 # ------------------------------------------------------------------------------------------------- chạy trọn trên dữ liệu giả
 @pytest.fixture(scope="module")
 def b7_root(tmp_path_factory):
@@ -295,3 +313,10 @@ def test_build_tcga_gse31210_card_and_gate_end_to_end(b7_root, monkeypatch):
     assert list(t.cohort) == list(C.B7_DATASETS) and t.n_folds.eq(25).all()
     assert t.b0_auprc_mean.between(0, 1).all() and t.positive_rate.between(0, 1).all()
     assert json.loads((root / "results" / "survey_v2" / "B7_gate" / "config.json").read_text(encoding="utf-8"))["experiment"] == "B7_gate"
+    build.main(["pack"])
+    packed = root / "results" / "survey_v2" / "B7_data" / C.B7_DATA_DIR
+    for name in C.B7_DATASETS:
+        for f in ("expression.h5", "metadata.csv", "repeated_splits.csv", f"data_card_{name}.json", "b7_labels_all.csv"):
+            assert (packed / name / f).is_file(), (name, f)
+    cfg = json.loads((root / "results" / "survey_v2" / "B7_data" / "config.json").read_text(encoding="utf-8"))
+    assert cfg["experiment"] == "B7_data" and len(cfg["files_sha256"]) >= 10

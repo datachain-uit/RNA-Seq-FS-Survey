@@ -33,6 +33,9 @@ B7_DATASETS = ("tcga_luad_egfr", "gse31210_egfr")
 # experiment-data-geo-target/<thư mục> như RQ0′ (scripts/run_rq0_prime.py::cohort_data_dir).
 PERM_DATA_DIR = "experiment-data-perm"
 GEO_TARGET_DIR = "experiment-data-geo-target"
+# B7 (QĐ188): hai bộ EGFR nằm trong thư mục riêng, ghi được trên Kaggle (hai thư mục trên là liên kết tới Input chỉ đọc) và
+# sau đó tải lên một Kaggle Input riêng, để năm bộ cũ giữ nguyên SHA-256.
+B7_DATA_DIR = "experiment-data-b7"
 # v3.1: thư mục chính = layout Kaggle Input "experiment-data-v3" của đội code (DATA_AUDIT 27/10: gse30219 đã là bản R5,
 # 146 mẫu). DATASET_DIR_ALTERNATIVES: tên thư mục thay thế được chấp nhận (layout RQ0′ trên máy cá nhân);
 # survey_v2.data.resolve_dataset_dir() chọn thư mục đầu tiên tồn tại.
@@ -42,8 +45,8 @@ DATASET_DIRS = {
     "gse30219": f"{GEO_TARGET_DIR}/gse30219",
     "gse37745": f"{GEO_TARGET_DIR}/gse37745",
     "gse42127": f"{GEO_TARGET_DIR}/gse42127",
-    "tcga_luad_egfr": f"{PERM_DATA_DIR}/tcga_luad_egfr",
-    "gse31210_egfr": f"{GEO_TARGET_DIR}/gse31210_egfr",
+    "tcga_luad_egfr": f"{B7_DATA_DIR}/tcga_luad_egfr",
+    "gse31210_egfr": f"{B7_DATA_DIR}/gse31210_egfr",
 }
 DATASET_DIR_ALTERNATIVES = {"gse30219": (f"{GEO_TARGET_DIR}/gse30219_r5_fixed",)}
 # Số mẫu kỳ vọng (LUAD/LUSC) sau QC mẫu QĐ21 + QĐ22 + QĐ22b (29/10/2026). load_dataset() ghi vào notes và DỪNG khi

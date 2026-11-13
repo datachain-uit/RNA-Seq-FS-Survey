@@ -11,6 +11,8 @@ Lệnh con, theo thứ tự (chạy trên Kaggle có Internet; dữ liệu TCGA 
             hàm của notebook GEO; ghi |G| = gen ∩ TCGA.
   card      Data card (JSON + Markdown) cho mỗi bộ, sau QC và bản chia: nguồn, định nghĩa nhãn, số mẫu từng nhóm, mẫu loại kèm
             lý do, phân bố FILTER (chỉ ghi lại), thang giá trị, |G|, SHA-256 tệp dữ liệu và bản chia.
+  pack      Chép hai bộ đã dựng (không gồm _backup_*) vào results/survey_v2/B7_data/<bộ>/ kèm config.json, để zip của phiên Kaggle
+            mang đủ tệp nhãn, data card, bản chia (Review 13/11 A.5) và để tải lên Kaggle Input "experiment-data-b7".
 
 Sau `gse31210` và trước `card` (cùng thủ tục QC như bốn cohort GEO):
     python scripts/check_sex_consistency.py --datasets gse31210_egfr
@@ -256,9 +258,29 @@ def build_card(name: str, prov) -> dict:
     return card
 
 
+# ------------------------------------------------------------------------------------------------- pack
+def pack(names, prov) -> Path:
+    import shutil
+    from survey_v2.runlog import results_dir, write_config
+    out = results_dir("B7_data")
+    files = []
+    for name in names:
+        d = resolve_dataset_dir(DATA_ROOT, name)
+        dst = out / C.B7_DATA_DIR / name
+        dst.mkdir(parents=True, exist_ok=True)
+        for f in sorted(d.iterdir()):
+            if f.is_file():
+                shutil.copy2(f, dst / f.name)
+                files.append(dst / f.name)
+    write_config(out, prov, {"experiment": "B7_data", "datasets": list(names), "layout": f"{C.B7_DATA_DIR}/<bộ>/ (upload as Kaggle Input)",
+                             "files_sha256": {str(f.relative_to(out)): sha256(f) for f in files}, "versions": all_versions()})
+    print(f"B7_data: {len(files)} tệp → {out}", flush=True)
+    return out
+
+
 def main(argv=None, script=__file__):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("command", choices=["tcga", "gse31210", "card"])
+    ap.add_argument("command", choices=["tcga", "gse31210", "card", "pack"])
     ap.add_argument("--cache", type=Path, default=None, help="thư mục tải về (mặc định $KLTN_DATA_ROOT/_b7_raw)")
     ap.add_argument("--status-json", type=Path, default=None, help="tcga: dùng status GDC đã lưu thay vì gọi API (test)")
     ap.add_argument("--allow-other-release", action="store_true")
@@ -270,6 +292,8 @@ def main(argv=None, script=__file__):
         build_tcga(args, prov)
     elif args.command == "gse31210":
         build_gse31210(args, prov)
+    elif args.command == "pack":
+        pack(args.datasets, prov)
     else:
         for name in args.datasets:
             build_card(name, prov)
