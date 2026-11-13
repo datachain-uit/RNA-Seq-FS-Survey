@@ -106,6 +106,11 @@ def test_characteristics_by_key_does_not_shift_values_y98():
     assert t.loc["G2", "relapse"] == "not relapsed" and pd.isna(t.loc["G2", "cluster"]) and t.loc["G1", "cluster"] == "A"
     with pytest.raises(ValueError):
         B.characteristics_by_key({"G1": ["tissue: a", "tissue: b"]})
+    with pytest.raises(ValueError):
+        B.characteristics_by_key({"G1": ["gene alteration status: EGFR mutation +", "gene alteration status: KRAS mutation +"]})
+    d = B.characteristics_by_key({"G1": ["tissue: t", "months before relapse/censor: 8.4", "months before relapse/censor: 14.6"]})
+    assert d.loc["G1", "months before relapse/censor"] == "8.4 | 14.6" and d.loc["G1", "tissue"] == "t"
+    assert d.attrs["duplicate_keys"] == [{"sample_id": "G1", "key": "months before relapse/censor", "values": ["8.4", "14.6"]}]
 
 
 def test_label_gse31210_qd185():

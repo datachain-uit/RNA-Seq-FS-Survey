@@ -142,12 +142,17 @@ def geo_annot_url(gpl: str) -> str:
     return f"https://ftp.ncbi.nlm.nih.gov/geo/platforms/{geo_stub(gpl)}/{gpl}/annot/{gpl}.annot.gz"
 
 
-def characteristics_by_key(cells_per_sample: dict[str, list[str]]) -> pd.DataFrame:
+STRICT_KEYS = ("tissue", "gene alteration status", "gender", "sex")    # trường dùng làm nhãn hoặc QC: lặp khoá → dừng
+
+
+def characteristics_by_key(cells_per_sample: dict[str, list[str]], strict_keys=STRICT_KEYS) -> pd.DataFrame:
     """Y98: mỗi ô "khoá: giá trị" đọc theo tiền tố của chính ô đó. Đầu vào: GSM → danh sách ô characteristics.
 
-    Ô rỗng bỏ qua; ô không có ":" ghi vào khoá "_unkeyed"; một mẫu có cùng khoá hai lần → lỗi.
+    Ô rỗng bỏ qua; ô không có ":" ghi vào khoá "_unkeyed". Một mẫu có cùng khoá hai lần: dừng nếu khoá thuộc `strict_keys`
+    (trường dùng làm nhãn hoặc QC); khoá khác thì nối các giá trị bằng " | " và ghi vào out.attrs["duplicate_keys"]
+    (GSE31210: GSM773540 có hai ô "months before relapse/censor", trường tiên lượng không dùng ở B7).
     """
-    rows = {}
+    rows, dups = {}, []
     for gsm, cells in cells_per_sample.items():
         rec = {}
         for cell in cells:
@@ -160,11 +165,16 @@ def characteristics_by_key(cells_per_sample: dict[str, list[str]]) -> pd.DataFra
             else:
                 k, v = "_unkeyed", cell
             if k in rec:
-                raise ValueError(f"{gsm}: khoá '{k}' xuất hiện hai lần trong characteristics")
+                if k.lower() in strict_keys:
+                    raise ValueError(f"{gsm}: khoá '{k}' (dùng làm nhãn/QC) xuất hiện hai lần trong characteristics")
+                dups.append({"sample_id": gsm, "key": k, "values": [rec[k], v]})
+                rec[k] = f"{rec[k]} | {v}"
+                continue
             rec[k] = v
         rows[gsm] = rec
     out = pd.DataFrame.from_dict(rows, orient="index")
     out.index.name = "sample_id"
+    out.attrs["duplicate_keys"] = dups
     return out
 
 
