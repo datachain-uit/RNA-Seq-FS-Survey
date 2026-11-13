@@ -48,8 +48,8 @@ from survey_v2.runlog import DATA_ROOT, all_versions, start_run  # noqa: E402
 
 TCGA_B7, GEO_B7 = C.B7_DATASETS
 GDC = "https://api.gdc.cancer.gov"
-GSE31210_MATRIX = "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE31nnn/GSE31210/matrix/GSE31210_series_matrix.txt.gz"
-GPL570_ANNOT = "https://ftp.ncbi.nlm.nih.gov/geo/platforms/GPL570nnn/GPL570/annot/GPL570.annot.gz"
+GSE31210_MATRIX = B.geo_series_matrix_url("GSE31210")
+GPL570_ANNOT = B.geo_annot_url("GPL570")      # …/platforms/GPLnnn/GPL570/annot/GPL570.annot.gz
 CLASS_NAMES = {0: "EGFR_wt", 1: "EGFR_mut"}
 
 
