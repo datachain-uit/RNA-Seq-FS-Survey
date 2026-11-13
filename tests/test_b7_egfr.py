@@ -120,6 +120,12 @@ def test_label_gse31210_qd185():
         B.label_gse31210(chars)
 
 
+def test_geo_urls_follow_the_ftp_stub_rule():
+    assert B.geo_stub("GPL570") == "GPLnnn" and B.geo_stub("GPL6884") == "GPL6nnn" and B.geo_stub("GSE31210") == "GSE31nnn"
+    assert B.geo_annot_url("GPL570") == "https://ftp.ncbi.nlm.nih.gov/geo/platforms/GPLnnn/GPL570/annot/GPL570.annot.gz"
+    assert B.geo_series_matrix_url("GSE31210").endswith("/geo/series/GSE31nnn/GSE31210/matrix/GSE31210_series_matrix.txt.gz")
+
+
 def test_decide_scale_rule_a2():
     lin = pd.DataFrame([[0.5, 50.0, 5000.0]] * 10)
     out, info = B.decide_scale(lin)

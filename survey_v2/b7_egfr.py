@@ -128,6 +128,20 @@ def check_counts(observed: dict, expected: dict, what: str) -> None:
 
 
 # ------------------------------------------------------------------------------------------------- GEO / GSE31210
+def geo_stub(accession: str) -> str:
+    """Thư mục FTP của GEO (chép notebook GEO): GSE31210 → GSE31nnn, GPL570 → GPLnnn, GPL6884 → GPL6nnn."""
+    prefix, number = accession[:3], accession[3:]
+    return prefix + (number[:-3] if len(number) > 3 else "") + "nnn"
+
+
+def geo_series_matrix_url(gse: str) -> str:
+    return f"https://ftp.ncbi.nlm.nih.gov/geo/series/{geo_stub(gse)}/{gse}/matrix/{gse}_series_matrix.txt.gz"
+
+
+def geo_annot_url(gpl: str) -> str:
+    return f"https://ftp.ncbi.nlm.nih.gov/geo/platforms/{geo_stub(gpl)}/{gpl}/annot/{gpl}.annot.gz"
+
+
 def characteristics_by_key(cells_per_sample: dict[str, list[str]]) -> pd.DataFrame:
     """Y98: mỗi ô "khoá: giá trị" đọc theo tiền tố của chính ô đó. Đầu vào: GSM → danh sách ô characteristics.
 
