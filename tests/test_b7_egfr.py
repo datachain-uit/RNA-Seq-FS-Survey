@@ -185,6 +185,7 @@ def test_step1_driver_order_and_job(capsys):
     assert len(plan) == 12 and plan[0][1] == "tcga" and plan[1][1] == "gse31210" and plan[-1][1] == "pack"
     assert names.index("scripts/b7_gate.py --e0-dir") > names.index("scripts/run_e1_classification.py --datasets")
     assert plan[9][plan[9].index("--k") + 1] == "10" and "--save-scores" in plan[9]
+    assert plan[6][plan[6].index("--manifest-out") + 1] == "e1_repeated_splits_manifest.json"     # không ghi vào experiment-data-perm
     assert drv.main(["--list"]) == 0 and capsys.readouterr().out.count("python scripts/") == 12
     job = importlib.import_module("kaggle_jobs").JOBS["b7_step1"]
     assert job.shards == [["scripts/run_b7_step1.py", "--n-jobs", "4"]] and "B7_gate" in job.outputs and "B7_data" in job.outputs
@@ -307,7 +308,11 @@ def test_build_tcga_gse31210_card_and_gate_end_to_end(b7_root, monkeypatch):
     assert gi["scale_decision"]["scale"].startswith("linear") and gi["n_genes_in_tcga"] == 120
 
     sys.modules.pop("build_e1_repeated_splits", None)
-    importlib.import_module("build_e1_repeated_splits").main(["--datasets", *C.B7_DATASETS])
+    perm_manifest = root / C.PERM_DATA_DIR / "e1_repeated_splits_manifest.json"
+    before = perm_manifest.read_bytes() if perm_manifest.exists() else None
+    b7_manifest = root / C.B7_DATA_DIR / "e1_repeated_splits_manifest.json"
+    importlib.import_module("build_e1_repeated_splits").main(["--datasets", *C.B7_DATASETS, "--manifest-out", str(b7_manifest)])
+    assert b7_manifest.is_file() and (perm_manifest.read_bytes() if perm_manifest.exists() else None) == before
     build.main(["card"])
     card = json.loads((g / "data_card_gse31210_egfr.json").read_text(encoding="utf-8"))
     assert card["n_per_class_after_qc"] == [25, 25] and "repeated_splits.csv" in card["sha256"]

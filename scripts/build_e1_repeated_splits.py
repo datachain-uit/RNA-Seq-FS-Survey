@@ -26,6 +26,9 @@ def parse_args(argv=None):
     ap.add_argument("--datasets", nargs="+", default=list(C.MAIN_DATASETS))
     ap.add_argument("--out-name", default="repeated_splits.csv")
     ap.add_argument("--force", action="store_true", help="replace an existing manifest only after validation")
+    ap.add_argument("--manifest-out", type=Path, default=None,
+                    help="where to write e1_repeated_splits_manifest.json (+ config.json); default $KLTN_DATA_ROOT/experiment-data-perm "
+                         "(B7: experiment-data-b7, writable on Kaggle)")
     return ap.parse_args(argv)
 
 
@@ -50,7 +53,8 @@ def main(argv=None, script=__file__):
             raise ValueError(f"{name}: generated manifest invalid: {errors}")
         report.append({"dataset": name, "path": str(path), "rows": len(manifest), "sha256": sha256(path)})
         print(f"[{name}] {len(manifest)} rows | {path}", flush=True)
-    out = DATA_ROOT / C.PERM_DATA_DIR / "e1_repeated_splits_manifest.json"
+    out = args.manifest_out or (DATA_ROOT / C.PERM_DATA_DIR / "e1_repeated_splits_manifest.json")
+    out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps({"protocol": "5 repeats x 5 patient-grouped outer folds", "seeds": list(C.REPEAT_SEEDS),
                                "files": report}, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     write_config(out.parent, prov, {"experiment": "E1_precomputed_splits", "files": report},
