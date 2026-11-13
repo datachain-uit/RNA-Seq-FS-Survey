@@ -41,7 +41,7 @@ from survey_v2.fewshot import build_fewshot_manifest, validate_fewshot_manifest 
 
 
 REPEAT_SEEDS = C.REPEAT_SEEDS
-PRIMARY_DATASETS = tuple(C.DATASETS)
+PRIMARY_DATASETS = tuple(C.MAIN_DATASETS)
 GEO_DATASETS = tuple(C.FEWSHOT_COHORTS)
 # n_T levels per cohort (documentation + legacy helpers). survey_v2.fewshot derives the same levels from the data:
 # a level is kept only when the smaller class of pool_T has at least n_T samples; GSE10245 is capped by FEWSHOT_N_T_LIMIT.

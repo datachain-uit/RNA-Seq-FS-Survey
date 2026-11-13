@@ -175,7 +175,7 @@ def sex_table(ds, meta: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--datasets", nargs="+", default=list(C.DATASETS))
+    ap.add_argument("--datasets", nargs="+", default=list(C.MAIN_DATASETS))
     ap.add_argument("--out", type=Path, default=None, help="mặc định $KLTN_DATA_ROOT/qc")
     ap.add_argument("--show-all", action="store_true", help="in mọi mẫu, không chỉ mẫu bị cờ")
     args = ap.parse_args(argv)

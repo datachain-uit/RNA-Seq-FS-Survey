@@ -104,7 +104,7 @@ def build_jobs() -> dict[str, Job]:
     J.append(Job("sanity", "1 · 03/11", "Sanity Y10 (normal vs tumor, AUROC >= 0,99)", [["scripts/run_sanity_auroc.py"]],
                  ["sanity"], parallel=1, hours="~1"))
     J.append(Job("e0", "1 · 03/11", "E0 kiểm tra tín hiệu, 5 bộ (200 hoán vị + 100 random-k)",
-                 [["scripts/run_survey_e0_signal_check.py", "--n-jobs", "4"]], [f"E0/{d}" for d in C.DATASETS], parallel=1, hours="~1"))
+                 [["scripts/run_survey_e0_signal_check.py", "--n-jobs", "4"]], [f"E0/{d}" for d in C.MAIN_DATASETS], parallel=1, hours="~1"))
     J.append(Job("e1_phaseA_geo", "1 · 03/11", "E1 pha A, 4 cohort GEO, 11 phương pháp + IHC/panel, 5×5 (một tiến trình/cohort)",
                  [_fs("--datasets", d) for d in GEO], [f"E1_feature_selection/{d}" for d in GEO], hours="3–6"))
     J.append(Job("e1_phaseB_geo", "1 · 03/11", "E1 pha B, 4 cohort GEO: LR-L2 (+RF, SVM ở k ∈ {5, 25}), B0, random-k",
@@ -167,12 +167,12 @@ def build_jobs() -> dict[str, Job]:
     J.append(Job("tables", "sau mỗi đợt", "Bảng, hình, provenance_manifest (E6 ghép tại k = 10; v3.1.7: + bảng ablation IHC, "
                  "panel công bố, CI bootstrap tái lập)",
                  [["scripts/make_survey_tables.py"]], ["tables"], parallel=1,
-                 requires=[f"E1_classification/{d}/classification_per_fold.csv" for d in C.DATASETS] + [f"E0/{d}/e0_signal_check.csv" for d in C.DATASETS]
-                 + [f"E1_classification_noIHC/{d}/classification_per_fold.csv" for d in C.DATASETS] + ["E2_E3/e2_cost_point.csv"],
+                 requires=[f"E1_classification/{d}/classification_per_fold.csv" for d in C.MAIN_DATASETS] + [f"E0/{d}/e0_signal_check.csv" for d in C.MAIN_DATASETS]
+                 + [f"E1_classification_noIHC/{d}/classification_per_fold.csv" for d in C.MAIN_DATASETS] + ["E2_E3/e2_cost_point.csv"],
                  # v3.1.7a: sau `panels`, E1_feature_selection/*/config.json ghi redo_methods = hai panel (không còn svm_rfe);
                  # việc `panels` đã đòi redo_methods ∋ svm_rfe ở đầu vào của nó, nên redo_methods ∋ panel_* bảo đảm cả chuỗi.
-                 requires_cfg=[(f"E1_feature_selection/{d}/config.json", "redo_methods", m) for d in C.DATASETS for m in PUBLISHED_PANELS]
-                 + [(f"E1_classification/{d}/config.json", "methods_in_results", m) for d in C.DATASETS for m in PUBLISHED_PANELS]
+                 requires_cfg=[(f"E1_feature_selection/{d}/config.json", "redo_methods", m) for d in C.MAIN_DATASETS for m in PUBLISHED_PANELS]
+                 + [(f"E1_classification/{d}/config.json", "methods_in_results", m) for d in C.MAIN_DATASETS for m in PUBLISHED_PANELS]
                  + [("E2_E3/config.json", "timing_tracemalloc", False), ("E2_E3/config.json", "peak_source", "VmHWM")],
                  restore_from=["e0", "sanity", "e7", "e2e3_merge", "ablation_phaseB", "redo_svm_rfe_B", "panels"], hours="<0,5"))
     # ----------------------------------------------------------------- v3.1.6: chọn lại SVM-RFE (QĐ25; random_state) — 02–04/11
@@ -180,37 +180,37 @@ def build_jobs() -> dict[str, Job]:
     redo = ["--redo-methods", "svm_rfe"]
     J.append(Job("redo_svm_rfe_A", "R · 04/11", "SVM-RFE chọn lại (random_state, QĐ25): E1 pha A 5 bộ + ablation pha A 5 bộ; "
                  "phương pháp khác lấy từ checkpoint đã khôi phục",
-                 [_fs("--datasets", d, *redo) for d in C.DATASETS] + [_fs("--datasets", d, *abl, *redo) for d in C.DATASETS],
-                 [f"E1_feature_selection/{d}" for d in C.DATASETS] + [f"E1_feature_selection_noIHC/{d}" for d in C.DATASETS],
-                 requires=[f"E1_feature_selection/{d}/checkpoints/repeat_0_fold_0_f_test.genes.csv" for d in C.DATASETS]
-                 + [f"E1_feature_selection_noIHC/{d}/checkpoints/repeat_0_fold_0_f_test.genes.csv" for d in C.DATASETS],
+                 [_fs("--datasets", d, *redo) for d in C.MAIN_DATASETS] + [_fs("--datasets", d, *abl, *redo) for d in C.MAIN_DATASETS],
+                 [f"E1_feature_selection/{d}" for d in C.MAIN_DATASETS] + [f"E1_feature_selection_noIHC/{d}" for d in C.MAIN_DATASETS],
+                 requires=[f"E1_feature_selection/{d}/checkpoints/repeat_0_fold_0_f_test.genes.csv" for d in C.MAIN_DATASETS]
+                 + [f"E1_feature_selection_noIHC/{d}/checkpoints/repeat_0_fold_0_f_test.genes.csv" for d in C.MAIN_DATASETS],
                  restore_from=["e1_phaseA_geo", "e1_phaseB_tcga", "ablation_phaseA_geo", "ablation_phaseA_tcga"], parallel=4, hours="~1"))
     J.append(Job("redo_svm_rfe_B", "R · 04/11", "SVM-RFE đánh giá lại (QĐ25): E1 pha B 5 bộ (+RF, SVM ở k ∈ {5, 25}), E1b 4 cohort, "
                  "E4/E5 2 bộ (E5c tính lại); các dòng khác giữ nguyên",
-                 [_clf("--datasets", d, "--secondary", "--no-references", "--methods", "svm_rfe", *redo) for d in C.DATASETS]
+                 [_clf("--datasets", d, "--secondary", "--no-references", "--methods", "svm_rfe", *redo) for d in C.MAIN_DATASETS]
                  + [["scripts/run_survey_e1b_learning_curve.py", "--datasets", d, "--methods", "svm_rfe", *redo, "--n-jobs", "2"] for d in GEO]
                  + [["scripts/run_survey_e4_e5_stability.py", "--datasets", "gse37745", "--methods", "svm_rfe", "--wrappers", *redo, "--n-jobs", "2"],
                     ["scripts/run_survey_e4_e5_stability.py", "--datasets", TCGA, "--methods", "svm_rfe", "--wrappers", "--skip-e5a", "--skip-e5b",
                      *redo, "--n-jobs", "2"]],
-                 [f"E1_classification/{d}" for d in C.DATASETS] + [f"E1b/{d}" for d in GEO] + ["E4_E5/gse37745", f"E4_E5/{TCGA}"],
-                 requires=[f"E1_feature_selection/{d}/selected_genes.csv" for d in C.DATASETS]
-                 + [f"E1_classification/{d}/classification_per_fold.csv" for d in C.DATASETS]
+                 [f"E1_classification/{d}" for d in C.MAIN_DATASETS] + [f"E1b/{d}" for d in GEO] + ["E4_E5/gse37745", f"E4_E5/{TCGA}"],
+                 requires=[f"E1_feature_selection/{d}/selected_genes.csv" for d in C.MAIN_DATASETS]
+                 + [f"E1_classification/{d}/classification_per_fold.csv" for d in C.MAIN_DATASETS]
                  + [f"E1b/{d}/e1b_per_run.csv" for d in GEO] + ["E4_E5/gse37745/e4_selected_genes.csv", f"E4_E5/{TCGA}/e4_selected_genes.csv"],
-                 requires_cfg=[(f"E1_feature_selection/{d}/config.json", "redo_methods", "svm_rfe") for d in C.DATASETS],
+                 requires_cfg=[(f"E1_feature_selection/{d}/config.json", "redo_methods", "svm_rfe") for d in C.MAIN_DATASETS],
                  restore_from=["e1_phaseB_wrappers", "e1_phaseB_geo", "e1_phaseB_tcga", "fewshot_e1b", "e4e5_gse37745", "e4_tcga", "redo_svm_rfe_A"],
                  parallel=3, hours="2–3"))
     # ----------------------------------------------------------------- v3.1.7: panel công bố (QĐ32) — 05/11
     J.append(Job("panels", "P · 05/11", "Panel công bố Girard 2016 + Wilkerson 2013 (survey_v2/panels/published_panels.csv): E1 pha A "
                  "(panel cố định, gen thiếu ghi vào config) và pha B 5 bộ, E1b 4 cohort; nối vào kết quả đã có (phương pháp khác giữ nguyên)",
-                 [_fs("--datasets", d, "--methods", *PUBLISHED_PANELS, "--redo-methods", *PUBLISHED_PANELS) for d in C.DATASETS],
-                 [f"E1_feature_selection/{d}" for d in C.DATASETS] + [f"E1_classification/{d}" for d in C.DATASETS] + [f"E1b/{d}" for d in GEO],
-                 finalize=[_clf("--datasets", d, "--no-references", "--methods", *PUBLISHED_PANELS, "--redo-methods", *PUBLISHED_PANELS) for d in C.DATASETS]
+                 [_fs("--datasets", d, "--methods", *PUBLISHED_PANELS, "--redo-methods", *PUBLISHED_PANELS) for d in C.MAIN_DATASETS],
+                 [f"E1_feature_selection/{d}" for d in C.MAIN_DATASETS] + [f"E1_classification/{d}" for d in C.MAIN_DATASETS] + [f"E1b/{d}" for d in GEO],
+                 finalize=[_clf("--datasets", d, "--no-references", "--methods", *PUBLISHED_PANELS, "--redo-methods", *PUBLISHED_PANELS) for d in C.MAIN_DATASETS]
                  + [["scripts/run_survey_e1b_learning_curve.py", "--datasets", d, "--methods", *PUBLISHED_PANELS, "--redo-methods", *PUBLISHED_PANELS,
                      "--n-jobs", "2"] for d in GEO],
-                 requires=[f"E1_feature_selection/{d}/selected_genes.csv" for d in C.DATASETS]
-                 + [f"E1_classification/{d}/classification_per_fold.csv" for d in C.DATASETS] + [f"E1b/{d}/e1b_per_run.csv" for d in GEO],
-                 requires_cfg=[(f"E1_feature_selection/{d}/config.json", "redo_methods", "svm_rfe") for d in C.DATASETS]
-                 + [(f"E1_classification/{d}/config.json", "redo_methods", "svm_rfe") for d in C.DATASETS],
+                 requires=[f"E1_feature_selection/{d}/selected_genes.csv" for d in C.MAIN_DATASETS]
+                 + [f"E1_classification/{d}/classification_per_fold.csv" for d in C.MAIN_DATASETS] + [f"E1b/{d}/e1b_per_run.csv" for d in GEO],
+                 requires_cfg=[(f"E1_feature_selection/{d}/config.json", "redo_methods", "svm_rfe") for d in C.MAIN_DATASETS]
+                 + [(f"E1_classification/{d}/config.json", "redo_methods", "svm_rfe") for d in C.MAIN_DATASETS],
                  restore_from=["redo_svm_rfe_B"], parallel=4, hours="<0,5"))
     # ----------------------------------------------------------------- Ablation loại 4 gen IHC (09–10/11, khoá luận)
     J.append(Job("ablation_phaseA_geo", "4 · 10/11", "Ablation không IHC: pha A 4 cohort GEO", [_fs("--datasets", d, *abl) for d in GEO],
@@ -220,10 +220,10 @@ def build_jobs() -> dict[str, Job]:
                  [f"E1_feature_selection_noIHC/{TCGA}"], finalize=[_fs("--datasets", TCGA, *abl)], hours="8–11"))
     J.append(Job("ablation_phaseB", "4 · 10/11", "Ablation không IHC: pha B 5 bộ",
                  [_clf("--datasets", d, "--selection-roots", "{RESULTS}/E1_feature_selection_noIHC", "--exclude-genes", *IHC_GENES,
-                       "--out", "E1_classification_noIHC") for d in C.DATASETS],
-                 [f"E1_classification_noIHC/{d}" for d in C.DATASETS],
-                 requires=[f"E1_feature_selection_noIHC/{d}/selected_genes.csv" for d in C.DATASETS],
-                 requires_cfg=[(f"E1_feature_selection_noIHC/{d}/config.json", "redo_methods", "svm_rfe") for d in C.DATASETS],
+                       "--out", "E1_classification_noIHC") for d in C.MAIN_DATASETS],
+                 [f"E1_classification_noIHC/{d}" for d in C.MAIN_DATASETS],
+                 requires=[f"E1_feature_selection_noIHC/{d}/selected_genes.csv" for d in C.MAIN_DATASETS],
+                 requires_cfg=[(f"E1_feature_selection_noIHC/{d}/config.json", "redo_methods", "svm_rfe") for d in C.MAIN_DATASETS],
                  restore_from=["ablation_phaseA_geo", "ablation_phaseA_tcga", "redo_svm_rfe_A"], hours="3–6"))
     return {j.name: j for j in J}
 

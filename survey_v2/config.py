@@ -18,6 +18,17 @@ DATASETS = {
     "gse37745": "target_main",                              # GPL570, 104/65 sau QĐ21 + QĐ22; E4–E5
     "gse42127": "target_second_platform",                   # GPL6884, 126/41 sau QĐ22; báo cáo riêng
 }
+# Năm bộ của bài toán chính LUAD/LUSC. Mặc định --datasets của các script và JOB Kaggle cũ dùng danh sách này, để thêm bộ
+# B7 không đổi lệnh nào đã chạy (QĐ188, Review 13/11).
+MAIN_DATASETS = tuple(DATASETS)
+# B7 (QĐ177, QĐ185, QĐ186, QĐ188): bài toán khó hơn — đột biến EGFR ở LUAD. Thêm vào CUỐI DATASETS để mã seed
+# 100 + thứ tự (DATASET_SEED_IDS) và chỉ số 0..4 (COHORT_ID của E4/E5) của năm bộ cũ không đổi. Nhãn: 1 = EGFR đột biến
+# (TCGA: biến thể hoạt hoá vùng kinase; GSE31210: "EGFR mutation +"), 0 = EGFR hoang dại / âm.
+DATASETS.update({
+    "tcga_luad_egfr": "b7_harder_task",                     # TCGA-LUAD của cohort TCGA hiện có; 435/58 (QĐ186)
+    "gse31210_egfr": "b7_harder_task",                      # GPL570, 99/127 trước QC (QĐ185)
+})
+B7_DATASETS = ("tcga_luad_egfr", "gse31210_egfr")
 # Thư mục chứa từng bộ (tương đối với $KLTN_DATA_ROOT). Bộ perm/ v2 giữ định dạng cũ; cohort GEO dùng
 # experiment-data-geo-target/<thư mục> như RQ0′ (scripts/run_rq0_prime.py::cohort_data_dir).
 PERM_DATA_DIR = "experiment-data-perm"
@@ -31,6 +42,8 @@ DATASET_DIRS = {
     "gse30219": f"{GEO_TARGET_DIR}/gse30219",
     "gse37745": f"{GEO_TARGET_DIR}/gse37745",
     "gse42127": f"{GEO_TARGET_DIR}/gse42127",
+    "tcga_luad_egfr": f"{PERM_DATA_DIR}/tcga_luad_egfr",
+    "gse31210_egfr": f"{GEO_TARGET_DIR}/gse31210_egfr",
 }
 DATASET_DIR_ALTERNATIVES = {"gse30219": (f"{GEO_TARGET_DIR}/gse30219_r5_fixed",)}
 # Số mẫu kỳ vọng (LUAD/LUSC) sau QC mẫu QĐ21 + QĐ22 + QĐ22b (29/10/2026). load_dataset() ghi vào notes và DỪNG khi
@@ -46,11 +59,13 @@ DATASET_EXPECTED_N = {
     "gse30219": (81, 60),
     "gse37745": (104, 65),
     "gse42127": (126, 41),
+    "tcga_luad_egfr": (435, 58),                            # (hoang dại, đột biến), QĐ186
+    # gse31210_egfr: điền sau QC giới tính và sàng trùng (trước QC: 99/127, QĐ185)
 }
 DATASET_PLATFORM = {"tcga_luad_lusc_primary_tumor": "RNA-seq (log2 TPM+1)", "gse10245": "GPL570", "gse30219": "GPL570",
-                    "gse37745": "GPL570", "gse42127": "GPL6884"}
-# Tên giữ cho runner/test của đội code (commit 3059ce5, 2508a2a): cùng nội dung với DATASETS/DATASET_DIRS.
-V3_EXPERIMENT_DATASETS = tuple(DATASETS)
+                    "gse37745": "GPL570", "gse42127": "GPL6884", "tcga_luad_egfr": "RNA-seq (log2 TPM+1)", "gse31210_egfr": "GPL570"}
+# Tên giữ cho runner/test của đội code (commit 3059ce5, 2508a2a): năm bộ của bài toán chính.
+V3_EXPERIMENT_DATASETS = MAIN_DATASETS
 V3_DATASET_DIRS = {name: tuple(path.split("/")) for name, path in DATASET_DIRS.items()}
 SOURCE_DATASET = "tcga_luad_lusc_primary_tumor"            # nguồn (E7) và không gian gen G = giao với bộ này
 GENE_SPACE_REFERENCE = SOURCE_DATASET                       # cohort GEO chỉ dùng gen có trong TCGA (B8)
@@ -223,6 +238,19 @@ E3_P_GRID = (1000, 2000, 5000, 10000, None)     # None = toàn bộ gen (19.938)
 # bài ghi rõ "đo tới p = 10.000". Giống cơ chế KTSP_MAX_P.
 E3_MAX_P = {"elastic_net": 10000}
 E3_WRAPPER_BUDGETS = ((10, 20), (30, 50))
+
+# --- B7: bài toán EGFR (QĐ177, QĐ185, QĐ186, QĐ188; quy tắc chốt 12/11 và 13/11) ------------------------------------
+B7_GDC_RELEASE_EXPECTED = "Data Release 46.0"
+# Số phải khớp tuyệt đối với bước 0 (Review 13/11 Phụ lục A.1); khác thì dừng và báo.
+B7_TCGA_EGFR_COUNTS = {"mutant": 58, "wildtype": 435, "excluded_other_egfr": 12, "no_maf": 10}
+B7_TCGA_TP53_COUNTS = {"mutant": 243, "wildtype": 262, "no_maf": 10}
+B7_GSE31210_COUNTS = {"positive": 127, "negative": 99, "normal_excluded": 20}
+B7_GSE31210_POSITIVE = ("EGFR mutation +",)
+B7_GSE31210_NEGATIVE = ("EGFR/KRAS/ALK -", "KRAS mutation +", "ALK-fusion +")   # QĐ185: 99 mẫu
+B7_LINEAR_SCALE_P99 = 100.0       # phân vị 99 % > ngưỡng → thang tuyến tính: sàn 1 rồi log2 trước khi gom probe (A.2)
+B7_GATE_K = 10
+B7_G1_P_PERM_MAX = 0.05           # G1: p hoán vị E0 ≤ 0,05
+B7_G2_B0_MINUS_RANDOM_MIN = 0.05  # G2: AUROC(B0) − AUROC(random-k, k = 10) trung bình trên 25 fold ≥ 0,05
 
 # --- Sanity (Y10) --------------------------------------------------------------------------------------------------
 SANITY_DATASET = "tcga_normal_vs_tumor_sanity"

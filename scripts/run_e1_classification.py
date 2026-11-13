@@ -46,7 +46,7 @@ ROW_KEY = ["repeat", "fold", "method", "k", "model"]
 
 def parse_args(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--datasets", nargs="+", default=list(C.DATASETS))
+    ap.add_argument("--datasets", nargs="+", default=list(C.MAIN_DATASETS))
     ap.add_argument("--methods", nargs="+", default=None, help="only panels from these selectors (default: all found)")
     ap.add_argument("--k", nargs="+", type=int, default=None)
     ap.add_argument("--repeats", nargs="+", type=int, default=list(range(len(C.REPEAT_SEEDS))))

@@ -166,7 +166,7 @@ def test_tables_requires_cfg_accepts_panels_output(tmp_path, monkeypatch):
     fs_rules = [r for r in job.requires_cfg if r[0].startswith("E1_feature_selection/")]
     assert fs_rules and all(v in kj.PUBLISHED_PANELS for _, _, v in fs_rules)
     for redo, ok in ((list(kj.PUBLISHED_PANELS), True), (["svm_rfe"], False)):
-        for d in kj.C.DATASETS:
+        for d in kj.C.MAIN_DATASETS:
             (root / "E1_feature_selection" / d).mkdir(parents=True, exist_ok=True)
             (root / "E1_feature_selection" / d / "config.json").write_text(json.dumps({"redo_methods": redo}), encoding="utf-8")
         msgs = [m for m in kj.check_requires(job) if m.startswith("E1_feature_selection/")]
