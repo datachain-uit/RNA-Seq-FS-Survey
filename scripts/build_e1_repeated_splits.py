@@ -23,7 +23,7 @@ from survey_v2.runlog import DATA_ROOT, start_run, write_config  # noqa: E402
 
 def parse_args(argv=None):
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--datasets", nargs="+", default=list(C.DATASETS))
+    ap.add_argument("--datasets", nargs="+", default=list(C.MAIN_DATASETS))
     ap.add_argument("--out-name", default="repeated_splits.csv")
     ap.add_argument("--force", action="store_true", help="replace an existing manifest only after validation")
     return ap.parse_args(argv)

@@ -39,7 +39,7 @@ DEFAULT_METHODS = list(C.NON_WRAPPER_METHODS) + list(FIXED_PANELS)
 
 def parse_args(argv=None):
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--datasets", nargs="+", default=list(C.DATASETS))
+    ap.add_argument("--datasets", nargs="+", default=list(C.MAIN_DATASETS))
     ap.add_argument("--methods", nargs="+", default=DEFAULT_METHODS,
                     help=f"selectors {C.ALL_SELECTORS} and fixed panels {tuple(FIXED_PANELS)}")
     ap.add_argument("--k", nargs="+", type=int, default=list(C.K_GRID))

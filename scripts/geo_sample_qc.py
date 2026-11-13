@@ -424,7 +424,7 @@ def main(argv=None):
         fetch_tcga_sex(root, require_traceable())
         return
     if args.command == "apply-sex-qc":
-        cohorts = args.cohorts if args.cohorts != list(GEO) else list(C.DATASETS)
+        cohorts = args.cohorts if args.cohorts != list(GEO) else list(C.MAIN_DATASETS)
         apply_sex_qc(root, args.qc_dir or (root / "qc"), cohorts)
         return
     if args.command == "rebuild":

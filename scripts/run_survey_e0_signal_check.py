@@ -40,7 +40,7 @@ from survey_v2.runlog import DATA_ROOT, all_versions, results_dir, start_run, wr
 
 def parse_args(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--datasets", nargs="+", default=list(C.DATASETS))
+    ap.add_argument("--datasets", nargs="+", default=list(C.MAIN_DATASETS))
     ap.add_argument("--k", type=int, default=C.E0_K)
     ap.add_argument("--selector", default=C.E0_SELECTOR)
     ap.add_argument("--n-perm", type=int, default=C.E0_N_PERM)
