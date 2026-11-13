@@ -35,7 +35,7 @@ from survey_v2 import config as C  # noqa: E402
 TCGA_B7, GEO_B7 = C.B7_DATASETS
 
 
-def steps(qc_dir: str, n_jobs: int) -> list[list[str]]:
+def steps(qc_dir: str, n_jobs: int, split_manifest: str = "e1_repeated_splits_manifest.json") -> list[list[str]]:
     b7 = list(C.B7_DATASETS)
     return [
         ["scripts/build_b7_egfr_datasets.py", "tcga"],
@@ -44,7 +44,7 @@ def steps(qc_dir: str, n_jobs: int) -> list[list[str]]:
         ["scripts/geo_sample_qc.py", "apply-sex-qc", "--cohorts", GEO_B7, "--qc-dir", qc_dir],
         ["scripts/geo_sample_qc.py", "rz-screen", "--cohorts", GEO_B7, *C.GPL570_COHORTS, "--out", qc_dir],
         ["scripts/geo_sample_qc.py", "rebuild", "--cohorts", GEO_B7],
-        ["scripts/build_e1_repeated_splits.py", "--datasets", *b7],
+        ["scripts/build_e1_repeated_splits.py", "--datasets", *b7, "--manifest-out", split_manifest],
         ["scripts/build_b7_egfr_datasets.py", "card"],
         ["scripts/run_survey_e0_signal_check.py", "--datasets", *b7, "--n-jobs", str(n_jobs), "--out", "E0_b7"],
         ["scripts/run_e1_classification.py", "--datasets", *b7, "--k", str(C.B7_GATE_K), "--save-scores", "--out", "E1_classification_b7"],
@@ -65,7 +65,7 @@ def main(argv=None) -> int:
     from survey_v2.runlog import DATA_ROOT
     args = parse_args(argv)
     qc_dir = str(DATA_ROOT.joinpath(*C.RESULT_DIR, "B7_data", "qc"))
-    plan = steps(qc_dir, args.n_jobs)
+    plan = steps(qc_dir, args.n_jobs, str(DATA_ROOT / C.B7_DATA_DIR / "e1_repeated_splits_manifest.json"))
     for i, s in enumerate(plan, 1):
         if args.list or i < args.start:
             print(f"{'(bỏ qua) ' if i < args.start and not args.list else ''}{i:2d}. python {' '.join(s)}", flush=True)
