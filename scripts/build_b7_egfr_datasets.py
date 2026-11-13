@@ -209,6 +209,7 @@ def build_gse31210(args, prov) -> dict:
             "label_rule": "1 = 'EGFR mutation +'; 0 = 'EGFR/KRAS/ALK -', 'KRAS mutation +', 'ALK-fusion +' (QĐ185); 'normal lung' excluded; "
                           "characteristics read by the key prefix of each cell (Y98)",
             "label_counts": lab.label_status.value_counts().to_dict(),
+            "characteristics_duplicate_keys": chars.attrs.get("duplicate_keys", []),
             "gene_alteration_counts_tumour": lab.loc[tumour, "gene_alteration_status"].value_counts().to_dict(),
             "excluded_normal": lab.index[lab.label_status == "normal_excluded"].tolist(),
             "sample_data_processing": processing, "scale_decision": scale_info,
