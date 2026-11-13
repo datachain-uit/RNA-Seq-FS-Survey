@@ -40,6 +40,7 @@ class Experiment:
     intro: str          # mục đích, đầu ra, nghiệm thu (markdown)
     jobs: list          # theo thứ tự chạy
     order: str          # hướng dẫn thứ tự phiên (markdown)
+    repo_branch: str = "survey-v2-code"
 
 
 EXPERIMENTS = [
@@ -136,6 +137,17 @@ EXPERIMENTS = [
         ["ablation_phaseA_geo", "ablation_phaseA_tcga", "ablation_phaseB"],
         "1. `ablation_phaseA_geo` và `ablation_phaseA_tcga` (2 phiên song song; TCGA có thể quá 12 giờ → chạy lại cùng JOB).\n"
         "2. `ablation_phaseB` — khôi phục output cả hai phiên pha A."),
+    Experiment(
+        "kaggle_B7_step1.ipynb", "B7 bước 1 — đột biến EGFR ở LUAD: dữ liệu, E0, cổng G1/G2 (QĐ188)",
+        "Chạy `scripts/run_b7_step1.py` (12 bước theo Phụ lục A của Review 13/11, dừng ở bước lỗi đầu tiên): dựng `tcga_luad_egfr` từ "
+        "MAF mở của GDC (nhãn phải đúng 58/435/12/10, TP53 243/262/10) và `gse31210_egfr` từ GEO (127/99, loại 20 mô lành), QC giới "
+        "tính và sàng trùng, bản chia 5×5, data card, E0 → `E0_b7/`, B0 và random-k ở k = 10 → `E1_classification_b7/`, cổng → "
+        "`B7_gate/b7_gate_table.csv`; hai bộ chép vào `B7_data/experiment-data-b7/` để tải lên Kaggle Input riêng.\n"
+        "Nghiệm thu: `JOB_OK`; config.json traceable; số nhãn khớp; bảng cổng đủ hai bộ. **Bật Internet** (Settings → Internet on).",
+        ["b7_step1"],
+        "Một phiên (1–3 giờ), không cần khôi phục output. Kaggle Input: **experiment-data-v3**. Push nhánh `dmkd-revision` và ghim "
+        "`REPO_COMMIT` trước khi chạy. Lỗi ở bước i: sửa nguyên nhân rồi chạy lại cùng JOB.",
+        repo_branch="dmkd-revision"),
 ]
 
 JOB_LINE_PREFIX = "JOB = "
@@ -181,6 +193,7 @@ def build(exp: Experiment, runner: dict, jobs) -> dict:
     allowed = ", ".join(repr(n) for n in exp.jobs)
     cfg[i:i + 1] = [f"JOBS_IN_NOTEBOOK = [{allowed}]",
                     f"JOB = {exp.jobs[0]!r}" + "  # chọn một trong JOBS_IN_NOTEBOOK (bảng ở đầu notebook)"]
+    cfg = [line.replace("REPO_BRANCH = 'survey-v2-code'", f"REPO_BRANCH = {exp.repo_branch!r}") for line in cfg]
     cfg.append("assert JOB in JOBS_IN_NOTEBOOK, f'{JOB} không thuộc notebook này — dùng notebook của thí nghiệm tương ứng'")
     cells[1]["source"] = _lines("\n".join(cfg))
     for c in cells:
