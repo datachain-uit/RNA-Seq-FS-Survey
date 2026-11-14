@@ -5,7 +5,7 @@ không dùng nhãn đích), select_on_source (panel từ nguồn, fit LR-L2 trê
 chọn gen trên ma trận gộp, fit trên L_T) và target_only (ghép cặp). Bộ chọn gen chung: TRANSFER_SELECTOR (L1-LR đúng k).
 Lưới: n_T ∈ TRANSFER_N_T = {5, 10, 20}; k ∈ TRANSFER_K_GRID = {2, 3, 4, 5, 10}; 3 cohort GPL570 so sánh, GSE42127 mô tả.
 Không gian gen G = giao gen cohort ∩ TCGA; lọc sơ bộ không nhãn tính trên NGUỒN cho ba chiến lược chuyển giao, trên L_T cho
-target_only. Không có MVP, ptLasso, Trans-GLM ở đây (bài 2).
+target_only. ptLasso và Trans-GLM chạy ở B6 (scripts/run_e7_r_eval.py, QĐ176); MVP thuộc bài 2.
 
     python scripts/run_survey_e7_transfer_naive.py --n-jobs 4
     python scripts/run_survey_e7_transfer_naive.py --datasets gse37745 --n-t 5 --k 2 5
@@ -48,6 +48,7 @@ def parse_args(argv=None):
     ap.add_argument("--selector", default=C.TRANSFER_SELECTOR)
     ap.add_argument("--prefilter", type=int, default=C.PREFILTER_P0)
     ap.add_argument("--splits-root", type=Path, default=None)
+    ap.add_argument("--splits-file", default="fewshot_splits.csv", help="B1: tên tệp bản chia (vd. fewshot_splits_20.csv)")
     ap.add_argument("--n-jobs", type=int, default=1)
     ap.add_argument("--out", default="E7")
     return ap.parse_args(argv)
@@ -107,7 +108,7 @@ def main(argv=None, script=__file__):
     for name in args.datasets:
         ds, out = load_dataset(DATA_ROOT, name), results_dir(args.out, name)
         cid = C.cohort_id(name)
-        path = fewshot_path(ds, args.splits_root)
+        path = fewshot_path(ds, args.splits_root, args.splits_file)
         man = pd.read_csv(path, dtype={"n_t": str})
         errors = validate_fewshot_manifest(man)
         if errors:
@@ -136,7 +137,7 @@ def main(argv=None, script=__file__):
                "source_selector_info": {kk: (vv if not hasattr(vv, "tolist") else vv.tolist()) for kk, vv in
                                         {k: ctx.source_info.get(k) for k in ("C", "exact", "n_filled")}.items()},
                "fewshot_splits_file": str(path), "fewshot_splits_sha256": sha256(path), "n_rows": int(len(df)),
-               "note": "no proposed method here; ptLasso / Trans-GLM / MVP belong to the method paper",
+               "note": "ptLasso and Trans-GLM are reported in the survey (B6, QĐ176); MVP belongs to the method paper",
                "elapsed_s": time.time() - t_all, "versions": all_versions()}
         write_config(out, prov, cfg, data_files=[ds.data_dir / "expression.h5", ds.data_dir / "metadata.csv", path,
                                                  source.data_dir / "expression.h5", source.data_dir / "metadata.csv"])

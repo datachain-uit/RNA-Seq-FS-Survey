@@ -52,6 +52,7 @@ def parse_args(argv=None):
     ap.add_argument("--k", nargs="+", type=int, default=list(C.FEWSHOT_K_GRID))
     ap.add_argument("--n-t", nargs="+", default=None, help="mức n_T cần chạy (số hoặc 'pool'); mặc định mọi mức trong bản chia")
     ap.add_argument("--splits-root", type=Path, default=None)
+    ap.add_argument("--splits-file", default="fewshot_splits.csv", help="B1: tên tệp bản chia (vd. fewshot_splits_20.csv)")
     ap.add_argument("--prefilter", type=int, default=C.PREFILTER_P0)
     ap.add_argument("--random-draws", type=int, default=C.N_RANDOM_DRAWS)
     ap.add_argument("--n-jobs", type=int, default=1)
@@ -148,7 +149,7 @@ def main(argv=None, script=__file__):
     for name in args.datasets:
         ds, out = load_dataset(DATA_ROOT, name), results_dir(args.out, name)
         cid = C.cohort_id(name)
-        path = fewshot_path(ds, args.splits_root)
+        path = fewshot_path(ds, args.splits_root, args.splits_file)
         man = pd.read_csv(path, dtype={"n_t": str})
         errors = validate_fewshot_manifest(man)
         if errors:

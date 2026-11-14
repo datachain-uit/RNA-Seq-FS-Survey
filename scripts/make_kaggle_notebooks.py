@@ -148,6 +148,36 @@ EXPERIMENTS = [
         "Một phiên (1–3 giờ), không cần khôi phục output. Kaggle Input: **experiment-data-v3**. Push nhánh `dmkd-revision` và ghim "
         "`REPO_COMMIT` trước khi chạy. Lỗi ở bước i: sửa nguyên nhân rồi chạy lại cùng JOB.",
         repo_branch="dmkd-revision"),
+    Experiment(
+        "kaggle_B2_B5.ipynb", "B2–B5 — k-TSP bỏ phiếu, zero-shot, biến thể B0, chữ ký 10 gen (QĐ172–QĐ175)",
+        "`b2_b3_b5`: B2 (`run_b2_ktsp_vote.py`), B3 (`run_b3_zero_shot.py`), B5 (`run_b5_signatures10.py`) → `B2_ktsp_vote/`, "
+        "`B3_zero_shot/`, `B5_signatures10/`, bảng `B2_tables/`, `B3_tables/`, `B5_tables/`.\n"
+        "`b4`: `run_b4_b0_variants.py` → `B4_b0_variants/`, bảng `B4_tables/` (cổng: B0 gốc chạy lại trùng E1 đã công bố, "
+        "`b4_gate_b0.csv` toàn `pass = True`).\n"
+        "Kết quả đã công bố (panel k-TSP, E1b, E7, E1) đọc từ `results/survey_v2/` của bản clone — không cần khôi phục Input.\n"
+        "Nghiệm thu: `JOB_OK`; config.json traceable; `B3_tables/b3_gate_e7_source_only.csv` và `B4_tables/b4_gate_b0.csv` đạt.",
+        ["b2_b3_b5", "b4"],
+        "Hai phiên độc lập, chạy song song được (mỗi phiên 1–3 giờ). Kaggle Input: **experiment-data-v3**. Không khôi phục output.",
+        repo_branch="dmkd-revision"),
+    Experiment(
+        "kaggle_B1_fewshot20.ipynb", "B1 — 20 lần chia few-shot cho E1b và E7 (QĐ171)",
+        "Bước chuẩn bị dựng `B1_splits/<cohort>/fewshot_splits_20.csv` (seed 42–61) và DỪNG nếu lần chia 0–4 không trùng "
+        "`fewshot_splits.csv` đã công bố. Sau đó E7 (4 chiến lược) → `B1_E7_20/`, E1b (L1-LR, F-test, k-TSP, IHC-4, random-k) → "
+        "`B1_E1b_20/`; bảng `B1_tables/` (cổng 5 lần chia, nhãn positive / negative / practically equivalent / inconclusive).\n"
+        "Nghiệm thu: `JOB_OK`; `B1_tables/b1_gates.csv` toàn `pass = True`.",
+        ["b1"],
+        "Một phiên (4–7 giờ). Kaggle Input: **experiment-data-v3**. Quá giờ (mã 124): phiên mới cùng JOB, khôi phục zip vừa lưu.",
+        repo_branch="dmkd-revision"),
+    Experiment(
+        "kaggle_B7_E1_E4.ipynb", "B7 — EGFR ở LUAD: E1 (pha A, B) và E4 trên TCGA-LUAD (QĐ177; cổng G1, G2 đã đạt 13/11)",
+        "`b7_e1_phaseA` → `E1_feature_selection_b7/`; `b7_e4` → `E4_E5_b7/tcga_luad_egfr/`; `b7_e1_phaseB` → `E1_classification_b7/` "
+        "(LR-L2, B0, random-k, điểm từng mẫu cho AUPRC) và bảng `B7_tables/` (R1–R4).\n"
+        "Bước chuẩn bị của mỗi việc chép `B7_data/experiment-data-b7/` (trong zip b7_step1) vào thư mục dữ liệu và kiểm SHA-256.\n"
+        "Nghiệm thu: `JOB_OK`; config.json traceable.",
+        ["b7_e1_phaseA", "b7_e4", "b7_e1_phaseB"],
+        "1. `b7_e1_phaseA` và `b7_e4` song song (hai phiên), mỗi phiên khôi phục output `b7_step1`.\n"
+        "2. `b7_e1_phaseB` — khôi phục `b7_step1`, `b7_e1_phaseA`, `b7_e4` theo đúng thứ tự.",
+        repo_branch="dmkd-revision"),
 ]
 
 JOB_LINE_PREFIX = "JOB = "
