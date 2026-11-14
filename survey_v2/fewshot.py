@@ -34,7 +34,7 @@ def _n_t_levels(name: str, pool_counts: dict[int, int]) -> list[int | None]:
     return levels
 
 
-def build_fewshot_manifest(name: str, sample_ids, patient_ids, labels, *, seeds=C.REPEAT_SEEDS,
+def build_fewshot_manifest(name: str, sample_ids, patient_ids, labels, *, seeds=C.REPEAT_SEEDS[: C.FEWSHOT_SPLITS],
                            n_subsets: int = C.FEWSHOT_SUBSETS, test_fraction: float = C.FEWSHOT_TEST_FRACTION) -> pd.DataFrame:
     sample_ids = np.asarray(sample_ids, dtype=str)
     patient_ids = np.asarray(patient_ids, dtype=str)
@@ -43,7 +43,9 @@ def build_fewshot_manifest(name: str, sample_ids, patient_ids, labels, *, seeds=
         raise ValueError(f"{name}: few-shot giả định mỗi bệnh nhân một mẫu; có bệnh nhân nhiều mẫu")
     cid = C.cohort_id(name)
     rows = []
-    for split, seed in enumerate(seeds[: C.FEWSHOT_SPLITS]):
+    # B1 (QĐ171): `seeds` dài hơn 5 cho thêm lần chia; lần chia s chỉ phụ thuộc seed của nó, nên 5 lần chia đầu với seed
+    # 42–46 trùng tuyệt đối bản 5 lần chia (mặc định không đổi).
+    for split, seed in enumerate(seeds):
         sss = StratifiedShuffleSplit(n_splits=1, test_size=test_fraction, random_state=int(seed))
         pool_idx, test_idx = next(sss.split(np.zeros(len(y)), y))
         pool_counts = {c: int(np.sum(y[pool_idx] == c)) for c in (0, 1)}

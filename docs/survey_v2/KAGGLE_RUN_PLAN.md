@@ -113,3 +113,21 @@ Sau đợt 1 (v3.1.6, 31/10):
 - Chỉ kết quả từ phiên có `JOB_OK` mới được trích (kết quả 26–28/10 chỉ để ước lượng chi phí, M19).
 - v3.1.6: `logs/pip_freeze_<JOB>.txt` trong zip = môi trường thật của phiên (Kaggle: Python 3.13.15, numpy 2.1.3, scikit-learn 1.6.1 —
   khác `requirements.txt`); người viết lấy phiên bản từ đây. `config.json` có `resumed_from` khi phiên tiếp tục kết quả của commit khác.
+
+## 4. Đợt hiệu chỉnh DMKD (B1–B7, nhánh `dmkd-revision`; đặc tả 12/11/2026)
+
+Mọi phiên clone nhánh `dmkd-revision`, ghim cùng một `REPO_COMMIT` đã push. Kết quả đã công bố (tag `survey-v3-dmkd.1`) được đọc từ
+`results/survey_v2/` của bản clone, nên không cần khôi phục làm Input. Kaggle Input luôn có **experiment-data-v3**.
+
+| Thứ tự | Notebook | JOB | Khôi phục | Ước lượng | Nghiệm thu thêm |
+|---|---|---|---|---|---|
+| 1 | `kaggle/kaggle_B2_B5.ipynb` | `b2_b3_b5` | — | 1–2 h | `B3_tables/b3_gate_e7_source_only.csv` toàn `pass` |
+| 1 | `kaggle/kaggle_B2_B5.ipynb` | `b4` | — | 1–3 h | `B4_tables/b4_gate_b0.csv` toàn `pass` (B0 gốc trùng E1) |
+| 1 | `kaggle/kaggle_B1_fewshot20.ipynb` | `b1` | — | 4–7 h | bước chuẩn bị dừng nếu lần chia 0–4 khác bản công bố; `B1_tables/b1_gates.csv` toàn `pass` |
+| 1 | `kaggle/kaggle_B7_E1_E4.ipynb` | `b7_e1_phaseA` | `b7_step1` | 5–11 h | quá giờ: chạy lại cùng JOB với zip vừa lưu |
+| 1 | `kaggle/kaggle_B7_E1_E4.ipynb` | `b7_e4` | `b7_step1` | 4–9 h | |
+| 2 | `kaggle/kaggle_B7_E1_E4.ipynb` | `b7_e1_phaseB` | `b7_step1`, `b7_e1_phaseA`, `b7_e4` | 1–3 h | `B7_tables/` (R1–R4) |
+| 1 | `kaggle_r/kaggle_B6_e7_r.ipynb` | (`PHASE = 'all'`) | tuỳ chọn: `b1` | 4–6 h | `B6_gate/b6_gate.csv` toàn `pass_all`; bật Internet (cài R) |
+| 3 | — | `make_revision_tables.py b6` | `b1` + B6 | phút | chạy lại nếu phiên B6 chạy trước khi có `b1` |
+
+Các phiên cùng thứ tự 1 chạy song song được. Bảng của từng việc sinh bằng `scripts/make_revision_tables.py` (bước finalize).

@@ -63,7 +63,7 @@ DATASET_EXPECTED_N = {
     "gse37745": (104, 65),
     "gse42127": (126, 41),
     "tcga_luad_egfr": (435, 58),                            # (hoang dại, đột biến), QĐ186
-    # gse31210_egfr: điền sau QC giới tính và sàng trùng (trước QC: 99/127, QĐ185)
+    "gse31210_egfr": (98, 126),                             # (âm, dương) sau QC giới tính b7_step1 13/11 (2 mẫu cách ly; trước QC 99/127)
 }
 DATASET_PLATFORM = {"tcga_luad_lusc_primary_tumor": "RNA-seq (log2 TPM+1)", "gse10245": "GPL570", "gse30219": "GPL570",
                     "gse37745": "GPL570", "gse42127": "GPL6884", "tcga_luad_egfr": "RNA-seq (log2 TPM+1)", "gse31210_egfr": "GPL570"}

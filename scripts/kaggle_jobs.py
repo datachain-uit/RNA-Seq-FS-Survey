@@ -87,6 +87,7 @@ class Job:
     parallel: int = 4
     exclusive: bool = False
     hours: str = ""
+    prepare: list = field(default_factory=list)       # lệnh chạy TUẦN TỰ trước các shard (dựng bản chia, khôi phục dữ liệu B7)
 
 
 def _fs(*a):
@@ -231,6 +232,56 @@ def build_jobs() -> dict[str, Job]:
                  [["scripts/run_b7_step1.py", "--n-jobs", "4"]],
                  [f"E0_b7/{d}" for d in C.B7_DATASETS] + [f"E1_classification_b7/{d}" for d in C.B7_DATASETS] + ["B7_gate", "B7_data"],
                  parallel=1, hours="1–3"))
+    # ----------------------------------------------------------------- Đợt hiệu chỉnh DMKD (QĐ171–QĐ188; nhánh dmkd-revision)
+    # Kết quả đã công bố (tag survey-v3-dmkd.1) đọc từ results/survey_v2/ của bản clone kho mã (--published-root mặc định),
+    # không cần khôi phục làm Input. Bảng: scripts/make_revision_tables.py (finalize của từng việc).
+    J.append(Job("b2_b3_b5", "R3 · 16/11", "B2 k-TSP bỏ phiếu (E1 5 bộ, E1b, E7), B3 hai biến thể zero-shot (E7, 5 lần chia), "
+                 "B5 chữ ký Girard/Wilkerson rút về 10 gen (E1 5 bộ, E1b k = 10); bảng B2, B3, B5",
+                 [["scripts/run_b2_ktsp_vote.py", "--datasets", d] for d in C.MAIN_DATASETS]
+                 + [["scripts/run_b3_zero_shot.py", "--datasets", d] for d in GEO]
+                 + [["scripts/run_b5_signatures10.py", "--datasets", d] for d in C.MAIN_DATASETS],
+                 [f"B2_ktsp_vote/{d}" for d in C.MAIN_DATASETS] + [f"B3_zero_shot/{d}" for d in GEO]
+                 + [f"B5_signatures10/{d}" for d in C.MAIN_DATASETS] + ["B2_tables", "B3_tables", "B5_tables"],
+                 finalize=[["scripts/make_revision_tables.py", "b2", "b3", "b5"]], parallel=4, hours="1–2"))
+    J.append(Job("b4", "R3 · 16/11", "B4 ba biến thể B0 (toàn bộ G lưới rộng; 5.000 gen lưới gốc; 5.000 gen lưới rộng) + B0 gốc làm "
+                 "cổng bằng nhau, 25 fold × 5 bộ; bảng B4 (quy tắc GSE42127 ≥ 0,935; k* độ nhạy)",
+                 [["scripts/run_b4_b0_variants.py", "--datasets", d] for d in (TCGA, *GEO)],
+                 [f"B4_b0_variants/{d}" for d in C.MAIN_DATASETS] + ["B4_tables"],
+                 finalize=[["scripts/make_revision_tables.py", "b4"]], parallel=4, hours="1–3"))
+    b1_split = ["--splits-root", "{RESULTS}/B1_splits", "--splits-file", "fewshot_splits_20.csv"]
+    J.append(Job("b1", "R3 · 18/11", "B1: bản chia few-shot 20 lần (seed 42–61; cổng: lần chia 0–4 trùng bản đã công bố), E7 4 chiến "
+                 "lược và E1b (L1-LR, F-test, k-TSP, IHC-4, random-k) trên 20 lần chia; cổng 5 lần chia; nhãn cấp lần chia",
+                 [["scripts/run_survey_e7_transfer_naive.py", "--datasets", d, *b1_split, "--out", "B1_E7_20"] for d in GEO]
+                 + [["scripts/run_survey_e1b_learning_curve.py", "--datasets", d, "--methods", "l1_lr", "f_test", "ktsp", "ihc_4",
+                     *b1_split, "--out", "B1_E1b_20"] for d in GEO],
+                 [f"B1_E7_20/{d}" for d in GEO] + [f"B1_E1b_20/{d}" for d in GEO] + ["B1_splits", "B1_tables"],
+                 prepare=[["scripts/build_fewshot_splits.py", "--seeds", *[str(s) for s in range(42, 62)], "--name", "fewshot_splits_20.csv",
+                           "--out-root", "{RESULTS}/B1_splits", "--manifest-name", "fewshot_splits_20_manifest.json",
+                           "--gate-against", "fewshot_splits.csv"]],
+                 finalize=[["scripts/make_revision_tables.py", "b1"]], parallel=4, hours="4–7"))
+    b7 = list(C.B7_DATASETS)
+    b7_fs = ["--methods", *C.NON_WRAPPER_METHODS, "--out", "E1_feature_selection_b7"]
+    J.append(Job("b7_e1_phaseA", "R3 · 18/11", "B7 E1 pha A: 11 bộ chọn không wrapper (không panel mô học), lưới k của E1, 5 × 5; "
+                 "TCGA-LUAD một tiến trình mỗi lần lặp, GSE31210 một tiến trình; quá giờ thì chạy lại cùng JOB (checkpoint)",
+                 [["scripts/run_e1_feature_selection.py", "--datasets", b7[0], "--repeats", str(r), *b7_fs] for r in range(len(C.REPEAT_SEEDS))]
+                 + [["scripts/run_e1_feature_selection.py", "--datasets", b7[1], *b7_fs]],
+                 [f"E1_feature_selection_b7/{d}" for d in b7],
+                 prepare=[["scripts/b7_restore_data.py"]], finalize=[["scripts/run_e1_feature_selection.py", "--datasets", *b7, *b7_fs]],
+                 restore_from=["b7_step1"], requires=["B7_data/config.json", "B7_gate/b7_gate_table.csv"], parallel=4, hours="5–11"))
+    J.append(Job("b7_e1_phaseB", "R3 · 18/11", "B7 E1 pha B: LR-L2, B0, random-k (lưới k đủ; dòng k = 10 của b7_step1 được giữ), điểm "
+                 "từng mẫu để tính AUPRC; bảng B7 (R1–R4)",
+                 [["scripts/run_e1_classification.py", "--datasets", d, "--selection-roots", "{RESULTS}/E1_feature_selection_b7",
+                   "--save-scores", "--out", "E1_classification_b7"] for d in b7],
+                 [f"E1_classification_b7/{d}" for d in b7] + ["B7_tables"],
+                 prepare=[["scripts/b7_restore_data.py"]], finalize=[["scripts/make_revision_tables.py", "b7"]],
+                 requires=[f"E1_feature_selection_b7/{d}/selected_genes.csv" for d in b7],
+                 restore_from=["b7_step1", "b7_e1_phaseA", "b7_e4"], parallel=2, hours="1–3"))
+    J.append(Job("b7_e4", "R3 · 18/11", "B7 E4 trên TCGA-LUAD: M = 30 tập con, f ∈ {0,5; 0,7; 0,9}, 11 bộ chọn không wrapper (không E5); "
+                 "chạy song song được với b7_e1_phaseA",
+                 [["scripts/run_survey_e4_e5_stability.py", "--datasets", b7[0], "--skip-e5a", "--skip-e5b", "--e1-dir", "E1_feature_selection_b7",
+                   "--out", "E4_E5_b7", "--n-jobs", "4"]],
+                 [f"E4_E5_b7/{b7[0]}"], prepare=[["scripts/b7_restore_data.py"]], restore_from=["b7_step1"],
+                 requires=["B7_data/config.json"], parallel=1, hours="4–9"))
     return {j.name: j for j in J}
 
 
@@ -257,8 +308,8 @@ def head_commit() -> str | None:
 
 
 def render(argv: list[str]) -> list[str]:
-    res = str(results_root())
-    return [a.replace("{RESULTS}", res) for a in argv]
+    res, data = str(results_root()), str(data_root())
+    return [a.replace("{RESULTS}", res).replace("{DATA}", data) for a in argv]
 
 
 def command(argv: list[str]) -> list[str]:
@@ -472,6 +523,8 @@ def cmd_show(job: Job):
     print("cần có:", ", ".join(job.requires) or "—")
     if job.requires_cfg:
         print("config.json cần đạt:", "; ".join(f"{r}: {k} ∋ {v!r}" for r, k, v in job.requires_cfg))
+    for s in job.prepare:
+        print("  [prepare] python", " ".join(render(s)) if os.environ.get("KLTN_DATA_ROOT") else " ".join(s))
     for s in job.shards:
         print("  python", " ".join(render(s)) if os.environ.get("KLTN_DATA_ROOT") else " ".join(s))
     for s in job.finalize:
@@ -493,6 +546,11 @@ def cmd_run(job: Job, parallel: int | None, log_dir: Path, max_hours: float | No
     print(f"JOB {job.name} | commit {commit} | data {data_root()} | giới hạn {max_hours or '—'} giờ", flush=True)
     write_pip_freeze(job, log_dir)
     n_par = 1 if job.exclusive else (parallel or job.parallel)
+    if job.prepare:
+        codes = run_parallel([command(s) for s in job.prepare], 1, log_dir, job.name + "_prepare", deadline)
+        if any(codes):
+            print(f"LỖI ở bước chuẩn bị của {job.name}: {codes} (xem log {job.name}_prepare_*.log)")
+            return TIMEOUT_CODE if TIMEOUT_CODE in codes else 1
     sequential = job.name == "e1_phaseB_tcga"      # gộp pha A rồi mới pha B
     codes = run_parallel([command(s) for s in job.shards], 1 if sequential else n_par, log_dir, job.name, deadline)
     if TIMEOUT_CODE in codes:
