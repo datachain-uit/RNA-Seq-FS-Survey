@@ -1,0 +1,169 @@
+{
+  "experiment": "RQ2_r",
+  "dataset": "gse30219",
+  "space": "space_84310e5d407e",
+  "k_grid": [
+    2,
+    3,
+    4,
+    5,
+    10
+  ],
+  "methods": [
+    "ptlasso",
+    "transglm"
+  ],
+  "alphas": [
+    0.75,
+    0.5,
+    0.25
+  ],
+  "alpha_margin": 0.01,
+  "stage1": [
+    {
+      "space": "space_84310e5d407e",
+      "n_source": 1016,
+      "p": 5000,
+      "lambda_1se": 0.0267942137924059,
+      "lambda_min": 0.0105681900397875,
+      "cvm_1se": 0.272544158224864,
+      "size_S1": 28,
+      "seconds": 23.2
+    }
+  ],
+  "n_runs": 100,
+  "n_rows": 1000,
+  "n_errors": 0,
+  "same_as_stage1_topk_rate": 0.05,
+  "r_session_info": [
+    "commit 7f097da2a332327839201d89cc7d8f1aaada575b",
+    "stage all",
+    "thời điểm 2026-11-09 06:55:54",
+    "cohort gse10245,gse30219,gse37745,gse42127",
+    "số nhân 4",
+    "R version 4.5.3 (2026-03-11)",
+    "Platform: x86_64-conda-linux-gnu",
+    "Running under: Ubuntu 24.04.5 LTS",
+    "",
+    "Matrix products: default",
+    "BLAS/LAPACK: /tmp/r_env/lib/libopenblasp-r0.3.34.so;  LAPACK version 3.12.0",
+    "",
+    "locale:",
+    " [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              ",
+    " [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    ",
+    " [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   ",
+    " [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 ",
+    " [9] LC_ADDRESS=C               LC_TELEPHONE=C            ",
+    "[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       ",
+    "",
+    "time zone: Etc/UTC",
+    "tzcode source: system (glibc)",
+    "",
+    "attached base packages:",
+    "[1] stats     graphics  grDevices utils     datasets  methods   base     ",
+    "",
+    "other attached packages:",
+    "[1] glmtrans_2.1.0 glmnet_5.0     Matrix_1.7-6  ",
+    "",
+    "loaded via a namespace (and not attached):",
+    " [1] future_1.82.0        generics_0.1.4       class_7.3-24        ",
+    " [4] shape_1.4.6.1        stringi_1.8.9        lattice_0.23-1      ",
+    " [7] pROC_1.19.1          listenv_1.1.0        magrittr_2.0.5      ",
+    "[10] timechange_0.4.0     grid_4.5.3           RColorBrewer_1.1-3  ",
+    "[13] iterators_1.0.14     doParallel_1.0.17    foreach_1.5.2       ",
+    "[16] plyr_1.8.9           ModelMetrics_1.2.2.2 nnet_7.3-21         ",
+    "[19] survival_3.8-12      formatR_1.14         gridExtra_2.3.1     ",
+    "[22] purrr_1.2.2          scales_1.4.0         codetools_0.2-20    ",
+    "[25] lava_1.9.3           cli_3.6.6            rlang_1.3.0         ",
+    "[28] caret_7.0-1          hardhat_1.4.3        parallelly_1.50.0   "
+  ],
+  "panel_rule": "k gen |β| > 0 lớn nhất, hoà theo thứ tự 5.000 gen, thiếu thì F-test trên L_T; ptLasso β_eff = (1 − α̂)β1 + β2",
+  "evaluation": "evaluate_panel lr_l2, seed_for(cid, seed, subset, n_t, k) như MVP",
+  "elapsed_s": 69.24501252174377,
+  "versions": {
+    "numpy": "2.1.3",
+    "pandas": "2.3.3",
+    "scipy": "1.16.3",
+    "scikit-learn": "1.6.1",
+    "tables": "3.10.2",
+    "skrebate": null,
+    "joblib": "1.6.0",
+    "threadpoolctl": "3.7.0",
+    "psutil": "5.9.5",
+    "xgboost": "3.4.1",
+    "lightgbm": "4.6.0",
+    "codecarbon": null
+  },
+  "generated_at": "2026-11-09T06:57:26+00:00",
+  "commit_hash": "7f097da2a332327839201d89cc7d8f1aaada575b",
+  "provenance": {
+    "schema": "kltn-provenance/1",
+    "commit_hash": "7f097da2a332327839201d89cc7d8f1aaada575b",
+    "tracked": true,
+    "dirty": false,
+    "branch": "HEAD",
+    "remote": "https://github.com/datachain-uit/CN-23520899-LuanNT.git",
+    "untracked_reason": null,
+    "script": "scripts/run_rq2_r_eval.py",
+    "code_root": "/tmp/CN-23520899-LuanNT",
+    "data_root": "/kaggle/working/kltn_data",
+    "argv": [
+      "--inputs",
+      "/kaggle/working/kltn_data/results/survey_v2/RQ2_r_inputs",
+      "--r-out",
+      "/kaggle/working/rq2_r/r_out",
+      "--datasets",
+      "gse10245",
+      "gse30219",
+      "gse37745",
+      "gse42127",
+      "--save-scores"
+    ],
+    "started_at": "2026-11-09T06:55:57+00:00",
+    "python": "3.13.18",
+    "packages": {
+      "numpy": "2.1.3",
+      "pandas": "2.3.3",
+      "scikit-learn": "1.6.1",
+      "scipy": "1.16.3",
+      "tables": "3.10.2",
+      "openpyxl": "3.1.5",
+      "requests": "2.34.2",
+      "xgboost": "3.4.1",
+      "lightgbm": "4.6.0"
+    },
+    "machine": {
+      "platform": "Linux-6.18.55+-x86_64-with-glibc2.39",
+      "processor": "x86_64",
+      "machine": "x86_64",
+      "cpu_count": 4,
+      "hostname": "dd5342713562"
+    },
+    "data_sha256": {
+      "/kaggle/working/rq2_r/r_out/stage1_summary.csv": "307eae4e1940e14f33b2d355aa5e0f16932acd6d601f0c742e5eba1b4573d5d6"
+    },
+    "params": {
+      "inputs": "/kaggle/working/kltn_data/results/survey_v2/RQ2_r_inputs",
+      "r_out": "/kaggle/working/rq2_r/r_out",
+      "datasets": [
+        "gse10245",
+        "gse30219",
+        "gse37745",
+        "gse42127"
+      ],
+      "k": [
+        2,
+        3,
+        4,
+        5,
+        10
+      ],
+      "save_scores": true,
+      "out": "RQ2_r"
+    },
+    "traceable": true,
+    "traceable_errors": []
+  },
+  "traceable": true,
+  "traceable_errors": []
+}
