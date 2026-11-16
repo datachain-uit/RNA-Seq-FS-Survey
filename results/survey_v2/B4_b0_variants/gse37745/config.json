@@ -1,0 +1,153 @@
+{
+  "experiment": "B4_b0_variants",
+  "decision": "QĐ174 (Review 12/11), spec §B4",
+  "dataset": "gse37745",
+  "variants": {
+    "b0": {
+      "prefilter_p0": null,
+      "c_grid": [
+        0.01,
+        0.1,
+        1.0,
+        10.0
+      ]
+    },
+    "b0_full_wide": {
+      "prefilter_p0": null,
+      "c_grid": [
+        0.0001,
+        0.001,
+        0.01,
+        0.1,
+        1.0,
+        10.0
+      ]
+    },
+    "b0_p5000": {
+      "prefilter_p0": 5000,
+      "c_grid": [
+        0.01,
+        0.1,
+        1.0,
+        10.0
+      ]
+    },
+    "b0_p5000_wide": {
+      "prefilter_p0": 5000,
+      "c_grid": [
+        0.0001,
+        0.001,
+        0.01,
+        0.1,
+        1.0,
+        10.0
+      ]
+    }
+  },
+  "protocol": "same 25 outer folds as E1; C and threshold by inner 3-fold CV on outer train; seed = seed_for(cohort, seed, fold, 0) as B0",
+  "gate": "b0 must reproduce published E1 b0 (|ΔAUROC| < 1e-12), checked by make_revision_tables.py b4",
+  "split_file": "/kaggle/working/kltn_data/experiment-data-geo-target/gse37745/repeated_splits.csv",
+  "split_sha256": "18dc9577a10b86f9dec236cefad6beac48fb43db4c9d1383fed547b80712fd20",
+  "n_rows": 100,
+  "gene_space": {
+    "patient_id_assumed_from_sample_id": false,
+    "gene_space": "intersection with tcga_luad_lusc_primary_tumor",
+    "n_genes_before_gene_space": 20848,
+    "data_dir": "/kaggle/working/kltn_data/experiment-data-geo-target/gse37745",
+    "n_per_class": [
+      104,
+      65
+    ],
+    "n_per_class_expected": [
+      104,
+      65
+    ],
+    "n_matches_expected": true,
+    "n_genes_dropped": 4369
+  },
+  "n_genes": 16479,
+  "elapsed_s": 309.9426066875458,
+  "versions": {
+    "numpy": "2.1.3",
+    "pandas": "2.3.3",
+    "scipy": "1.16.3",
+    "scikit-learn": "1.6.1",
+    "tables": "3.10.2",
+    "skrebate": "0.8.4",
+    "joblib": "1.6.0",
+    "threadpoolctl": "3.7.0",
+    "psutil": "5.9.5",
+    "xgboost": "3.4.1",
+    "lightgbm": "4.6.0",
+    "codecarbon": null
+  },
+  "generated_at": "2026-11-15T02:48:23+00:00",
+  "commit_hash": "c50647a82e2d0200f7aad2f89c41a4755a27bae2",
+  "provenance": {
+    "schema": "kltn-provenance/1",
+    "commit_hash": "c50647a82e2d0200f7aad2f89c41a4755a27bae2",
+    "tracked": true,
+    "dirty": false,
+    "branch": "HEAD",
+    "remote": "https://github.com/datachain-uit/RNA-Seq-FS-Survey.git",
+    "untracked_reason": null,
+    "script": "scripts/run_b4_b0_variants.py",
+    "code_root": "/kaggle/working/RNA-Seq-FS-Survey",
+    "data_root": "/kaggle/working/kltn_data",
+    "argv": [
+      "--datasets",
+      "gse37745"
+    ],
+    "started_at": "2026-11-15T02:43:13+00:00",
+    "python": "3.13.18",
+    "packages": {
+      "numpy": "2.1.3",
+      "pandas": "2.3.3",
+      "scikit-learn": "1.6.1",
+      "scipy": "1.16.3",
+      "tables": "3.10.2",
+      "openpyxl": "3.1.5",
+      "requests": "2.34.2",
+      "xgboost": "3.4.1",
+      "lightgbm": "4.6.0",
+      "abess": "0.4.11"
+    },
+    "machine": {
+      "platform": "Linux-6.18.55+-x86_64-with-glibc2.39",
+      "processor": "x86_64",
+      "machine": "x86_64",
+      "cpu_count": 4,
+      "hostname": "aae891fffaff"
+    },
+    "data_sha256": {
+      "/kaggle/input/datasets/lfreedom2750/experiment-data-v3/experiment-data-v3_2026-11-09/experiment-data-geo-target/gse37745/expression.h5": "f5dcaf11d7f36defc37ad67cf47da30b2f85823e3360fef2f8f4d0ab96a34ec7",
+      "/kaggle/input/datasets/lfreedom2750/experiment-data-v3/experiment-data-v3_2026-11-09/experiment-data-geo-target/gse37745/metadata.csv": "568b557e43c09daee94f8959f0144db642064502d73cb6493e8f5ff77c031328",
+      "/kaggle/input/datasets/lfreedom2750/experiment-data-v3/experiment-data-v3_2026-11-09/experiment-data-geo-target/gse37745/repeated_splits.csv": "18dc9577a10b86f9dec236cefad6beac48fb43db4c9d1383fed547b80712fd20"
+    },
+    "params": {
+      "datasets": [
+        "gse37745"
+      ],
+      "variants": [
+        "b0",
+        "b0_full_wide",
+        "b0_p5000",
+        "b0_p5000_wide"
+      ],
+      "repeats": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "prefilter": 5000,
+      "splits_root": null,
+      "out": "B4_b0_variants"
+    },
+    "traceable": true,
+    "traceable_errors": []
+  },
+  "traceable": true,
+  "traceable_errors": []
+}

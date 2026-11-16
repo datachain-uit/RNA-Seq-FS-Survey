@@ -1,0 +1,2 @@
+cohort_a,sample_a,cohort_b,sample_b,r_z,r_raw,genes_used,label_a,label_b,sex_metadata_a,sex_metadata_b,same_label
+gse37745,GSM1019319,gse37745,GSM1019325,0.7182,0.9905,20848,1,1,male,male,True

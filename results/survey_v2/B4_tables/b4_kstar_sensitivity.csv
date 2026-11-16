@@ -1,0 +1,18 @@
+﻿method,k_star_ivw_b0,k_star_both_b0,verdict_vs_b0_b0,k_star_ivw_b0_p5000_wide,k_star_both_b0_p5000_wide,verdict_vs_b0_b0_p5000_wide
+abess,10.0,,ủng hộ một phần (chỉ bản IVW đạt; ghi rõ cohort chi phối),10.0,,ủng hộ một phần (chỉ bản IVW đạt; ghi rõ cohort chi phối)
+elastic_net,4.0,25.0,ủng hộ một phần (chỉ bản IVW đạt; ghi rõ cohort chi phối),5.0,50.0,ủng hộ một phần (chỉ bản IVW đạt; ghi rõ cohort chi phối)
+f_test,4.0,,ủng hộ một phần (chỉ bản IVW đạt; ghi rõ cohort chi phối),5.0,,ủng hộ một phần (chỉ bản IVW đạt; ghi rõ cohort chi phối)
+ihc_2,2.0,,ủng hộ một phần (chỉ bản IVW đạt; ghi rõ cohort chi phối),2.0,,ủng hộ một phần (chỉ bản IVW đạt; ghi rõ cohort chi phối)
+ihc_4,4.0,4.0,ủng hộ (k*_gộp <= 10 theo cả hai cách gộp),4.0,,ủng hộ một phần (chỉ bản IVW đạt; ghi rõ cohort chi phối)
+ktsp,4.0,10.0,ủng hộ (k*_gộp <= 10 theo cả hai cách gộp),4.0,10.0,ủng hộ (k*_gộp <= 10 theo cả hai cách gộp)
+l1_lr,10.0,10.0,ủng hộ (k*_gộp <= 10 theo cả hai cách gộp),10.0,25.0,ủng hộ một phần (chỉ bản IVW đạt; ghi rõ cohort chi phối)
+mrmr,10.0,25.0,ủng hộ một phần (chỉ bản IVW đạt; ghi rõ cohort chi phối),10.0,,ủng hộ một phần (chỉ bản IVW đạt; ghi rõ cohort chi phối)
+mutual_info,10.0,,ủng hộ một phần (chỉ bản IVW đạt; ghi rõ cohort chi phối),25.0,,chưa kết luận
+relieff,3.0,,ủng hộ một phần (chỉ bản IVW đạt; ghi rõ cohort chi phối),3.0,,ủng hộ một phần (chỉ bản IVW đạt; ghi rõ cohort chi phối)
+rf_importance,4.0,25.0,ủng hộ một phần (chỉ bản IVW đạt; ghi rõ cohort chi phối),10.0,,ủng hộ một phần (chỉ bản IVW đạt; ghi rõ cohort chi phối)
+stability_selection,10.0,10.0,ủng hộ (k*_gộp <= 10 theo cả hai cách gộp),10.0,50.0,ủng hộ một phần (chỉ bản IVW đạt; ghi rõ cohort chi phối)
+svm_rfe,10.0,10.0,ủng hộ (k*_gộp <= 10 theo cả hai cách gộp),10.0,,ủng hộ một phần (chỉ bản IVW đạt; ghi rõ cohort chi phối)
+panel_girard2016,,,không xác định (không đạt ở các k đã thử),,,không xác định (không đạt ở các k đã thử)
+panel_wilkerson2013,,,không xác định (không đạt ở các k đã thử),,,không xác định (không đạt ở các k đã thử)
+bpso,50.0,50.0,bác bỏ (chuỗi không tới được k = 25),50.0,50.0,bác bỏ (chuỗi không tới được k = 25)
+ga,10.0,,ủng hộ một phần (chỉ bản IVW đạt; ghi rõ cohort chi phối),10.0,,ủng hộ một phần (chỉ bản IVW đạt; ghi rõ cohort chi phối)

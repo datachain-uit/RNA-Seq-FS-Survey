@@ -1,0 +1,123 @@
+{
+  "experiment": "E0_signal_check",
+  "dataset": "tcga_luad_egfr",
+  "cohort": "tcga_luad_egfr",
+  "role": "b7_harder_task",
+  "n": 493,
+  "p": 19938,
+  "k": 10,
+  "selector": "f_test",
+  "auroc_real": 0.9296934865900383,
+  "n_perm": 200,
+  "null_mean": 0.4931105015673981,
+  "null_q95": 0.5861459421804248,
+  "p_perm": 0.004975124378109453,
+  "n_random": 100,
+  "random_mean": 0.7429493207941483,
+  "random_q95": 0.8050130616509928,
+  "p_random": 0.009900990099009901,
+  "gain_vs_random": 0.18674416579588993,
+  "signal_present": true,
+  "selection_useful": true,
+  "min_p": 0.004975124378109453,
+  "rule": "signal if p_perm < 0.05; selection useful if p_random < 0.05 and gain >= 0.02 (P0 rule, Review 11/10)",
+  "p_formula": "(b + 1) / (B + 1), Phipson & Smyth 2010",
+  "cv": "5-fold, seed 42, patient-grouped if needed",
+  "gene_space": {
+    "patient_id_assumed_from_sample_id": false,
+    "gene_space": "intersection with tcga_luad_lusc_primary_tumor",
+    "n_genes_before_gene_space": 19938,
+    "data_dir": "/kaggle/working/kltn_data/experiment-data-b7/tcga_luad_egfr",
+    "n_per_class": [
+      435,
+      58
+    ],
+    "n_per_class_expected": [
+      435,
+      58
+    ],
+    "n_matches_expected": true,
+    "n_genes_dropped": 0
+  },
+  "elapsed_s": 118.30458116531372,
+  "versions": {
+    "numpy": "2.1.3",
+    "pandas": "2.3.3",
+    "scipy": "1.16.3",
+    "scikit-learn": "1.6.1",
+    "tables": "3.10.2",
+    "skrebate": "0.8.4",
+    "joblib": "1.6.0",
+    "threadpoolctl": "3.7.0",
+    "psutil": "5.9.5",
+    "xgboost": "3.4.1",
+    "lightgbm": "4.6.0",
+    "codecarbon": null
+  },
+  "generated_at": "2026-11-13T10:49:30+00:00",
+  "commit_hash": "c1828d2ac9622232c1ee22f69fab7fdf2bae5a7d",
+  "provenance": {
+    "schema": "kltn-provenance/1",
+    "commit_hash": "c1828d2ac9622232c1ee22f69fab7fdf2bae5a7d",
+    "tracked": true,
+    "dirty": false,
+    "branch": "HEAD",
+    "remote": "https://github.com/datachain-uit/RNA-Seq-FS-Survey.git",
+    "untracked_reason": null,
+    "script": "scripts/run_survey_e0_signal_check.py",
+    "code_root": "/kaggle/working/RNA-Seq-FS-Survey",
+    "data_root": "/kaggle/working/kltn_data",
+    "argv": [
+      "--datasets",
+      "tcga_luad_egfr",
+      "gse31210_egfr",
+      "--n-jobs",
+      "4",
+      "--out",
+      "E0_b7"
+    ],
+    "started_at": "2026-11-13T10:47:31+00:00",
+    "python": "3.13.18",
+    "packages": {
+      "numpy": "2.1.3",
+      "pandas": "2.3.3",
+      "scikit-learn": "1.6.1",
+      "scipy": "1.16.3",
+      "tables": "3.10.2",
+      "openpyxl": "3.1.5",
+      "requests": "2.34.2",
+      "xgboost": "3.4.1",
+      "lightgbm": "4.6.0",
+      "abess": "0.4.11"
+    },
+    "machine": {
+      "platform": "Linux-6.18.55+-x86_64-with-glibc2.39",
+      "processor": "x86_64",
+      "machine": "x86_64",
+      "cpu_count": 4,
+      "hostname": "ffbedb43d0d8"
+    },
+    "data_sha256": {
+      "$KLTN_DATA_ROOT/experiment-data-b7/tcga_luad_egfr/expression.h5": "f688eb7b5c6785933915f5572b1a8143780953f0e36f4b1f3048a7f53176960d",
+      "$KLTN_DATA_ROOT/experiment-data-b7/tcga_luad_egfr/metadata.csv": "63ca7cade4d45b2ca64dae7e97dbc635d0b0b6101aa1dec09761ed8c13ebbdc5"
+    },
+    "params": {
+      "datasets": [
+        "tcga_luad_egfr",
+        "gse31210_egfr"
+      ],
+      "k": 10,
+      "selector": "f_test",
+      "n_perm": 200,
+      "n_random": 100,
+      "prefilter": 5000,
+      "seed": 42,
+      "n_jobs": 4,
+      "out": "E0_b7"
+    },
+    "traceable": true,
+    "traceable_errors": []
+  },
+  "traceable": true,
+  "traceable_errors": []
+}

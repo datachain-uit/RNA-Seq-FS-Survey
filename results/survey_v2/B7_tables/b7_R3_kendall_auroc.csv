@@ -1,0 +1,3 @@
+﻿cohort,reference,k,n_methods,kendall_tau,p_value
+tcga_luad_egfr,"tcga_luad_lusc_primary_tumor (published E1, LUAD vs LUSC)",10,11,0.45454545454545453,0.06017015392015392
+gse31210_egfr,"tcga_luad_lusc_primary_tumor (published E1, LUAD vs LUSC)",10,11,0.38181818181818183,0.12097096961680295

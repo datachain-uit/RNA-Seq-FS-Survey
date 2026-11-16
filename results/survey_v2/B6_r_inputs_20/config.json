@@ -1,0 +1,148 @@
+{
+  "experiment": "B6_r_inputs",
+  "copied_from": "CN-23520899-LuanNT@7f097da scripts/export_rq2_inputs.py",
+  "source": "tcga_luad_lusc_primary_tumor",
+  "prefilter": 5000,
+  "spaces": {
+    "84310e5d407e": {
+      "n_source": 1016,
+      "n_genes": 5000,
+      "gene_space_size": 16479,
+      "cohorts": [
+        "gse10245",
+        "gse30219",
+        "gse37745"
+      ]
+    },
+    "2c3b1e698781": {
+      "n_source": 1016,
+      "n_genes": 5000,
+      "gene_space_size": 17235,
+      "cohorts": [
+        "gse42127"
+      ]
+    }
+  },
+  "cohorts": {
+    "gse10245": {
+      "space": "space_84310e5d407e",
+      "n_runs": 160,
+      "n_samples": 55,
+      "splits_file": "/kaggle/working/kltn_data/results/survey_v2/B1_splits/gse10245/fewshot_splits_20.csv"
+    },
+    "gse30219": {
+      "space": "space_84310e5d407e",
+      "n_runs": 240,
+      "n_samples": 141,
+      "splits_file": "/kaggle/working/kltn_data/results/survey_v2/B1_splits/gse30219/fewshot_splits_20.csv"
+    },
+    "gse37745": {
+      "space": "space_84310e5d407e",
+      "n_runs": 240,
+      "n_samples": 169,
+      "splits_file": "/kaggle/working/kltn_data/results/survey_v2/B1_splits/gse37745/fewshot_splits_20.csv"
+    },
+    "gse42127": {
+      "space": "space_2c3b1e698781",
+      "n_runs": 240,
+      "n_samples": 167,
+      "splits_file": "/kaggle/working/kltn_data/results/survey_v2/B1_splits/gse42127/fewshot_splits_20.csv"
+    }
+  },
+  "stage1_folds": 10,
+  "stage1_seed": 1503545930,
+  "lt_fold_rule": "inner_splits lần lặp đầu, seed_for(cid, seed, subset, n_t, 9)",
+  "r_seed_rule": "seed_for(cid, seed, subset, n_t, 13)",
+  "source_scaling": "z-score theo nguồn (ddof = 0)",
+  "target_values": "log2 gốc; R z-score theo L_T (ddof = 0, sd = 0 -> 1)",
+  "float_format": "%.8g",
+  "elapsed_s": 68.20988917350769,
+  "versions": {
+    "numpy": "2.1.3",
+    "pandas": "2.3.3",
+    "scipy": "1.16.3",
+    "scikit-learn": "1.6.1",
+    "tables": "3.10.2",
+    "skrebate": null,
+    "joblib": "1.6.0",
+    "threadpoolctl": "3.7.0",
+    "psutil": "5.9.5",
+    "xgboost": "3.4.1",
+    "lightgbm": "4.6.0",
+    "codecarbon": null
+  },
+  "generated_at": "2026-11-15T04:17:06+00:00",
+  "commit_hash": "c50647a82e2d0200f7aad2f89c41a4755a27bae2",
+  "provenance": {
+    "schema": "kltn-provenance/1",
+    "commit_hash": "c50647a82e2d0200f7aad2f89c41a4755a27bae2",
+    "tracked": true,
+    "dirty": false,
+    "branch": "HEAD",
+    "remote": "https://github.com/datachain-uit/RNA-Seq-FS-Survey.git",
+    "untracked_reason": null,
+    "script": "scripts/export_e7_r_inputs.py",
+    "code_root": "/tmp/RNA-Seq-FS-Survey",
+    "data_root": "/kaggle/working/kltn_data",
+    "argv": [
+      "--datasets",
+      "gse10245",
+      "gse30219",
+      "gse37745",
+      "gse42127",
+      "--n-t",
+      "5",
+      "10",
+      "20",
+      "--splits-root",
+      "/kaggle/working/kltn_data/results/survey_v2/B1_splits",
+      "--splits-file",
+      "fewshot_splits_20.csv",
+      "--out",
+      "B6_r_inputs_20"
+    ],
+    "started_at": "2026-11-15T04:15:57+00:00",
+    "python": "3.13.18",
+    "packages": {
+      "numpy": "2.1.3",
+      "pandas": "2.3.3",
+      "scikit-learn": "1.6.1",
+      "scipy": "1.16.3",
+      "tables": "3.10.2",
+      "openpyxl": "3.1.5",
+      "requests": "2.34.2",
+      "xgboost": "3.4.1",
+      "lightgbm": "4.6.0"
+    },
+    "machine": {
+      "platform": "Linux-6.18.55+-x86_64-with-glibc2.39",
+      "processor": "x86_64",
+      "machine": "x86_64",
+      "cpu_count": 4,
+      "hostname": "859fcc066a7e"
+    },
+    "data_sha256": {},
+    "params": {
+      "datasets": [
+        "gse10245",
+        "gse30219",
+        "gse37745",
+        "gse42127"
+      ],
+      "source": "tcga_luad_lusc_primary_tumor",
+      "prefilter": 5000,
+      "n_t": [
+        "5",
+        "10",
+        "20"
+      ],
+      "splits_root": "/kaggle/working/kltn_data/results/survey_v2/B1_splits",
+      "splits_file": "fewshot_splits_20.csv",
+      "out": "B6_r_inputs_20"
+    },
+    "traceable": true,
+    "traceable_errors": []
+  },
+  "traceable": true,
+  "traceable_errors": []
+}

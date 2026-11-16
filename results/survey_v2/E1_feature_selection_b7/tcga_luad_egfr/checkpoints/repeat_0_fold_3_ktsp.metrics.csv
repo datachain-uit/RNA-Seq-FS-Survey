@@ -1,0 +1,9 @@
+cohort,repeat,seed,fold,method,k,n_train,p0,n_selected,exact_k,n_filled,selector_param,n_eval,best_fitness,selection_time_s,cpu_time_s,rss_delta_mb,emissions_kg_co2,missing_genes
+tcga_luad_egfr,0,42,3,ktsp,1,395,5000,0,False,0,,,,36.13953239800048,35.918241287000455,15.0703125,,ktsp: k must be even
+tcga_luad_egfr,0,42,3,ktsp,2,395,5000,2,True,0,,,,36.13953239800048,35.918241287000455,15.0703125,,
+tcga_luad_egfr,0,42,3,ktsp,3,395,5000,0,False,0,,,,36.13953239800048,35.918241287000455,15.0703125,,ktsp: k must be even
+tcga_luad_egfr,0,42,3,ktsp,4,395,5000,4,True,0,,,,36.13953239800048,35.918241287000455,15.0703125,,
+tcga_luad_egfr,0,42,3,ktsp,5,395,5000,0,False,0,,,,36.13953239800048,35.918241287000455,15.0703125,,ktsp: k must be even
+tcga_luad_egfr,0,42,3,ktsp,10,395,5000,10,True,0,,,,36.13953239800048,35.918241287000455,15.0703125,,
+tcga_luad_egfr,0,42,3,ktsp,25,395,5000,0,False,0,,,,36.13953239800048,35.918241287000455,15.0703125,,ktsp: k must be even
+tcga_luad_egfr,0,42,3,ktsp,50,395,5000,50,True,0,,,,36.13953239800048,35.918241287000455,15.0703125,,

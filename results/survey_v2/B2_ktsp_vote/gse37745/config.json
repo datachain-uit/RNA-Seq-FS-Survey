@@ -1,0 +1,194 @@
+{
+  "experiment": "B2_ktsp_vote",
+  "decision": "QĐ172 (Review 12/11), spec YEU-CAU-DOI-CODE-2026-11-12-GVHD-B1-B7 §B2",
+  "dataset": "gse37745",
+  "parts": [
+    "e1",
+    "e1b",
+    "e7"
+  ],
+  "k_grid": [
+    2,
+    4,
+    10
+  ],
+  "n_t_e7": [
+    "5",
+    "10",
+    "20"
+  ],
+  "rule": "pair direction learned on train (P(x_i>x_j|1) vs P(x_i>x_j|0)); score = share of pairs voting class 1; class 1 if score > 0.5; tie -> top pair decides; no normalisation",
+  "published_root": "/kaggle/working/RNA-Seq-FS-Survey/results/survey_v2",
+  "published_tag": "survey-v3-dmkd.1",
+  "rows": {
+    "e1": 75,
+    "e1b": 300,
+    "e7": 360
+  },
+  "e1": {
+    "split_file": "/kaggle/working/kltn_data/experiment-data-geo-target/gse37745/repeated_splits.csv",
+    "split_sha256": "18dc9577a10b86f9dec236cefad6beac48fb43db4c9d1383fed547b80712fd20",
+    "published_panels_sha256": "419a4a312786be8ee7ff5cdcc2b63e111e6daf1366a7a5598dd872d8ffcd9ace"
+  },
+  "e1b": {
+    "fewshot_splits_file": "/kaggle/working/kltn_data/experiment-data-geo-target/gse37745/fewshot_splits.csv",
+    "fewshot_splits_sha256": "ede2fd00f8dbff7ace0cac6b48761aafbab1601878e5f1ab2967b3889ae95a74"
+  },
+  "e7": {
+    "fewshot_splits_file": "/kaggle/working/kltn_data/experiment-data-geo-target/gse37745/fewshot_splits.csv",
+    "fewshot_splits_sha256": "ede2fd00f8dbff7ace0cac6b48761aafbab1601878e5f1ab2967b3889ae95a74",
+    "gene_space_size": 16479,
+    "source_pairs": {
+      "2": [
+        [
+          "KRT5",
+          "SLC44A4"
+        ]
+      ],
+      "4": [
+        [
+          "KRT5",
+          "SLC44A4"
+        ],
+        [
+          "DSG3",
+          "HKDC1"
+        ]
+      ],
+      "10": [
+        [
+          "KRT5",
+          "SLC44A4"
+        ],
+        [
+          "DSG3",
+          "HKDC1"
+        ],
+        [
+          "DSC3",
+          "MACC1"
+        ],
+        [
+          "CERS3",
+          "IYD"
+        ],
+        [
+          "CNGA3",
+          "KRT74"
+        ]
+      ]
+    },
+    "source_directions": {
+      "2": [
+        1
+      ],
+      "4": [
+        1,
+        1
+      ],
+      "10": [
+        1,
+        1,
+        1,
+        1,
+        -1
+      ]
+    },
+    "prefilter_p0_on_source": 5000,
+    "source_sha256": {
+      "expression.h5": "41bf54bda90aae286eab2ceec7e705aeaa778cd77eb85587ab7ff8aaa75c2cff",
+      "metadata.csv": "ee65ea8b4075967867ce4f7fa8383122449d6ba2e10dd5e178a33b27b5ea7b26"
+    }
+  },
+  "choices_to_confirm": [
+    "direction tie P(x_i>x_j|1) == P(x_i>x_j|0): keep 'x_i > x_j votes class 1' (count in n_direction_ties)",
+    "E7 k-TSP + LR-L2 reference recomputed on the same source pairs (published E7 used L1-LR panels)"
+  ],
+  "elapsed_s": 132.71203303337097,
+  "versions": {
+    "numpy": "2.1.3",
+    "pandas": "2.3.3",
+    "scipy": "1.16.3",
+    "scikit-learn": "1.6.1",
+    "tables": "3.10.2",
+    "skrebate": "0.8.4",
+    "joblib": "1.6.0",
+    "threadpoolctl": "3.7.0",
+    "psutil": "5.9.5",
+    "xgboost": "3.4.1",
+    "lightgbm": "4.6.0",
+    "codecarbon": null
+  },
+  "generated_at": "2026-11-15T02:44:51+00:00",
+  "commit_hash": "c50647a82e2d0200f7aad2f89c41a4755a27bae2",
+  "provenance": {
+    "schema": "kltn-provenance/1",
+    "commit_hash": "c50647a82e2d0200f7aad2f89c41a4755a27bae2",
+    "tracked": true,
+    "dirty": false,
+    "branch": "HEAD",
+    "remote": "https://github.com/datachain-uit/RNA-Seq-FS-Survey.git",
+    "untracked_reason": null,
+    "script": "scripts/run_b2_ktsp_vote.py",
+    "code_root": "/kaggle/working/RNA-Seq-FS-Survey",
+    "data_root": "/kaggle/working/kltn_data",
+    "argv": [
+      "--datasets",
+      "gse37745"
+    ],
+    "started_at": "2026-11-15T02:42:38+00:00",
+    "python": "3.13.18",
+    "packages": {
+      "numpy": "2.1.3",
+      "pandas": "2.3.3",
+      "scikit-learn": "1.6.1",
+      "scipy": "1.16.3",
+      "tables": "3.10.2",
+      "openpyxl": "3.1.5",
+      "requests": "2.34.2",
+      "xgboost": "3.4.1",
+      "lightgbm": "4.6.0",
+      "abess": "0.4.11"
+    },
+    "machine": {
+      "platform": "Linux-6.18.55+-x86_64-with-glibc2.39",
+      "processor": "x86_64",
+      "machine": "x86_64",
+      "cpu_count": 4,
+      "hostname": "68bac747d942"
+    },
+    "data_sha256": {
+      "/kaggle/input/datasets/lfreedom2750/experiment-data-v3/experiment-data-v3_2026-11-09/experiment-data-geo-target/gse37745/expression.h5": "f5dcaf11d7f36defc37ad67cf47da30b2f85823e3360fef2f8f4d0ab96a34ec7",
+      "/kaggle/input/datasets/lfreedom2750/experiment-data-v3/experiment-data-v3_2026-11-09/experiment-data-geo-target/gse37745/metadata.csv": "568b557e43c09daee94f8959f0144db642064502d73cb6493e8f5ff77c031328"
+    },
+    "params": {
+      "datasets": [
+        "gse37745"
+      ],
+      "parts": [
+        "e1",
+        "e1b",
+        "e7"
+      ],
+      "k": [
+        2,
+        4,
+        10
+      ],
+      "n_t": [
+        "5",
+        "10",
+        "20"
+      ],
+      "published_root": "/kaggle/working/RNA-Seq-FS-Survey/results/survey_v2",
+      "source": "tcga_luad_lusc_primary_tumor",
+      "prefilter": 5000,
+      "splits_root": null,
+      "out": "B2_ktsp_vote"
+    },
+    "traceable": true,
+    "traceable_errors": []
+  },
+  "traceable": true,
+  "traceable_errors": []
+}
