@@ -125,6 +125,23 @@ def test_b5_top_f_genes_keeps_signature_genes_only():
     assert b5.method_name("panel_girard2016") == "sig10_girard2016"
 
 
+def test_b7_kstar_table_keeps_selectors_without_kstar_and_every_delta():
+    mk = importlib.import_module("make_revision_tables")
+    kst = pd.DataFrame([
+        {"cohort": "a", "method": "l1_lr", "k_star_cohort": 50.0, "delta": 0.02},
+        {"cohort": "a", "method": "l1_lr", "k_star_cohort": None, "delta": 0.01},
+        {"cohort": "a", "method": "svm_rfe", "k_star_cohort": None, "delta": 0.02},
+        {"cohort": "a", "method": "svm_rfe", "k_star_cohort": None, "delta": 0.01},
+        {"cohort": "b", "method": "l1_lr", "k_star_cohort": None, "delta": 0.02},
+        {"cohort": "b", "method": "l1_lr", "k_star_cohort": None, "delta": 0.01}])
+    w = mk.kstar_wide(kst)
+    assert len(w) == 3 and list(w.columns) == ["cohort", "method", "k_star_delta_0.02", "reading_delta_0.02",
+                                               "k_star_delta_0.01", "reading_delta_0.01"]
+    r = w.set_index(["cohort", "method"])
+    assert r.loc[("a", "l1_lr"), "k_star_delta_0.02"] == 50 and r.loc[("a", "l1_lr"), "reading_delta_0.02"] == "k* = 50"
+    assert pd.isna(r.loc[("a", "svm_rfe"), "k_star_delta_0.02"]) and "không đạt ở k = 50" in r.loc[("b", "l1_lr"), "reading_delta_0.01"]
+
+
 def test_kaggle_jobs_registry_has_revision_jobs_with_prepare_steps():
     kj = importlib.import_module("kaggle_jobs")
     for name in ("b2_b3_b5", "b4", "b1", "b7_e1_phaseA", "b7_e1_phaseB", "b7_e4"):
@@ -251,6 +268,10 @@ def test_revision_pipeline_end_to_end(pipeline):
     assert set(r1.cohort) == set(b7)
     assert "auprc" in pd.read_csv(res / "B7_tables" / "b7_e1_summary.csv").columns
     assert len(pd.read_csv(res / "B7_tables" / "b7_R4_kendall_stability.csv")) == 1
+    kst = pd.read_csv(res / "B7_tables" / "b7_kstar.csv")                    # đủ mọi (bộ, bộ chọn) và cả hai Δ, kể cả khi không đạt
+    assert len(kst) == 2 * 3                                                    # 2 bộ B7 × 3 bộ chọn (f_test, l1_lr, ktsp)
+    assert {"k_star_delta_0.02", "reading_delta_0.02", "k_star_delta_0.01", "reading_delta_0.01"} <= set(kst.columns)
+    assert kst["reading_delta_0.02"].notna().all() and kst["reading_delta_0.01"].notna().all()
     for d in ("B1_tables", "B2_tables", "B3_tables", "B4_tables", "B5_tables", "B7_tables"):
         c = json.loads((res / d / "config.json").read_text(encoding="utf-8"))
         assert c["published_root"] == str(res) and c["inputs_sha256"]

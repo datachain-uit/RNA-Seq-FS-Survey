@@ -283,6 +283,24 @@ def task_b5(args, prov):
 # ==========================================================================================================================
 # B7: EGFR
 # ==========================================================================================================================
+def kstar_wide(kst: pd.DataFrame, k_first: int = C.KSTAR_SEQUENCE[0]) -> pd.DataFrame:
+    """Một dòng mỗi (cohort, bộ chọn), một cột mỗi Δ: k* hoặc rỗng, kèm cột đọc. GIỮ mọi bộ chọn không có k* (trước đây pivot_table
+    bỏ ô rỗng nên bộ chọn không đạt và cả cột Δ = 0,01 khi không bộ nào đạt biến mất khỏi bảng)."""
+    rows = []
+    for (cohort, method), g in kst.groupby(["cohort", "method"], sort=True):
+        row = {"cohort": cohort, "method": method}
+        for delta, gd in g.groupby("delta", sort=False):
+            v = gd.k_star_cohort.iloc[0]
+            ok = v is not None and not pd.isna(v)
+            row[f"k_star_delta_{delta:g}"] = int(v) if ok else np.nan
+            row[f"reading_delta_{delta:g}"] = f"k* = {int(v)}" if ok else f"không đạt ở k = {k_first} (mức đầu của chuỗi)"
+        rows.append(row)
+    out = pd.DataFrame(rows)
+    deltas = sorted({float(c.split("_")[-1]) for c in out.columns if c.startswith("k_star_delta_")}, reverse=True)
+    cols = ["cohort", "method"] + [f"{p}_delta_{d:g}" for d in deltas for p in ("k_star", "reading")]
+    return out[cols]
+
+
 def task_b7(args, prov):
     sys.path.insert(0, str(REPO / "scripts"))
     from make_survey_tables import e1_tests  # noqa: E402
@@ -313,8 +331,7 @@ def task_b7(args, prov):
     summ, tests, kst = pd.concat(summ), pd.concat(tests), pd.concat(kst)
     _save(summ, out, "b7_e1_summary.csv")
     _save(tests, out, "b7_e1_tests_vs_random_b0.csv")
-    k_wide = kst.pivot_table(index=["cohort", "method"], columns="delta", values="k_star_cohort", aggfunc="first").reset_index()
-    k_wide.columns = [c if not isinstance(c, float) else f"k_star_delta_{c:g}" for c in k_wide.columns]
+    k_wide = kstar_wide(kst)
     _save(k_wide, out, "b7_kstar.csv")
     # R1
     r1 = tests[(tests.k == k) & tests.method.isin(C.NON_WRAPPER_METHODS)].groupby("cohort").beats_random_holm.agg(["sum", "size"]).reset_index()
@@ -347,7 +364,9 @@ def task_b7(args, prov):
     _save(pd.DataFrame(r4), out, "b7_R4_kendall_stability.csv")
     if aup:
         _save(pd.concat(aup), out, "b7_auprc_per_fold.csv")
-    _finish(out, prov, "B7", inp, {"R1": r1.to_dict("records"), "R3": r3, "R4": r4,
+    r2 = {f"{r.cohort}|{r.method}": {c: (None if pd.isna(r[c]) else int(r[c])) for c in k_wide.columns if c.startswith("k_star_delta_")}
+          for _, r in k_wide.iterrows()}
+    _finish(out, prov, "B7", inp, {"R1": r1.to_dict("records"), "R2": r2, "R3": r3, "R4": r4,
                                    "R5": "not computed: the writer reads the Fig. 13 decision framework against b7_e1_summary, b7_kstar, b7_e4_stability"},
             choices=["R1 uses the main E1 rule: Nadeau–Bengio one-sided vs random-k, Holm within (cohort, method) across k, read at k = 10",
                      "R2: per-cohort k* (single cohort; fixed sequence, lb one-sided 95 % > −Δ) with Δ = 0.02 and Δ = 0.01",
