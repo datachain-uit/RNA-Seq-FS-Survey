@@ -1,0 +1,18 @@
+{
+  "commit_hash": "c1828d2ac9622232c1ee22f69fab7fdf2bae5a7d",
+  "dirty": false,
+  "dirty_files": [],
+  "script_tracked": true,
+  "pushed": true,
+  "run_at": "2026-11-13T10:47:13+00:00",
+  "data_root": "/kaggle/working/kltn_data",
+  "rz_threshold": 0.9,
+  "raw_threshold": 0.99,
+  "cohorts": [
+    "gse31210_egfr",
+    "gse10245",
+    "gse30219",
+    "gse37745"
+  ],
+  "r_z": "Pearson between samples after z-scoring each gene within its cohort; between cohorts on genes shared by all cohorts"
+}

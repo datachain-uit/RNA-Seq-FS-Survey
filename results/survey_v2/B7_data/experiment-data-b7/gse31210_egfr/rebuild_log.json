@@ -1,0 +1,44 @@
+[
+  {
+    "cohort": "gse31210_egfr",
+    "data_dir": "/kaggle/working/kltn_data/experiment-data-b7/gse31210_egfr",
+    "excluded_file": "/kaggle/working/kltn_data/experiment-data-b7/gse31210_egfr/excluded_samples_gse31210_egfr.csv",
+    "mode": "full",
+    "excluded_now": [
+      "GSM773594",
+      "GSM773684"
+    ],
+    "excluded_already_absent": [],
+    "n_before": 226,
+    "n_after": 224,
+    "n_per_class_after": [
+      98,
+      126
+    ],
+    "n_per_class_expected": [],
+    "sex_column": "unchanged from Sample_characteristics_ch1_3",
+    "sex_counts": {
+      "female": 121,
+      "male": 103
+    },
+    "sha256_before": {
+      "expression.h5": "f40e4f364b2d99780ea65ecda3bc61ed9b0d856e8eda88eb6d941884b09aa2bd",
+      "metadata.csv": "0fe53d29c463ac6798b97cd7a997501f13644eed17e6fe2ee0ccc3ae028444a7"
+    },
+    "changed": true,
+    "script": "scripts/geo_sample_qc.py rebuild",
+    "commit_hash": "c1828d2ac9622232c1ee22f69fab7fdf2bae5a7d",
+    "dirty": false,
+    "dirty_files": [],
+    "script_tracked": true,
+    "pushed": true,
+    "traceable": true,
+    "traceable_errors": [],
+    "run_at": "2026-11-13T10:47:20+00:00",
+    "backup_dir": "/kaggle/working/kltn_data/experiment-data-b7/gse31210_egfr/_backup_20261113-104720",
+    "sha256_after": {
+      "expression.h5": "6d2a9fbfc65194d2acb7b3b520006a54af244eec2f1fe06255d5e03a81019d0e",
+      "metadata.csv": "2679de2dc105205b880e30de5c537b81dc8585bd24c3427e54dc4ee330514b00"
+    }
+  }
+]

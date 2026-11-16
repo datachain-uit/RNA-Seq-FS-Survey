@@ -1,0 +1,88 @@
+{
+  "experiment": "B7_gate",
+  "rule": "G1: E0 p_perm <= 0.05 (F-test, k = 10, 200 permutations); G2: mean AUROC(B0) - mean AUROC(random-k, k = 10, 100 draws/fold) over 25 folds >= 0.05 (fixed 12/11)",
+  "datasets": [
+    "tcga_luad_egfr",
+    "gse31210_egfr"
+  ],
+  "e0_dir": "E0_b7",
+  "e1_dir": "E1_classification_b7",
+  "auprc_note": "B0 AUPRC from e1_scores.csv, reference only; random-k AUPRC not stored by run_e1_classification.py",
+  "n_rows": 2,
+  "versions": {
+    "numpy": "2.1.3",
+    "pandas": "2.3.3",
+    "scipy": "1.16.3",
+    "scikit-learn": "1.6.1",
+    "tables": "3.10.2",
+    "skrebate": "0.8.4",
+    "joblib": "1.6.0",
+    "threadpoolctl": "3.7.0",
+    "psutil": "5.9.5",
+    "xgboost": "3.4.1",
+    "lightgbm": "4.6.0",
+    "codecarbon": null
+  },
+  "generated_at": "2026-11-13T11:31:37+00:00",
+  "commit_hash": "c1828d2ac9622232c1ee22f69fab7fdf2bae5a7d",
+  "provenance": {
+    "schema": "kltn-provenance/1",
+    "commit_hash": "c1828d2ac9622232c1ee22f69fab7fdf2bae5a7d",
+    "tracked": true,
+    "dirty": false,
+    "branch": "HEAD",
+    "remote": "https://github.com/datachain-uit/RNA-Seq-FS-Survey.git",
+    "untracked_reason": null,
+    "script": "scripts/b7_gate.py",
+    "code_root": "/kaggle/working/RNA-Seq-FS-Survey",
+    "data_root": "/kaggle/working/kltn_data",
+    "argv": [
+      "--e0-dir",
+      "E0_b7",
+      "--e1-dir",
+      "E1_classification_b7"
+    ],
+    "started_at": "2026-11-13T11:31:36+00:00",
+    "python": "3.13.18",
+    "packages": {
+      "numpy": "2.1.3",
+      "pandas": "2.3.3",
+      "scikit-learn": "1.6.1",
+      "scipy": "1.16.3",
+      "tables": "3.10.2",
+      "openpyxl": "3.1.5",
+      "requests": "2.34.2",
+      "xgboost": "3.4.1",
+      "lightgbm": "4.6.0",
+      "abess": "0.4.11"
+    },
+    "machine": {
+      "platform": "Linux-6.18.55+-x86_64-with-glibc2.39",
+      "processor": "x86_64",
+      "machine": "x86_64",
+      "cpu_count": 4,
+      "hostname": "ffbedb43d0d8"
+    },
+    "data_sha256": {
+      "$KLTN_DATA_ROOT/results/survey_v2/E0_b7/tcga_luad_egfr/e0_signal_check.csv": "19b619495c27b8ef92101ffc4baa345960d0ac67075bf54983c5f97f59eec628",
+      "$KLTN_DATA_ROOT/results/survey_v2/E1_classification_b7/tcga_luad_egfr/classification_per_fold.csv": "76cb366a37189ca29f8175596f39ddc3eff9985b161ab9817a15886a815b5f0a",
+      "$KLTN_DATA_ROOT/results/survey_v2/E1_classification_b7/tcga_luad_egfr/e1_scores.csv": "8b579a00d5657e59a0f63ab1776b0233023f233647da8842c8052ebd3dd2b563",
+      "$KLTN_DATA_ROOT/results/survey_v2/E0_b7/gse31210_egfr/e0_signal_check.csv": "d4da06e5c64859c120fa4513fa89ae8ca4a622ca8cc78e25c46a3596072f0aa2",
+      "$KLTN_DATA_ROOT/results/survey_v2/E1_classification_b7/gse31210_egfr/classification_per_fold.csv": "e07cb53e2a7dd29262685b33cfcaf3c6a2f79ff2eaf722275ea41cb8c58265d7",
+      "$KLTN_DATA_ROOT/results/survey_v2/E1_classification_b7/gse31210_egfr/e1_scores.csv": "ffffcfcffe4a9a8b731b17513977ca0dfb8680565c0c5b8a1fe5d72303b5b857"
+    },
+    "params": {
+      "datasets": [
+        "tcga_luad_egfr",
+        "gse31210_egfr"
+      ],
+      "e0_dir": "E0_b7",
+      "e1_dir": "E1_classification_b7",
+      "out": "B7_gate"
+    },
+    "traceable": true,
+    "traceable_errors": []
+  },
+  "traceable": true,
+  "traceable_errors": []
+}

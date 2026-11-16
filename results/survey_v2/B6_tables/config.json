@@ -1,0 +1,106 @@
+{
+  "experiment": "B6_tables",
+  "spec": "YEU-CAU-DOI-CODE-2026-11-12-GVHD-B1-B7.md §3 (reading rules fixed 12/11/2026)",
+  "published_root": "D:\\KLTN\\_workspace\\b6-tables-run\\code\\results\\survey_v2",
+  "published_tag": "survey-v3-dmkd.1",
+  "inputs_sha256": {
+    "D:\\KLTN\\_workspace\\b6-tables-run\\data\\results\\survey_v2\\B6_E7_principled\\gse10245\\e7_r_per_run.csv": "79b637dba4d833a5fd2cde915dbd8d1d82a575abd3a5f85715e32711b9231752",
+    "D:\\KLTN\\_workspace\\b6-tables-run\\data\\results\\survey_v2\\B1_E7_20\\gse10245\\e7_per_run.csv": "0a7e2ea3615abb41602ee5def0b4050a872346c2f55f8c51c551c300b69cf2a4",
+    "D:\\KLTN\\_workspace\\b6-tables-run\\data\\results\\survey_v2\\B6_E7_principled\\gse10245\\e7_r_diagnostics.csv": "595e944c2f5681b9799dd0e77b32256c993ad72a9b102b07959ac1a4e605c634",
+    "D:\\KLTN\\_workspace\\b6-tables-run\\data\\results\\survey_v2\\B6_E7_principled\\gse30219\\e7_r_per_run.csv": "117a404d087a166fbea08ab97d104fb51bcabced88056a02e6369b30a6a2308e",
+    "D:\\KLTN\\_workspace\\b6-tables-run\\data\\results\\survey_v2\\B1_E7_20\\gse30219\\e7_per_run.csv": "8c6c5a34d946baee787ecba0286f9130b9feb8294d1464906855559205488e69",
+    "D:\\KLTN\\_workspace\\b6-tables-run\\data\\results\\survey_v2\\B6_E7_principled\\gse30219\\e7_r_diagnostics.csv": "c5f160c5f940b8a0ddda801ef0d63dcbffc80693b07621e0faf123d689e6c2bf",
+    "D:\\KLTN\\_workspace\\b6-tables-run\\data\\results\\survey_v2\\B6_E7_principled\\gse37745\\e7_r_per_run.csv": "858d70850e9a5ba3cbab442340f39f914cbf7277bcce5d7573abca78805d0ee4",
+    "D:\\KLTN\\_workspace\\b6-tables-run\\data\\results\\survey_v2\\B1_E7_20\\gse37745\\e7_per_run.csv": "1f0045390b9af0c85e3d417d7bd423db151c28f822dfd94265ec00003d5d466a",
+    "D:\\KLTN\\_workspace\\b6-tables-run\\data\\results\\survey_v2\\B6_E7_principled\\gse37745\\e7_r_diagnostics.csv": "7c39e8db6b96c963165c68802cb755314fb32fbc14a69acd372f9dd390a2e1db",
+    "D:\\KLTN\\_workspace\\b6-tables-run\\data\\results\\survey_v2\\B6_E7_principled\\gse42127\\e7_r_per_run.csv": "10aa9bb19d7ed036bcf0ac09f9dc01f1505915b0608dc51c391d8b014bd17e9d",
+    "D:\\KLTN\\_workspace\\b6-tables-run\\data\\results\\survey_v2\\B1_E7_20\\gse42127\\e7_per_run.csv": "f7b4483f5dd1c64f4e00bd57c3abf54af784ef137cb9d0aabc27f98e948d9d63",
+    "D:\\KLTN\\_workspace\\b6-tables-run\\data\\results\\survey_v2\\B6_E7_principled\\gse42127\\e7_r_diagnostics.csv": "cc813b7eb2d6c89538b528d3c3d6432c832b9cdf264358864053dc244ea89929"
+  },
+  "summary": {
+    "label_counts": {
+      "ptlasso": {
+        "inconclusive": 18,
+        "negative transfer": 2,
+        "positive transfer": 15,
+        "practically equivalent": 20
+      },
+      "transglm": {
+        "inconclusive": 31,
+        "negative transfer": 0,
+        "positive transfer": 5,
+        "practically equivalent": 19
+      }
+    }
+  },
+  "choices_to_confirm": [
+    "same split-level rule as B1 (Wilcoxon exact two-sided, Holm within strategy, bootstrap CI over splits, margin 0.01)",
+    "deltas vs select-on-source and pooled are descriptive (no Holm)",
+    "target-only, select-on-source, pooled from B1_E7_20 (same 20 splits, same subsets)"
+  ],
+  "versions": {
+    "numpy": "2.5.0",
+    "pandas": "3.0.3",
+    "scipy": "1.18.1",
+    "scikit-learn": "1.9.0",
+    "tables": "3.11.1",
+    "skrebate": null,
+    "joblib": "1.6.0",
+    "threadpoolctl": "3.6.0",
+    "psutil": "7.2.2",
+    "xgboost": null,
+    "lightgbm": null,
+    "codecarbon": null
+  },
+  "generated_at": "2026-11-15T22:55:50+07:00",
+  "commit_hash": "c50647a82e2d0200f7aad2f89c41a4755a27bae2",
+  "provenance": {
+    "schema": "kltn-provenance/1",
+    "commit_hash": "c50647a82e2d0200f7aad2f89c41a4755a27bae2",
+    "tracked": true,
+    "dirty": false,
+    "branch": "HEAD",
+    "remote": "https://github.com/datachain-uit/RNA-Seq-FS-Survey.git",
+    "untracked_reason": null,
+    "script": "scripts/make_revision_tables.py",
+    "code_root": "D:/KLTN/_workspace/b6-tables-run/code",
+    "data_root": "D:/KLTN/_workspace/b6-tables-run/data",
+    "argv": [
+      "b6"
+    ],
+    "started_at": "2026-11-15T22:55:48+07:00",
+    "python": "3.14.6",
+    "packages": {
+      "numpy": "2.5.0",
+      "pandas": "3.0.3",
+      "scikit-learn": "1.9.0",
+      "scipy": "1.18.1",
+      "tables": "3.11.1",
+      "openpyxl": "3.1.5",
+      "requests": "2.34.2"
+    },
+    "machine": {
+      "platform": "Windows-11-10.0.22000-SP0",
+      "processor": "Intel64 Family 6 Model 140 Stepping 1, GenuineIntel",
+      "machine": "AMD64",
+      "cpu_count": 8,
+      "hostname": "DESKTOP-1LQ0FRI"
+    },
+    "data_sha256": {},
+    "params": {
+      "tasks": "['b6']",
+      "b1_e7": "B1_E7_20",
+      "b1_e1b": "B1_E1b_20",
+      "b4_threshold": "0.935",
+      "b6_gate_dir": "B6_E7_gate5",
+      "b6_dir": "B6_E7_principled",
+      "fewshot_cohorts": "['gse10245', 'gse30219', 'gse37745', 'gse42127']",
+      "main_datasets": "['tcga_luad_lusc_primary_tumor', 'gse10245', 'gse30219', 'gse37745', 'gse42127']",
+      "kstar_cohorts": "['gse10245', 'gse30219', 'gse37745']"
+    },
+    "traceable": true,
+    "traceable_errors": []
+  },
+  "traceable": true,
+  "traceable_errors": []
+}

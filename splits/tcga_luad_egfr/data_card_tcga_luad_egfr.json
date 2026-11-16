@@ -1,0 +1,254 @@
+{
+  "dataset": "tcga_luad_egfr",
+  "role": "b7_harder_task",
+  "platform": "RNA-seq (log2 TPM+1)",
+  "source": "GDC Data Release 46.0 - August 10, 2026; TCGA-LUAD Masked Somatic Mutation (open), 618 MAF files; expression = tcga_luad_lusc_primary_tumor (log2(TPM + 1), same genes and QC)",
+  "label_mapping": {
+    "EGFR wild-type / negative": 0,
+    "EGFR mutant / positive": 1
+  },
+  "label_rule": "1 = >= 1 activating EGFR kinase-domain variant (ex19 in-frame del, L858R, L861Q, G719X, S768I, ex20 in-frame ins); 0 = no non-synonymous EGFR variant; other EGFR variants and samples without an open MAF excluded (QĐ186)",
+  "n_after_qc": 493,
+  "n_per_class_after_qc": [
+    435,
+    58
+  ],
+  "positive_rate": 0.1176,
+  "n_patients": 493,
+  "label_exclusions": [
+    {
+      "sample_id": "TCGA-05-4245-01A",
+      "label_status": "no_maf",
+      "egfr_variants": ""
+    },
+    {
+      "sample_id": "TCGA-05-4382-01A",
+      "label_status": "excluded_other_egfr",
+      "egfr_variants": "p.R222L;p.E545Q"
+    },
+    {
+      "sample_id": "TCGA-05-4402-01A",
+      "label_status": "excluded_other_egfr",
+      "egfr_variants": "p.S752Pfs*3"
+    },
+    {
+      "sample_id": "TCGA-05-4410-01A",
+      "label_status": "excluded_other_egfr",
+      "egfr_variants": "p.R377S"
+    },
+    {
+      "sample_id": "TCGA-35-3615-01A",
+      "label_status": "no_maf",
+      "egfr_variants": ""
+    },
+    {
+      "sample_id": "TCGA-38-4629-01A",
+      "label_status": "excluded_other_egfr",
+      "egfr_variants": "p.G465R"
+    },
+    {
+      "sample_id": "TCGA-44-2659-01A",
+      "label_status": "no_maf",
+      "egfr_variants": ""
+    },
+    {
+      "sample_id": "TCGA-55-6980-01A",
+      "label_status": "excluded_other_egfr",
+      "egfr_variants": "p.E709_T710delinsD"
+    },
+    {
+      "sample_id": "TCGA-55-7570-01A",
+      "label_status": "excluded_other_egfr",
+      "egfr_variants": "p.V300M"
+    },
+    {
+      "sample_id": "TCGA-55-8505-01A",
+      "label_status": "no_maf",
+      "egfr_variants": ""
+    },
+    {
+      "sample_id": "TCGA-67-3772-01A",
+      "label_status": "no_maf",
+      "egfr_variants": ""
+    },
+    {
+      "sample_id": "TCGA-69-7760-01A",
+      "label_status": "excluded_other_egfr",
+      "egfr_variants": "p.E709_T710delinsD"
+    },
+    {
+      "sample_id": "TCGA-69-7765-01A",
+      "label_status": "excluded_other_egfr",
+      "egfr_variants": "p.Q486*"
+    },
+    {
+      "sample_id": "TCGA-69-8453-01A",
+      "label_status": "no_maf",
+      "egfr_variants": ""
+    },
+    {
+      "sample_id": "TCGA-78-7143-01A",
+      "label_status": "no_maf",
+      "egfr_variants": ""
+    },
+    {
+      "sample_id": "TCGA-78-7155-01A",
+      "label_status": "excluded_other_egfr",
+      "egfr_variants": "p.Q432H;p.K754I;p.G901V"
+    },
+    {
+      "sample_id": "TCGA-78-7158-01A",
+      "label_status": "excluded_other_egfr",
+      "egfr_variants": "p.L907M"
+    },
+    {
+      "sample_id": "TCGA-86-8358-01A",
+      "label_status": "no_maf",
+      "egfr_variants": ""
+    },
+    {
+      "sample_id": "TCGA-95-7039-01A",
+      "label_status": "excluded_other_egfr",
+      "egfr_variants": "p.S921R"
+    },
+    {
+      "sample_id": "TCGA-95-7947-01A",
+      "label_status": "excluded_other_egfr",
+      "egfr_variants": "p.I91V;p.R1052I"
+    },
+    {
+      "sample_id": "TCGA-97-A4M2-01A",
+      "label_status": "no_maf",
+      "egfr_variants": ""
+    },
+    {
+      "sample_id": "TCGA-MP-A4TI-01A",
+      "label_status": "no_maf",
+      "egfr_variants": ""
+    }
+  ],
+  "qc_exclusions": [],
+  "filter_distribution": [
+    {
+      "Hugo_Symbol": "EGFR",
+      "FILTER": NaN,
+      "n_variants": 89
+    },
+    {
+      "Hugo_Symbol": "TP53",
+      "FILTER": NaN,
+      "n_variants": 264
+    }
+  ],
+  "scale": "log2(TPM + 1) (as source)",
+  "gene_space_G": 19938,
+  "build_info": {
+    "dataset": "tcga_luad_egfr",
+    "source": "GDC Data Release 46.0 - August 10, 2026; TCGA-LUAD Masked Somatic Mutation (open), 618 MAF files; expression = tcga_luad_lusc_primary_tumor (log2(TPM + 1), same genes and QC)",
+    "gdc_status": {
+      "commit": "8f7c2a51ab0084b216ad1b62a3fae8b945439c53",
+      "data_release": "Data Release 46.0 - August 10, 2026",
+      "data_release_version": {
+        "major": 46,
+        "minor": 0,
+        "release_date": "2026-08-10"
+      },
+      "status": "OK",
+      "tag": "8.5.0",
+      "version": 1
+    },
+    "workflows": [
+      "Aliquot Ensemble Somatic Variant Merging and Masking"
+    ],
+    "label_rule": "1 = >= 1 activating EGFR kinase-domain variant (ex19 in-frame del, L858R, L861Q, G719X, S768I, ex20 in-frame ins); 0 = no non-synonymous EGFR variant; other EGFR variants and samples without an open MAF excluded (QĐ186)",
+    "variant_dedup_key": [
+      "sample_id",
+      "Chromosome",
+      "Start_Position",
+      "Reference_Allele",
+      "Tumor_Seq_Allele2"
+    ],
+    "n_variant_rows_raw": 442,
+    "n_variant_rows_dedup": 409,
+    "egfr_counts": {
+      "wildtype": 435,
+      "mutant": 58,
+      "excluded_other_egfr": 12,
+      "no_maf": 10
+    },
+    "tp53_counts": {
+      "wildtype": 262,
+      "mutant": 243,
+      "no_maf": 10
+    },
+    "activating_class_counts": {
+      "ex19del": 27,
+      "L858R": 21,
+      "L861Q": 3,
+      "G719X": 3,
+      "S768I": 3,
+      "ex20ins": 3
+    },
+    "n_samples": 493,
+    "n_per_class": [
+      435,
+      58
+    ],
+    "n_genes": 19938,
+    "scale": "log2(TPM + 1) (as source)"
+  },
+  "sha256": {
+    "expression.h5": "f688eb7b5c6785933915f5572b1a8143780953f0e36f4b1f3048a7f53176960d",
+    "metadata.csv": "63ca7cade4d45b2ca64dae7e97dbc635d0b0b6101aa1dec09761ed8c13ebbdc5",
+    "repeated_splits.csv": "6302d7f2e752fc80e7fa2b6675ed5451efddf53b82ba35323fa12c0475d6a7f6",
+    "excluded_samples_tcga_luad_egfr.csv": "319997af3f3d89bc5d4077171d754ffa865c2fa73ca7e913e8c2e37b21561a04",
+    "b7_labels_all.csv": "8e7807ca5457a3e09944c06f73c6170b4333e178bb551cb94636133d1072ef3f"
+  },
+  "splits": "/kaggle/working/kltn_data/experiment-data-b7/tcga_luad_egfr/repeated_splits.csv",
+  "card_provenance": {
+    "schema": "kltn-provenance/1",
+    "commit_hash": "c1828d2ac9622232c1ee22f69fab7fdf2bae5a7d",
+    "tracked": true,
+    "dirty": false,
+    "branch": "HEAD",
+    "remote": "https://github.com/datachain-uit/RNA-Seq-FS-Survey.git",
+    "untracked_reason": null,
+    "script": "scripts/build_b7_egfr_datasets.py",
+    "code_root": "/kaggle/working/RNA-Seq-FS-Survey",
+    "data_root": "/kaggle/working/kltn_data",
+    "argv": [
+      "card"
+    ],
+    "started_at": "2026-11-13T10:47:27+00:00",
+    "python": "3.13.18",
+    "packages": {
+      "numpy": "2.1.3",
+      "pandas": "2.3.3",
+      "scikit-learn": "1.6.1",
+      "scipy": "1.16.3",
+      "tables": "3.10.2",
+      "openpyxl": "3.1.5",
+      "requests": "2.34.2",
+      "xgboost": "3.4.1",
+      "lightgbm": "4.6.0",
+      "abess": "0.4.11"
+    },
+    "machine": {
+      "platform": "Linux-6.18.55+-x86_64-with-glibc2.39",
+      "processor": "x86_64",
+      "machine": "x86_64",
+      "cpu_count": 4,
+      "hostname": "ffbedb43d0d8"
+    },
+    "data_sha256": {},
+    "params": {
+      "command": "card",
+      "cache": "/kaggle/working/kltn_data/_b7_raw",
+      "status_json": "None",
+      "allow_other_release": "False",
+      "datasets": "['tcga_luad_egfr', 'gse31210_egfr']"
+    },
+    "traceable": true,
+    "traceable_errors": []
+  }
+}

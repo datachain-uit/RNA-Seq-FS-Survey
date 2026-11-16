@@ -1,0 +1,2 @@
+﻿cohort,reference,k,fraction,n_methods,kendall_tau,p_value
+tcga_luad_egfr,tcga_luad_lusc_primary_tumor,10,0.7,11,0.5636363636363636,0.016540504248837583

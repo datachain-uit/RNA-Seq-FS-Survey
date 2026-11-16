@@ -1,0 +1,106 @@
+{
+  "experiment": "B4_tables",
+  "spec": "YEU-CAU-DOI-CODE-2026-11-12-GVHD-B1-B7.md §3 (reading rules fixed 12/11/2026)",
+  "published_root": "/kaggle/working/RNA-Seq-FS-Survey/results/survey_v2",
+  "published_tag": "survey-v3-dmkd.1",
+  "inputs_sha256": {
+    "/kaggle/working/kltn_data/results/survey_v2/B4_b0_variants/tcga_luad_lusc_primary_tumor/b4_per_fold.csv": "df1eca52c43c6877bac02054e5e7ddd927295e01b20608505dc90b514977169c",
+    "/kaggle/working/kltn_data/results/survey_v2/B4_b0_variants/gse10245/b4_per_fold.csv": "79e882833c085a4f7afbbe805996c63d8039b75fddcc3dfe7caa5ee34c8fc14a",
+    "/kaggle/working/kltn_data/results/survey_v2/B4_b0_variants/gse30219/b4_per_fold.csv": "5b65c600bac28a85dd3d2d0335ea2ac1e0bf0caae9a6ce35bd049ab7541f6f2b",
+    "/kaggle/working/kltn_data/results/survey_v2/B4_b0_variants/gse37745/b4_per_fold.csv": "7d9da9468af7d54d66a45c6fb68af84bdd3661c31a1c82f6fb995037c00f63f3",
+    "/kaggle/working/kltn_data/results/survey_v2/B4_b0_variants/gse42127/b4_per_fold.csv": "2b844fff0b7586fa3000d3508abf1b3610c3cc94955c35b63d6fb789d48c4b3c",
+    "/kaggle/working/RNA-Seq-FS-Survey/results/survey_v2/E1_classification/tcga_luad_lusc_primary_tumor/classification_per_fold.csv": "cd670e4346f4e152efd5ef01f5249dcadf52010137b74521badb1c8d2c57b019",
+    "/kaggle/working/RNA-Seq-FS-Survey/results/survey_v2/E1_classification/gse10245/classification_per_fold.csv": "1c68bf38fac4c6a6bd90841c4d60f4c48523aa76a00843e18b6dcfd8ddeccf1b",
+    "/kaggle/working/RNA-Seq-FS-Survey/results/survey_v2/E1_classification/gse30219/classification_per_fold.csv": "bcdb7d77a5ba4deee4d895eed2808ce26119a136ec23a6d96bf00a95a580d637",
+    "/kaggle/working/RNA-Seq-FS-Survey/results/survey_v2/E1_classification/gse37745/classification_per_fold.csv": "db21c3648700b0d1ec4f95bcf39bdfe5b92a0023e1f95b4bb83b7501bbedbe2d",
+    "/kaggle/working/RNA-Seq-FS-Survey/results/survey_v2/E1_classification/gse42127/classification_per_fold.csv": "94af57ca551bfa3ef7ee74fc2a9a45e6837d0870914ba464a94b9446421c1a54"
+  },
+  "summary": {
+    "gate_b0_pass": true,
+    "gse42127_threshold": 0.935,
+    "b0_under_regularised_on_gse42127": true,
+    "sentence": "A B0 variant reaches >= 0.935 AUROC on GSE42127 (b0_p5000_wide 0.942): the original B0 is under-regularised on that cohort.",
+    "best_variant_for_kstar": "b0_p5000_wide",
+    "kstar_changed_methods": [
+      "elastic_net",
+      "ihc_4",
+      "l1_lr",
+      "mrmr",
+      "rf_importance",
+      "stability_selection",
+      "svm_rfe"
+    ]
+  },
+  "choices_to_confirm": [
+    "best B0 variant for the k* sensitivity analysis = highest mean AUROC averaged over the 3 GPL570 cohorts",
+    "threshold 0.935 = mRMR AUROC on GSE42127 quoted in the spec (not recomputed)"
+  ],
+  "versions": {
+    "numpy": "2.1.3",
+    "pandas": "2.3.3",
+    "scipy": "1.16.3",
+    "scikit-learn": "1.6.1",
+    "tables": "3.10.2",
+    "skrebate": "0.8.4",
+    "joblib": "1.6.0",
+    "threadpoolctl": "3.7.0",
+    "psutil": "5.9.5",
+    "xgboost": "3.4.1",
+    "lightgbm": "4.6.0",
+    "codecarbon": null
+  },
+  "generated_at": "2026-11-15T03:17:45+00:00",
+  "commit_hash": "c50647a82e2d0200f7aad2f89c41a4755a27bae2",
+  "provenance": {
+    "schema": "kltn-provenance/1",
+    "commit_hash": "c50647a82e2d0200f7aad2f89c41a4755a27bae2",
+    "tracked": true,
+    "dirty": false,
+    "branch": "HEAD",
+    "remote": "https://github.com/datachain-uit/RNA-Seq-FS-Survey.git",
+    "untracked_reason": null,
+    "script": "scripts/make_revision_tables.py",
+    "code_root": "/kaggle/working/RNA-Seq-FS-Survey",
+    "data_root": "/kaggle/working/kltn_data",
+    "argv": [
+      "b4"
+    ],
+    "started_at": "2026-11-15T03:17:42+00:00",
+    "python": "3.13.18",
+    "packages": {
+      "numpy": "2.1.3",
+      "pandas": "2.3.3",
+      "scikit-learn": "1.6.1",
+      "scipy": "1.16.3",
+      "tables": "3.10.2",
+      "openpyxl": "3.1.5",
+      "requests": "2.34.2",
+      "xgboost": "3.4.1",
+      "lightgbm": "4.6.0",
+      "abess": "0.4.11"
+    },
+    "machine": {
+      "platform": "Linux-6.18.55+-x86_64-with-glibc2.39",
+      "processor": "x86_64",
+      "machine": "x86_64",
+      "cpu_count": 4,
+      "hostname": "aae891fffaff"
+    },
+    "data_sha256": {},
+    "params": {
+      "tasks": "['b4']",
+      "b1_e7": "B1_E7_20",
+      "b1_e1b": "B1_E1b_20",
+      "b4_threshold": "0.935",
+      "b6_gate_dir": "B6_E7_gate5",
+      "b6_dir": "B6_E7_principled",
+      "fewshot_cohorts": "['gse10245', 'gse30219', 'gse37745', 'gse42127']",
+      "main_datasets": "['tcga_luad_lusc_primary_tumor', 'gse10245', 'gse30219', 'gse37745', 'gse42127']",
+      "kstar_cohorts": "['gse10245', 'gse30219', 'gse37745']"
+    },
+    "traceable": true,
+    "traceable_errors": []
+  },
+  "traceable": true,
+  "traceable_errors": []
+}

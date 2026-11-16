@@ -1,0 +1,2 @@
+dataset,n,mode,metadata_sex_column,xist_threshold,y_threshold,gene_thresholds,threshold_rule,match,inconsistent,n_intermediate,n_quarantine
+gse31210_egfr,226,"two-axis (XIST, Y)",sex,8.215876244361986,7.019651181469196,,,224,2,0,2

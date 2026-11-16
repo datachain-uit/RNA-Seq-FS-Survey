@@ -1,0 +1,94 @@
+{
+  "experiment": "B7_data",
+  "datasets": [
+    "tcga_luad_egfr",
+    "gse31210_egfr"
+  ],
+  "layout": "experiment-data-b7/<bộ>/ (upload as Kaggle Input)",
+  "files_sha256": {
+    "experiment-data-b7/tcga_luad_egfr/b7_build_info.json": "88e9ae5c27fbaada1e26680b09e3462db5c3825811e9a69b68f58520fbc64c16",
+    "experiment-data-b7/tcga_luad_egfr/b7_filter_distribution.csv": "45b88886c490cd3e4f1ce4a37a3523200b3571e74a33d14fcc8c6d1847814684",
+    "experiment-data-b7/tcga_luad_egfr/b7_labels_all.csv": "8e7807ca5457a3e09944c06f73c6170b4333e178bb551cb94636133d1072ef3f",
+    "experiment-data-b7/tcga_luad_egfr/b7_maf_files.csv": "30b2a0f05a6a840f5032bef98591ece5b1fe9c17ac9f88f57f45521234b588a5",
+    "experiment-data-b7/tcga_luad_egfr/b7_variants_dedup.csv": "1667c56fc526ab02df91133f831d9d4f88407ab615b0f99e7496e0b3c534de4a",
+    "experiment-data-b7/tcga_luad_egfr/data_card_tcga_luad_egfr.json": "41b1ac82cc0a5d9b01218961dd4fb97eb8fc5e0f9e68f72b06a658b703553de3",
+    "experiment-data-b7/tcga_luad_egfr/data_card_tcga_luad_egfr.md": "3b2e9871bdde026eb9d655a1ea873deeb54adf9d85cdf33c19da5991fad26dc3",
+    "experiment-data-b7/tcga_luad_egfr/excluded_samples_tcga_luad_egfr.csv": "319997af3f3d89bc5d4077171d754ffa865c2fa73ca7e913e8c2e37b21561a04",
+    "experiment-data-b7/tcga_luad_egfr/expression.h5": "f688eb7b5c6785933915f5572b1a8143780953f0e36f4b1f3048a7f53176960d",
+    "experiment-data-b7/tcga_luad_egfr/metadata.csv": "63ca7cade4d45b2ca64dae7e97dbc635d0b0b6101aa1dec09761ed8c13ebbdc5",
+    "experiment-data-b7/tcga_luad_egfr/repeated_splits.csv": "6302d7f2e752fc80e7fa2b6675ed5451efddf53b82ba35323fa12c0475d6a7f6",
+    "experiment-data-b7/gse31210_egfr/b7_build_info.json": "f023ae71e807e30bfc0321307754d3b783b83da070f9d4d13009536224fd8883",
+    "experiment-data-b7/gse31210_egfr/b7_labels_all.csv": "dddfd91c0a30c3ebf45fd38feb6cc1c0b986072512a1d57e0218ce067acfa2aa",
+    "experiment-data-b7/gse31210_egfr/data_card_gse31210_egfr.json": "887f13c985cefa45f99d70317dceece0d8fbebb2c0955c1dae4e2c6d83da5bab",
+    "experiment-data-b7/gse31210_egfr/data_card_gse31210_egfr.md": "d79f9e5171958f7bbc550fc13ab0651474b6a86307e305383318de89f320bb2a",
+    "experiment-data-b7/gse31210_egfr/excluded_samples_gse31210_egfr.csv": "91609a5db249d09a3e16fea8e43d2c26b903d776ee1a9c8b650683472fd63584",
+    "experiment-data-b7/gse31210_egfr/expression.h5": "6d2a9fbfc65194d2acb7b3b520006a54af244eec2f1fe06255d5e03a81019d0e",
+    "experiment-data-b7/gse31210_egfr/metadata.csv": "2679de2dc105205b880e30de5c537b81dc8585bd24c3427e54dc4ee330514b00",
+    "experiment-data-b7/gse31210_egfr/rebuild_log.json": "65a397d649c560107063250bc5e3349f77fff4f3c8b3da4cdb526b247dd7288e",
+    "experiment-data-b7/gse31210_egfr/repeated_splits.csv": "91ff5e92e75eff26159bcba1310abb787b4b2c536e460c0faac4913ddc5dfa05"
+  },
+  "versions": {
+    "numpy": "2.1.3",
+    "pandas": "2.3.3",
+    "scipy": "1.16.3",
+    "scikit-learn": "1.6.1",
+    "tables": "3.10.2",
+    "skrebate": "0.8.4",
+    "joblib": "1.6.0",
+    "threadpoolctl": "3.7.0",
+    "psutil": "5.9.5",
+    "xgboost": "3.4.1",
+    "lightgbm": "4.6.0",
+    "codecarbon": null
+  },
+  "generated_at": "2026-11-13T11:31:39+00:00",
+  "commit_hash": "c1828d2ac9622232c1ee22f69fab7fdf2bae5a7d",
+  "provenance": {
+    "schema": "kltn-provenance/1",
+    "commit_hash": "c1828d2ac9622232c1ee22f69fab7fdf2bae5a7d",
+    "tracked": true,
+    "dirty": false,
+    "branch": "HEAD",
+    "remote": "https://github.com/datachain-uit/RNA-Seq-FS-Survey.git",
+    "untracked_reason": null,
+    "script": "scripts/build_b7_egfr_datasets.py",
+    "code_root": "/kaggle/working/RNA-Seq-FS-Survey",
+    "data_root": "/kaggle/working/kltn_data",
+    "argv": [
+      "pack"
+    ],
+    "started_at": "2026-11-13T11:31:38+00:00",
+    "python": "3.13.18",
+    "packages": {
+      "numpy": "2.1.3",
+      "pandas": "2.3.3",
+      "scikit-learn": "1.6.1",
+      "scipy": "1.16.3",
+      "tables": "3.10.2",
+      "openpyxl": "3.1.5",
+      "requests": "2.34.2",
+      "xgboost": "3.4.1",
+      "lightgbm": "4.6.0",
+      "abess": "0.4.11"
+    },
+    "machine": {
+      "platform": "Linux-6.18.55+-x86_64-with-glibc2.39",
+      "processor": "x86_64",
+      "machine": "x86_64",
+      "cpu_count": 4,
+      "hostname": "ffbedb43d0d8"
+    },
+    "data_sha256": {},
+    "params": {
+      "command": "pack",
+      "cache": "/kaggle/working/kltn_data/_b7_raw",
+      "status_json": "None",
+      "allow_other_release": "False",
+      "datasets": "['tcga_luad_egfr', 'gse31210_egfr']"
+    },
+    "traceable": true,
+    "traceable_errors": []
+  },
+  "traceable": true,
+  "traceable_errors": []
+}

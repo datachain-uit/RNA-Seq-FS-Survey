@@ -1,0 +1,105 @@
+{
+  "experiment": "B5_signatures10",
+  "decision": "QĐ175 (Review 12/11), spec §B5",
+  "dataset": "tcga_luad_lusc_primary_tumor",
+  "k": 10,
+  "rule": "per outer-train fold: F statistic of each signature gene present in G, keep the top 10, LR-L2 as usual",
+  "panels_csv": "/kaggle/working/RNA-Seq-FS-Survey/survey_v2/panels/published_panels.csv",
+  "panels_csv_sha256": "7c1646b9242093dc2414f6c851efc28a0ef8694efe417b713d0803f77f4478d8",
+  "signatures": {
+    "panel_girard2016": {
+      "n_genes": 42,
+      "n_in_G": 42,
+      "missing": []
+    },
+    "panel_wilkerson2013": {
+      "n_genes": 52,
+      "n_in_G": 52,
+      "missing": []
+    }
+  },
+  "e1": {
+    "split_file": "/kaggle/working/kltn_data/experiment-data-perm/tcga_luad_lusc_primary_tumor/repeated_splits.csv",
+    "split_sha256": "ff909fd90415014e8dce4c1692346baa4873bee0e533932515880a5ed18cb6ce",
+    "rows": 50
+  },
+  "elapsed_s": 54.827152729034424,
+  "versions": {
+    "numpy": "2.1.3",
+    "pandas": "2.3.3",
+    "scipy": "1.16.3",
+    "scikit-learn": "1.6.1",
+    "tables": "3.10.2",
+    "skrebate": "0.8.4",
+    "joblib": "1.6.0",
+    "threadpoolctl": "3.7.0",
+    "psutil": "5.9.5",
+    "xgboost": "3.4.1",
+    "lightgbm": "4.6.0",
+    "codecarbon": null
+  },
+  "generated_at": "2026-11-15T02:48:18+00:00",
+  "commit_hash": "c50647a82e2d0200f7aad2f89c41a4755a27bae2",
+  "provenance": {
+    "schema": "kltn-provenance/1",
+    "commit_hash": "c50647a82e2d0200f7aad2f89c41a4755a27bae2",
+    "tracked": true,
+    "dirty": false,
+    "branch": "HEAD",
+    "remote": "https://github.com/datachain-uit/RNA-Seq-FS-Survey.git",
+    "untracked_reason": null,
+    "script": "scripts/run_b5_signatures10.py",
+    "code_root": "/kaggle/working/RNA-Seq-FS-Survey",
+    "data_root": "/kaggle/working/kltn_data",
+    "argv": [
+      "--datasets",
+      "tcga_luad_lusc_primary_tumor"
+    ],
+    "started_at": "2026-11-15T02:47:23+00:00",
+    "python": "3.13.18",
+    "packages": {
+      "numpy": "2.1.3",
+      "pandas": "2.3.3",
+      "scikit-learn": "1.6.1",
+      "scipy": "1.16.3",
+      "tables": "3.10.2",
+      "openpyxl": "3.1.5",
+      "requests": "2.34.2",
+      "xgboost": "3.4.1",
+      "lightgbm": "4.6.0",
+      "abess": "0.4.11"
+    },
+    "machine": {
+      "platform": "Linux-6.18.55+-x86_64-with-glibc2.39",
+      "processor": "x86_64",
+      "machine": "x86_64",
+      "cpu_count": 4,
+      "hostname": "68bac747d942"
+    },
+    "data_sha256": {
+      "/kaggle/input/datasets/lfreedom2750/experiment-data-v3/experiment-data-v3_2026-11-09/experiment-data-perm/tcga_luad_lusc_primary_tumor/expression.h5": "41bf54bda90aae286eab2ceec7e705aeaa778cd77eb85587ab7ff8aaa75c2cff",
+      "/kaggle/input/datasets/lfreedom2750/experiment-data-v3/experiment-data-v3_2026-11-09/experiment-data-perm/tcga_luad_lusc_primary_tumor/metadata.csv": "ee65ea8b4075967867ce4f7fa8383122449d6ba2e10dd5e178a33b27b5ea7b26"
+    },
+    "params": {
+      "datasets": [
+        "tcga_luad_lusc_primary_tumor"
+      ],
+      "parts": [
+        "e1",
+        "e1b"
+      ],
+      "signatures": [
+        "panel_girard2016",
+        "panel_wilkerson2013"
+      ],
+      "panels_csv": "/kaggle/working/RNA-Seq-FS-Survey/survey_v2/panels/published_panels.csv",
+      "k": 10,
+      "splits_root": null,
+      "out": "B5_signatures10"
+    },
+    "traceable": true,
+    "traceable_errors": []
+  },
+  "traceable": true,
+  "traceable_errors": []
+}

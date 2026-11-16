@@ -1,0 +1,5 @@
+﻿cohort,n_reference_rows,n_missing,tol,max_abs_diff_auroc,pass
+gse10245,25,0,1e-09,0.0,True
+gse30219,25,0,1e-09,0.0,True
+gse37745,25,0,1e-09,0.0,True
+gse42127,25,0,1e-09,0.0,True

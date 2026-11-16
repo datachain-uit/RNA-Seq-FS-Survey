@@ -1,0 +1,235 @@
+{
+  "protocol": "5 splits test_T/pool_T (1/3:2/3, stratified) x 4 nested subsets per n_T per class",
+  "seeds": [
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    50,
+    51,
+    52,
+    53,
+    54,
+    55,
+    56,
+    57,
+    58,
+    59,
+    60,
+    61
+  ],
+  "n_t_grid": [
+    5,
+    10,
+    20,
+    40,
+    "pool"
+  ],
+  "files": [
+    {
+      "dataset": "gse10245",
+      "path": "/kaggle/working/kltn_data/results/survey_v2/B1_splits/gse10245/fewshot_splits_20.csv",
+      "rows": 9840,
+      "n_t_levels": [
+        "5",
+        "10",
+        "pool"
+      ],
+      "n_splits": 20,
+      "n_subsets": 4,
+      "sha256": "fac02157021713f75eaf9dd35dc0b8729e5b92cdd9f01355b356834bce35dacb",
+      "patient_id_assumed_from_sample_id": false,
+      "seeds": [
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61
+      ],
+      "gate": {
+        "reference": "/kaggle/working/kltn_data/experiment-data-geo-target/gse10245/fewshot_splits.csv",
+        "reference_sha256": "b31efa81e03b21454e23d455d58e05100234fd1fd09029e1d655cff22d5b30d5",
+        "splits_compared": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "rows_compared": 2460,
+        "pass": true
+      }
+    },
+    {
+      "dataset": "gse30219",
+      "path": "/kaggle/working/kltn_data/results/survey_v2/B1_splits/gse30219/fewshot_splits_20.csv",
+      "rows": 38320,
+      "n_t_levels": [
+        "5",
+        "10",
+        "20",
+        "40",
+        "pool"
+      ],
+      "n_splits": 20,
+      "n_subsets": 4,
+      "sha256": "2697bd76fcbcf4dc461ce40f3c175eeeba377b835ad249abbd33a8bf9a235dc9",
+      "patient_id_assumed_from_sample_id": false,
+      "seeds": [
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61
+      ],
+      "gate": {
+        "reference": "/kaggle/working/kltn_data/experiment-data-geo-target/gse30219/fewshot_splits.csv",
+        "reference_sha256": "88667258ebb2d5150a45971e121bbd8d36b2a722f4986a9d2d48dc3ae48aeb7b",
+        "splits_compared": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "rows_compared": 9580,
+        "pass": true
+      }
+    },
+    {
+      "dataset": "gse37745",
+      "path": "/kaggle/working/kltn_data/results/survey_v2/B1_splits/gse37745/fewshot_splits_20.csv",
+      "rows": 43760,
+      "n_t_levels": [
+        "5",
+        "10",
+        "20",
+        "40",
+        "pool"
+      ],
+      "n_splits": 20,
+      "n_subsets": 4,
+      "sha256": "d440d79199e5b2d6317e4c990cc4012c51239d21d1347d7d0fcd73fc8cbee649",
+      "patient_id_assumed_from_sample_id": false,
+      "seeds": [
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61
+      ],
+      "gate": {
+        "reference": "/kaggle/working/kltn_data/experiment-data-geo-target/gse37745/fewshot_splits.csv",
+        "reference_sha256": "ede2fd00f8dbff7ace0cac6b48761aafbab1601878e5f1ab2967b3889ae95a74",
+        "splits_compared": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "rows_compared": 10940,
+        "pass": true
+      }
+    },
+    {
+      "dataset": "gse42127",
+      "path": "/kaggle/working/kltn_data/results/survey_v2/B1_splits/gse42127/fewshot_splits_20.csv",
+      "rows": 32400,
+      "n_t_levels": [
+        "5",
+        "10",
+        "20",
+        "pool"
+      ],
+      "n_splits": 20,
+      "n_subsets": 4,
+      "sha256": "95eb914a60d07f2c8bb8c7dd5818b013c7189c6cc8630b959e147cd1744ba74a",
+      "patient_id_assumed_from_sample_id": false,
+      "seeds": [
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61
+      ],
+      "gate": {
+        "reference": "/kaggle/working/kltn_data/experiment-data-geo-target/gse42127/fewshot_splits.csv",
+        "reference_sha256": "5cfec85ebf3b88981ba081114fdd2777ff6d65dc9085dac31859ecaeb34a5f01",
+        "splits_compared": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "rows_compared": 8100,
+        "pass": true
+      }
+    }
+  ]
+}

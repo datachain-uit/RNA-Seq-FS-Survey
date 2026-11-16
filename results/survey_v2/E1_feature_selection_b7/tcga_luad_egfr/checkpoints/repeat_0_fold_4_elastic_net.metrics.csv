@@ -1,0 +1,9 @@
+cohort,repeat,seed,fold,method,k,n_train,p0,n_selected,exact_k,n_filled,selector_param,n_eval,best_fitness,selection_time_s,cpu_time_s,rss_delta_mb,emissions_kg_co2,missing_genes
+tcga_luad_egfr,0,42,4,elastic_net,1,395,5000,1,True,0,0.003758374042884442,,,932.7757257329995,925.363001359,0.0,,
+tcga_luad_egfr,0,42,4,elastic_net,2,395,5000,2,True,0,0.003981071705534973,,,932.7757257329995,925.363001359,0.0,,
+tcga_luad_egfr,0,42,4,elastic_net,3,395,5000,3,True,0,0.004403013327202414,,,932.7757257329995,925.363001359,0.0,,
+tcga_luad_egfr,0,42,4,elastic_net,4,395,5000,4,True,0,0.004466835921509631,,,932.7757257329995,925.363001359,0.0,,
+tcga_luad_egfr,0,42,4,elastic_net,5,395,5000,5,False,0,0.004731512589614805,,,932.7757257329995,925.363001359,0.0,,
+tcga_luad_egfr,0,42,4,elastic_net,10,395,5000,10,False,0,0.005084520468600938,,,932.7757257329995,925.363001359,0.0,,
+tcga_luad_egfr,0,42,4,elastic_net,25,395,5000,25,True,0,0.01,,,932.7757257329995,925.363001359,0.0,,
+tcga_luad_egfr,0,42,4,elastic_net,50,395,5000,50,True,0,0.020388017608333853,,,932.7757257329995,925.363001359,0.0,,

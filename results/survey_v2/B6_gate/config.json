@@ -1,0 +1,97 @@
+{
+  "experiment": "B6_gate_tables",
+  "spec": "YEU-CAU-DOI-CODE-2026-11-12-GVHD-B1-B7.md §3 (reading rules fixed 12/11/2026)",
+  "published_root": "/tmp/RNA-Seq-FS-Survey/results/survey_v2",
+  "published_tag": "survey-v3-dmkd.1",
+  "inputs_sha256": {
+    "/kaggle/working/kltn_data/results/survey_v2/B6_E7_gate5/gse10245/e7_r_per_run.csv": "b3f0c294711cda9c248b70ce1b513a962029b2dcf20c88954fefabf314735715",
+    "/tmp/RNA-Seq-FS-Survey/results/survey_v2/B6_reference_rq2_r_7f097da/gse10245/rq2_r_per_run.csv": "8f6a0823eed021b269c98fd16f42bcc1ff052a42642bd7a2269c742a15b80f50",
+    "/kaggle/working/kltn_data/results/survey_v2/B6_E7_gate5/gse10245/e7_r_selected_genes.csv": "1d87788062128b50c7aaf0dc8772b87aa1acf53e450880fc7ef6f94801f6f505",
+    "/tmp/RNA-Seq-FS-Survey/results/survey_v2/B6_reference_rq2_r_7f097da/gse10245/rq2_r_selected_genes.csv": "f4ef75e608e8f34292441834ec533a85f1031fc2ba51588c4975e7809f0af87b",
+    "/kaggle/working/kltn_data/results/survey_v2/B6_E7_gate5/gse30219/e7_r_per_run.csv": "33b952fb1fa7f4bfea05343950c7f9391adc9c61271181bb24900ac2446ee6d3",
+    "/tmp/RNA-Seq-FS-Survey/results/survey_v2/B6_reference_rq2_r_7f097da/gse30219/rq2_r_per_run.csv": "682a1d0f353d6492527dbbd2eb7621f1f23957130748684a34e4f4184eaaddd8",
+    "/kaggle/working/kltn_data/results/survey_v2/B6_E7_gate5/gse30219/e7_r_selected_genes.csv": "015ff58d544c43402c3d0a6655294f6e49255853520ec34c62d7e6cbf90d732a",
+    "/tmp/RNA-Seq-FS-Survey/results/survey_v2/B6_reference_rq2_r_7f097da/gse30219/rq2_r_selected_genes.csv": "2416630bd1b7169b4476712363d6eb776cc7988ec3275a0f8a793c7b6809e675",
+    "/kaggle/working/kltn_data/results/survey_v2/B6_E7_gate5/gse37745/e7_r_per_run.csv": "06cb66ef4b3ad77869ccb180c23ee85db6a7189ce0456bd79d6d71e92f71a1e4",
+    "/tmp/RNA-Seq-FS-Survey/results/survey_v2/B6_reference_rq2_r_7f097da/gse37745/rq2_r_per_run.csv": "165cb3c3c55f65b7bb907ffcb36c7cdebda2c771787f791c214e7f3074edaef9",
+    "/kaggle/working/kltn_data/results/survey_v2/B6_E7_gate5/gse37745/e7_r_selected_genes.csv": "5290b33d0efb19775bef016ff19053440d8b1ae83034457f970883e525cdbdc3",
+    "/tmp/RNA-Seq-FS-Survey/results/survey_v2/B6_reference_rq2_r_7f097da/gse37745/rq2_r_selected_genes.csv": "a5e00d1568e6f66b1a490ff6b7b97633270f5bbb1518d8299a45b3e19bfaec39",
+    "/kaggle/working/kltn_data/results/survey_v2/B6_E7_gate5/gse42127/e7_r_per_run.csv": "85cf9601cc9f80d932c615e36a9da1cfb8c660064a8a3dc6d36c825b3ac2c22f",
+    "/tmp/RNA-Seq-FS-Survey/results/survey_v2/B6_reference_rq2_r_7f097da/gse42127/rq2_r_per_run.csv": "f527affd7277a69ee44155653a2201d7ed9171c063c95bb3b51230ad0763a08f",
+    "/kaggle/working/kltn_data/results/survey_v2/B6_E7_gate5/gse42127/e7_r_selected_genes.csv": "2d8144716f4691675b8d9347438abe1eb41a915af5bff3d72df5762c521bb292",
+    "/tmp/RNA-Seq-FS-Survey/results/survey_v2/B6_reference_rq2_r_7f097da/gse42127/rq2_r_selected_genes.csv": "b8d6d935d5ab6e244436f2af777c44ac3db865e6b084b2f22af0b3a6665e6c5d"
+  },
+  "summary": {
+    "pass": true,
+    "tol": 1e-09,
+    "reference": "/tmp/RNA-Seq-FS-Survey/results/survey_v2/B6_reference_rq2_r_7f097da"
+  },
+  "choices_to_confirm": [],
+  "versions": {
+    "numpy": "2.1.3",
+    "pandas": "2.3.3",
+    "scipy": "1.16.3",
+    "scikit-learn": "1.6.1",
+    "tables": "3.10.2",
+    "skrebate": null,
+    "joblib": "1.6.0",
+    "threadpoolctl": "3.7.0",
+    "psutil": "5.9.5",
+    "xgboost": "3.4.1",
+    "lightgbm": "4.6.0",
+    "codecarbon": null
+  },
+  "generated_at": "2026-11-15T04:15:47+00:00",
+  "commit_hash": "c50647a82e2d0200f7aad2f89c41a4755a27bae2",
+  "provenance": {
+    "schema": "kltn-provenance/1",
+    "commit_hash": "c50647a82e2d0200f7aad2f89c41a4755a27bae2",
+    "tracked": true,
+    "dirty": false,
+    "branch": "HEAD",
+    "remote": "https://github.com/datachain-uit/RNA-Seq-FS-Survey.git",
+    "untracked_reason": null,
+    "script": "scripts/make_revision_tables.py",
+    "code_root": "/tmp/RNA-Seq-FS-Survey",
+    "data_root": "/kaggle/working/kltn_data",
+    "argv": [
+      "b6gate"
+    ],
+    "started_at": "2026-11-15T04:15:46+00:00",
+    "python": "3.13.18",
+    "packages": {
+      "numpy": "2.1.3",
+      "pandas": "2.3.3",
+      "scikit-learn": "1.6.1",
+      "scipy": "1.16.3",
+      "tables": "3.10.2",
+      "openpyxl": "3.1.5",
+      "requests": "2.34.2",
+      "xgboost": "3.4.1",
+      "lightgbm": "4.6.0"
+    },
+    "machine": {
+      "platform": "Linux-6.18.55+-x86_64-with-glibc2.39",
+      "processor": "x86_64",
+      "machine": "x86_64",
+      "cpu_count": 4,
+      "hostname": "859fcc066a7e"
+    },
+    "data_sha256": {},
+    "params": {
+      "tasks": "['b6gate']",
+      "b1_e7": "B1_E7_20",
+      "b1_e1b": "B1_E1b_20",
+      "b4_threshold": "0.935",
+      "b6_gate_dir": "B6_E7_gate5",
+      "b6_dir": "B6_E7_principled",
+      "fewshot_cohorts": "['gse10245', 'gse30219', 'gse37745', 'gse42127']",
+      "main_datasets": "['tcga_luad_lusc_primary_tumor', 'gse10245', 'gse30219', 'gse37745', 'gse42127']",
+      "kstar_cohorts": "['gse10245', 'gse30219', 'gse37745']"
+    },
+    "traceable": true,
+    "traceable_errors": []
+  },
+  "traceable": true,
+  "traceable_errors": []
+}

@@ -1,0 +1,160 @@
+{
+  "experiment": "E1b_learning_curve",
+  "dataset": "gse37745",
+  "role": "target_main",
+  "methods": [
+    "l1_lr",
+    "f_test",
+    "ktsp",
+    "ihc_4",
+    "random_k"
+  ],
+  "k_grid": [
+    2,
+    3,
+    4,
+    5,
+    10
+  ],
+  "n_t_levels": [
+    "5",
+    "10",
+    "20",
+    "40",
+    "pool"
+  ],
+  "n_runs": 400,
+  "protocol": "5 test_T/pool_T splits x 4 nested subsets per n_T per class; prefilter and selection on L_T only; LR-L2 with M5 small-n rule",
+  "fewshot_splits_file": "/kaggle/working/kltn_data/results/survey_v2/B1_splits/gse37745/fewshot_splits_20.csv",
+  "fewshot_splits_sha256": "d440d79199e5b2d6317e4c990cc4012c51239d21d1347d7d0fcd73fc8cbee649",
+  "prefilter_p0": 5000,
+  "random_k_draws": 100,
+  "stability": "Nogueira over the runs per (n_T, method, k); universe = gene space G",
+  "methods_in_results": [
+    "f_test",
+    "ihc_4",
+    "ktsp",
+    "l1_lr",
+    "random_k"
+  ],
+  "redo_methods": [],
+  "rows_reused_from_commit": null,
+  "gene_space": {
+    "patient_id_assumed_from_sample_id": false,
+    "gene_space": "intersection with tcga_luad_lusc_primary_tumor",
+    "n_genes_before_gene_space": 20848,
+    "data_dir": "/kaggle/working/kltn_data/experiment-data-geo-target/gse37745",
+    "n_per_class": [
+      104,
+      65
+    ],
+    "n_per_class_expected": [
+      104,
+      65
+    ],
+    "n_matches_expected": true,
+    "n_genes_dropped": 4369
+  },
+  "n_samples": 169,
+  "n_genes": 16479,
+  "elapsed_s": 5376.00310754776,
+  "versions": {
+    "numpy": "2.1.3",
+    "pandas": "2.3.3",
+    "scipy": "1.16.3",
+    "scikit-learn": "1.6.1",
+    "tables": "3.10.2",
+    "skrebate": "0.8.4",
+    "joblib": "1.6.0",
+    "threadpoolctl": "3.7.0",
+    "psutil": "5.9.5",
+    "xgboost": "3.4.1",
+    "lightgbm": "4.6.0",
+    "codecarbon": null
+  },
+  "generated_at": "2026-11-15T15:43:48+00:00",
+  "commit_hash": "c50647a82e2d0200f7aad2f89c41a4755a27bae2",
+  "provenance": {
+    "schema": "kltn-provenance/1",
+    "commit_hash": "c50647a82e2d0200f7aad2f89c41a4755a27bae2",
+    "tracked": true,
+    "dirty": false,
+    "branch": "HEAD",
+    "remote": "https://github.com/datachain-uit/RNA-Seq-FS-Survey.git",
+    "untracked_reason": null,
+    "script": "scripts/run_survey_e1b_learning_curve.py",
+    "code_root": "/kaggle/working/RNA-Seq-FS-Survey",
+    "data_root": "/kaggle/working/kltn_data",
+    "argv": [
+      "--datasets",
+      "gse37745",
+      "--methods",
+      "l1_lr",
+      "f_test",
+      "ktsp",
+      "ihc_4",
+      "--splits-root",
+      "/kaggle/working/kltn_data/results/survey_v2/B1_splits",
+      "--splits-file",
+      "fewshot_splits_20.csv",
+      "--out",
+      "B1_E1b_20"
+    ],
+    "started_at": "2026-11-15T14:14:12+00:00",
+    "python": "3.13.18",
+    "packages": {
+      "numpy": "2.1.3",
+      "pandas": "2.3.3",
+      "scikit-learn": "1.6.1",
+      "scipy": "1.16.3",
+      "tables": "3.10.2",
+      "openpyxl": "3.1.5",
+      "requests": "2.34.2",
+      "xgboost": "3.4.1",
+      "lightgbm": "4.6.0",
+      "abess": "0.4.11"
+    },
+    "machine": {
+      "platform": "Linux-6.18.55+-x86_64-with-glibc2.39",
+      "processor": "x86_64",
+      "machine": "x86_64",
+      "cpu_count": 4,
+      "hostname": "5fb956abcc14"
+    },
+    "data_sha256": {
+      "/kaggle/input/datasets/lfreedom2750/experiment-data-v3/experiment-data-v3_2026-11-09/experiment-data-geo-target/gse37745/expression.h5": "f5dcaf11d7f36defc37ad67cf47da30b2f85823e3360fef2f8f4d0ab96a34ec7",
+      "/kaggle/input/datasets/lfreedom2750/experiment-data-v3/experiment-data-v3_2026-11-09/experiment-data-geo-target/gse37745/metadata.csv": "568b557e43c09daee94f8959f0144db642064502d73cb6493e8f5ff77c031328",
+      "$KLTN_DATA_ROOT/results/survey_v2/B1_splits/gse37745/fewshot_splits_20.csv": "d440d79199e5b2d6317e4c990cc4012c51239d21d1347d7d0fcd73fc8cbee649"
+    },
+    "params": {
+      "datasets": [
+        "gse37745"
+      ],
+      "methods": [
+        "l1_lr",
+        "f_test",
+        "ktsp",
+        "ihc_4"
+      ],
+      "k": [
+        2,
+        3,
+        4,
+        5,
+        10
+      ],
+      "n_t": null,
+      "splits_root": "/kaggle/working/kltn_data/results/survey_v2/B1_splits",
+      "splits_file": "fewshot_splits_20.csv",
+      "prefilter": 5000,
+      "random_draws": 100,
+      "n_jobs": 1,
+      "out": "B1_E1b_20",
+      "redo_methods": null
+    },
+    "traceable": true,
+    "traceable_errors": []
+  },
+  "traceable": true,
+  "traceable_errors": []
+}

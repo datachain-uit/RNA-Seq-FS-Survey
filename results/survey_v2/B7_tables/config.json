@@ -1,0 +1,222 @@
+{
+  "experiment": "B7_tables",
+  "spec": "YEU-CAU-DOI-CODE-2026-11-12-GVHD-B1-B7.md §3 (reading rules fixed 12/11/2026)",
+  "published_root": "D:\\KLTN\\_workspace\\b7-tables-run\\code\\results\\survey_v2",
+  "published_tag": "survey-v3-dmkd.1",
+  "inputs_sha256": {
+    "D:\\KLTN\\_workspace\\b7-tables-run\\data\\results\\survey_v2\\E1_classification_b7\\tcga_luad_egfr\\classification_per_fold.csv": "c37dc95ead9cfbd2a730deeb8791adaebeb5661b164ff3aeb5425a8589a58aa9",
+    "D:\\KLTN\\_workspace\\b7-tables-run\\data\\results\\survey_v2\\E1_classification_b7\\tcga_luad_egfr\\e1_random_k.csv": "d5b4223dc9198c9115dbaa77d267344b4f2b9d934f940990a1e76d1ca39f6bd1",
+    "D:\\KLTN\\_workspace\\b7-tables-run\\data\\results\\survey_v2\\E1_classification_b7\\tcga_luad_egfr\\e1_scores.csv": "e0f075191bae68e8bf99caf9ad692c9221d9845c292b468e3148863fa887eb1c",
+    "D:\\KLTN\\_workspace\\b7-tables-run\\data\\results\\survey_v2\\E1_classification_b7\\gse31210_egfr\\classification_per_fold.csv": "e6644c874d0565dddeb69dcdbe67d2e8590c27d9825de09e9143e305450cfc12",
+    "D:\\KLTN\\_workspace\\b7-tables-run\\data\\results\\survey_v2\\E1_classification_b7\\gse31210_egfr\\e1_random_k.csv": "2bc27215823500442d7aca180b033daabe2bd0ec8ecda607f02d7aea39ad6680",
+    "D:\\KLTN\\_workspace\\b7-tables-run\\data\\results\\survey_v2\\E1_classification_b7\\gse31210_egfr\\e1_scores.csv": "f9b965f99d7f97267a5b3ee4b80c772a082be0fd668c3e41ef797a2d39ad3a31",
+    "D:\\KLTN\\_workspace\\b7-tables-run\\code\\results\\survey_v2\\E1_classification\\tcga_luad_lusc_primary_tumor\\classification_per_fold.csv": "dddf7329cc431acb97ba0ae2e6f9ca313ff7d2f2c42a7ea7c7dbf85d55fc9c53",
+    "D:\\KLTN\\_workspace\\b7-tables-run\\data\\results\\survey_v2\\E4_E5_b7\\tcga_luad_egfr\\e4_stability.csv": "162f937abdd3e044b947ee1a3d532c012afb7b08326176dac248d320f385e979",
+    "D:\\KLTN\\_workspace\\b7-tables-run\\code\\results\\survey_v2\\E4_E5\\tcga_luad_lusc_primary_tumor\\e4_stability.csv": "87d59b4f4c08034c1ba455fa16cd9ef35c5bbee30ffaba45634915e0e43a947e"
+  },
+  "summary": {
+    "R1": [
+      {
+        "cohort": "gse31210_egfr",
+        "n_beat_random_k10_holm": 11,
+        "n_selectors": 11
+      },
+      {
+        "cohort": "tcga_luad_egfr",
+        "n_beat_random_k10_holm": 11,
+        "n_selectors": 11
+      }
+    ],
+    "R2": {
+      "gse31210_egfr|abess": {
+        "k_star_delta_0.02": null,
+        "k_star_delta_0.01": null
+      },
+      "gse31210_egfr|elastic_net": {
+        "k_star_delta_0.02": null,
+        "k_star_delta_0.01": null
+      },
+      "gse31210_egfr|f_test": {
+        "k_star_delta_0.02": null,
+        "k_star_delta_0.01": null
+      },
+      "gse31210_egfr|ktsp": {
+        "k_star_delta_0.02": null,
+        "k_star_delta_0.01": null
+      },
+      "gse31210_egfr|l1_lr": {
+        "k_star_delta_0.02": null,
+        "k_star_delta_0.01": null
+      },
+      "gse31210_egfr|mrmr": {
+        "k_star_delta_0.02": null,
+        "k_star_delta_0.01": null
+      },
+      "gse31210_egfr|mutual_info": {
+        "k_star_delta_0.02": null,
+        "k_star_delta_0.01": null
+      },
+      "gse31210_egfr|relieff": {
+        "k_star_delta_0.02": null,
+        "k_star_delta_0.01": null
+      },
+      "gse31210_egfr|rf_importance": {
+        "k_star_delta_0.02": null,
+        "k_star_delta_0.01": null
+      },
+      "gse31210_egfr|stability_selection": {
+        "k_star_delta_0.02": null,
+        "k_star_delta_0.01": null
+      },
+      "gse31210_egfr|svm_rfe": {
+        "k_star_delta_0.02": null,
+        "k_star_delta_0.01": null
+      },
+      "tcga_luad_egfr|abess": {
+        "k_star_delta_0.02": null,
+        "k_star_delta_0.01": null
+      },
+      "tcga_luad_egfr|elastic_net": {
+        "k_star_delta_0.02": 50,
+        "k_star_delta_0.01": null
+      },
+      "tcga_luad_egfr|f_test": {
+        "k_star_delta_0.02": null,
+        "k_star_delta_0.01": null
+      },
+      "tcga_luad_egfr|ktsp": {
+        "k_star_delta_0.02": null,
+        "k_star_delta_0.01": null
+      },
+      "tcga_luad_egfr|l1_lr": {
+        "k_star_delta_0.02": 50,
+        "k_star_delta_0.01": null
+      },
+      "tcga_luad_egfr|mrmr": {
+        "k_star_delta_0.02": 50,
+        "k_star_delta_0.01": null
+      },
+      "tcga_luad_egfr|mutual_info": {
+        "k_star_delta_0.02": null,
+        "k_star_delta_0.01": null
+      },
+      "tcga_luad_egfr|relieff": {
+        "k_star_delta_0.02": null,
+        "k_star_delta_0.01": null
+      },
+      "tcga_luad_egfr|rf_importance": {
+        "k_star_delta_0.02": null,
+        "k_star_delta_0.01": null
+      },
+      "tcga_luad_egfr|stability_selection": {
+        "k_star_delta_0.02": 25,
+        "k_star_delta_0.01": null
+      },
+      "tcga_luad_egfr|svm_rfe": {
+        "k_star_delta_0.02": null,
+        "k_star_delta_0.01": null
+      }
+    },
+    "R3": [
+      {
+        "cohort": "tcga_luad_egfr",
+        "reference": "tcga_luad_lusc_primary_tumor (published E1, LUAD vs LUSC)",
+        "k": 10,
+        "n_methods": 11,
+        "kendall_tau": 0.45454545454545453,
+        "p_value": 0.06017015392015392
+      },
+      {
+        "cohort": "gse31210_egfr",
+        "reference": "tcga_luad_lusc_primary_tumor (published E1, LUAD vs LUSC)",
+        "k": 10,
+        "n_methods": 11,
+        "kendall_tau": 0.38181818181818183,
+        "p_value": 0.12097096961680295
+      }
+    ],
+    "R4": [
+      {
+        "cohort": "tcga_luad_egfr",
+        "reference": "tcga_luad_lusc_primary_tumor",
+        "k": 10,
+        "fraction": 0.7,
+        "n_methods": 11,
+        "kendall_tau": 0.5636363636363636,
+        "p_value": 0.016540504248837583
+      }
+    ],
+    "R5": "not computed: the writer reads the Fig. 13 decision framework against b7_e1_summary, b7_kstar, b7_e4_stability"
+  },
+  "choices_to_confirm": [
+    "R1 uses the main E1 rule: Nadeau–Bengio one-sided vs random-k, Holm within (cohort, method) across k, read at k = 10",
+    "R2: per-cohort k* (single cohort; fixed sequence, lb one-sided 95 % > −Δ) with Δ = 0.02 and Δ = 0.01",
+    "R3/R4: Kendall tau-b over the 11 non-wrapper selectors present in both tables",
+    "AUPRC = average precision per fold from per-sample test scores (lr_l2)"
+  ],
+  "versions": {
+    "numpy": "2.5.0",
+    "pandas": "3.0.3",
+    "scipy": "1.18.1",
+    "scikit-learn": "1.9.0",
+    "tables": "3.11.1",
+    "skrebate": null,
+    "joblib": "1.6.0",
+    "threadpoolctl": "3.6.0",
+    "psutil": "7.2.2",
+    "xgboost": null,
+    "lightgbm": null,
+    "codecarbon": null
+  },
+  "generated_at": "2026-11-16T14:49:23+07:00",
+  "commit_hash": "f22597c022e0c7251b326c4ff9fe66c025e9dbd5",
+  "provenance": {
+    "schema": "kltn-provenance/1",
+    "commit_hash": "f22597c022e0c7251b326c4ff9fe66c025e9dbd5",
+    "tracked": true,
+    "dirty": false,
+    "branch": "HEAD",
+    "remote": "https://github.com/datachain-uit/RNA-Seq-FS-Survey.git",
+    "untracked_reason": null,
+    "script": "scripts/make_revision_tables.py",
+    "code_root": "D:/KLTN/_workspace/b7-tables-run/code",
+    "data_root": "D:/KLTN/_workspace/b7-tables-run/data",
+    "argv": [
+      "b7"
+    ],
+    "started_at": "2026-11-16T14:49:07+07:00",
+    "python": "3.14.6",
+    "packages": {
+      "numpy": "2.5.0",
+      "pandas": "3.0.3",
+      "scikit-learn": "1.9.0",
+      "scipy": "1.18.1",
+      "tables": "3.11.1",
+      "openpyxl": "3.1.5",
+      "requests": "2.34.2"
+    },
+    "machine": {
+      "platform": "Windows-11-10.0.22000-SP0",
+      "processor": "Intel64 Family 6 Model 140 Stepping 1, GenuineIntel",
+      "machine": "AMD64",
+      "cpu_count": 8,
+      "hostname": "DESKTOP-1LQ0FRI"
+    },
+    "data_sha256": {},
+    "params": {
+      "tasks": "['b7']",
+      "b1_e7": "B1_E7_20",
+      "b1_e1b": "B1_E1b_20",
+      "b4_threshold": "0.935",
+      "b6_gate_dir": "B6_E7_gate5",
+      "b6_dir": "B6_E7_principled",
+      "fewshot_cohorts": "['gse10245', 'gse30219', 'gse37745', 'gse42127']",
+      "main_datasets": "['tcga_luad_lusc_primary_tumor', 'gse10245', 'gse30219', 'gse37745', 'gse42127']",
+      "kstar_cohorts": "['gse10245', 'gse30219', 'gse37745']"
+    },
+    "traceable": true,
+    "traceable_errors": []
+  },
+  "traceable": true,
+  "traceable_errors": []
+}

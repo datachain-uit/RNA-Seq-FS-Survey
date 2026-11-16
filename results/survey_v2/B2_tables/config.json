@@ -1,0 +1,100 @@
+{
+  "experiment": "B2_tables",
+  "spec": "YEU-CAU-DOI-CODE-2026-11-12-GVHD-B1-B7.md §3 (reading rules fixed 12/11/2026)",
+  "published_root": "/kaggle/working/RNA-Seq-FS-Survey/results/survey_v2",
+  "published_tag": "survey-v3-dmkd.1",
+  "inputs_sha256": {
+    "/kaggle/working/kltn_data/results/survey_v2/B2_ktsp_vote/tcga_luad_lusc_primary_tumor/b2_e1_per_fold.csv": "f9b47c6cec48fdd8ed15c508002dd099f6e7a57bde3ccd253f611387d586b907",
+    "/kaggle/working/kltn_data/results/survey_v2/B2_ktsp_vote/gse10245/b2_e1_per_fold.csv": "13eaf82a35d112652a24ce95a887f66a68eaf7687894a98f7c8857c838aa1b6d",
+    "/kaggle/working/kltn_data/results/survey_v2/B2_ktsp_vote/gse30219/b2_e1_per_fold.csv": "189760d39cd311cc1fee1dd63ef70f735fb8fd439192943ac3cb791920127cb0",
+    "/kaggle/working/kltn_data/results/survey_v2/B2_ktsp_vote/gse37745/b2_e1_per_fold.csv": "3578df0b00c43b5e6588afaab0aa30220ac7903ffa40e6f484dd0b5aad616108",
+    "/kaggle/working/kltn_data/results/survey_v2/B2_ktsp_vote/gse42127/b2_e1_per_fold.csv": "9bb81a7ab0f1d647f593227b18643c138a7567dfef8988d6c607c1959e951f45",
+    "/kaggle/working/kltn_data/results/survey_v2/B2_ktsp_vote/gse10245/b2_e1b_per_run.csv": "787bb95cfebd6f3d2353df2012bb9469c09d00b05cf7d19fd0d745cf2894982c",
+    "/kaggle/working/kltn_data/results/survey_v2/B2_ktsp_vote/gse30219/b2_e1b_per_run.csv": "dc0b3c8084b3ad71288016da75e8b8909d83f0f3861fd142c715e7de5fa9c67c",
+    "/kaggle/working/kltn_data/results/survey_v2/B2_ktsp_vote/gse37745/b2_e1b_per_run.csv": "f5d648da6651579347c615652c385d63bff85dcff7fc09645f5f6fdd3e0246f9",
+    "/kaggle/working/kltn_data/results/survey_v2/B2_ktsp_vote/gse42127/b2_e1b_per_run.csv": "581805923b13076ff01aef455385e189dd54033406cd6f0198f1b6af4ab9f54e",
+    "/kaggle/working/kltn_data/results/survey_v2/B2_ktsp_vote/gse10245/b2_e7_per_run.csv": "363d3b43c56e4f995be470825946765ebd95080c09e27bff3aaaf6231e101338",
+    "/kaggle/working/kltn_data/results/survey_v2/B2_ktsp_vote/gse30219/b2_e7_per_run.csv": "cb3f469ea487e53c160b019e9cf6662cab95275d3a04017cdd10341c95dda955",
+    "/kaggle/working/kltn_data/results/survey_v2/B2_ktsp_vote/gse37745/b2_e7_per_run.csv": "18767b90cc90157a7a86881e62bf7464fe74b57eab6499402e89f4bb8298c536",
+    "/kaggle/working/kltn_data/results/survey_v2/B2_ktsp_vote/gse42127/b2_e7_per_run.csv": "7c82eac21e6d5e360efb1e1301183fa202e26133e64763b723f8cdcbe4dbd4fb"
+  },
+  "summary": {
+    "source_only_vote_avoids_reversal_everywhere": true,
+    "sentence": "The voting rule avoids source-only AUROC < 0.5 in every cohort and every k.",
+    "cells_lr_below_05": 0,
+    "cells_vote_below_05": 0
+  },
+  "choices_to_confirm": [
+    "source-only cell value = mean over the 5 published splits (source-only does not depend on subset or n_T)"
+  ],
+  "versions": {
+    "numpy": "2.1.3",
+    "pandas": "2.3.3",
+    "scipy": "1.16.3",
+    "scikit-learn": "1.6.1",
+    "tables": "3.10.2",
+    "skrebate": "0.8.4",
+    "joblib": "1.6.0",
+    "threadpoolctl": "3.7.0",
+    "psutil": "5.9.5",
+    "xgboost": "3.4.1",
+    "lightgbm": "4.6.0",
+    "codecarbon": null
+  },
+  "generated_at": "2026-11-15T02:48:22+00:00",
+  "commit_hash": "c50647a82e2d0200f7aad2f89c41a4755a27bae2",
+  "provenance": {
+    "schema": "kltn-provenance/1",
+    "commit_hash": "c50647a82e2d0200f7aad2f89c41a4755a27bae2",
+    "tracked": true,
+    "dirty": false,
+    "branch": "HEAD",
+    "remote": "https://github.com/datachain-uit/RNA-Seq-FS-Survey.git",
+    "untracked_reason": null,
+    "script": "scripts/make_revision_tables.py",
+    "code_root": "/kaggle/working/RNA-Seq-FS-Survey",
+    "data_root": "/kaggle/working/kltn_data",
+    "argv": [
+      "b2",
+      "b3",
+      "b5"
+    ],
+    "started_at": "2026-11-15T02:48:22+00:00",
+    "python": "3.13.18",
+    "packages": {
+      "numpy": "2.1.3",
+      "pandas": "2.3.3",
+      "scikit-learn": "1.6.1",
+      "scipy": "1.16.3",
+      "tables": "3.10.2",
+      "openpyxl": "3.1.5",
+      "requests": "2.34.2",
+      "xgboost": "3.4.1",
+      "lightgbm": "4.6.0",
+      "abess": "0.4.11"
+    },
+    "machine": {
+      "platform": "Linux-6.18.55+-x86_64-with-glibc2.39",
+      "processor": "x86_64",
+      "machine": "x86_64",
+      "cpu_count": 4,
+      "hostname": "68bac747d942"
+    },
+    "data_sha256": {},
+    "params": {
+      "tasks": "['b2', 'b3', 'b5']",
+      "b1_e7": "B1_E7_20",
+      "b1_e1b": "B1_E1b_20",
+      "b4_threshold": "0.935",
+      "b6_gate_dir": "B6_E7_gate5",
+      "b6_dir": "B6_E7_principled",
+      "fewshot_cohorts": "['gse10245', 'gse30219', 'gse37745', 'gse42127']",
+      "main_datasets": "['tcga_luad_lusc_primary_tumor', 'gse10245', 'gse30219', 'gse37745', 'gse42127']",
+      "kstar_cohorts": "['gse10245', 'gse30219', 'gse37745']"
+    },
+    "traceable": true,
+    "traceable_errors": []
+  },
+  "traceable": true,
+  "traceable_errors": []
+}
