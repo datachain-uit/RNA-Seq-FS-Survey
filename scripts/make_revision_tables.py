@@ -79,7 +79,7 @@ def _res(*parts) -> Path:
 # ==========================================================================================================================
 def task_b1(args, prov):
     inp, out = Inputs(), results_dir("B1_tables")
-    gates, labels, e1b_rows = [], [], []
+    gates, e7_all, e1b_rows = [], [], []
     for co in FEW:
         e7 = inp.csv(_res(args.b1_e7, co, "e7_per_run.csv"), dtype={"n_t": str})
         e7_pub = inp.csv(PUBLISHED_ROOT / "E7" / co / "e7_per_run.csv", dtype={"n_t": str})
@@ -90,7 +90,7 @@ def task_b1(args, prov):
         e1b_pub = e1b_pub[e1b_pub.method.isin(e1b.method.unique()) & e1b_pub.n_t.isin(e1b.n_t.unique())]
         g = compare_rows(e1b[e1b.split < C.FEWSHOT_SPLITS], e1b_pub, ["split", "subset", "n_t", "method", "k"], cols=("auroc",))
         gates.append({"experiment": "E1b", "cohort": co, **g})
-        labels.append(split_level_labels(e7, "strategy", "target_only", ["cohort", "n_t", "k"], seed_tag="b1"))
+        e7_all.append(e7)
         lvl = e1b.groupby(["cohort", "n_t", "method", "k", "split"], as_index=False)["auroc"].mean()
         for (n_t, m, k), x in lvl.groupby(["n_t", "method", "k"]):
             ci = mean_ci(x.auroc.to_numpy())
@@ -98,7 +98,8 @@ def task_b1(args, prov):
                              "auroc_sd_split": ci["sd"], "auroc_q25": float(x.auroc.quantile(0.25)), "auroc_q75": float(x.auroc.quantile(0.75))})
     gates = pd.DataFrame(gates)
     _save(gates, out, "b1_gates.csv")
-    lab = pd.concat(labels, ignore_index=True)
+    # Holm trong từng chiến lược qua MỌI ô của nó trên cả bốn cohort (đặc tả 12/11, O49): gán nhãn một lần trên bảng gộp
+    lab = split_level_labels(pd.concat(e7_all, ignore_index=True), "strategy", "target_only", ["cohort", "n_t", "k"], seed_tag="b1")
     _save(lab, out, "b1_e7_split_labels.csv")
     _save(pd.DataFrame(e1b_rows), out, "b1_e1b_split_summary.csv")
     counts = lab.groupby(["strategy", "label"]).size().unstack(fill_value=0)
@@ -410,16 +411,14 @@ def task_b6gate(args, prov):
 
 def task_b6(args, prov):
     inp, out = Inputs(), results_dir("B6_tables")
-    labels, desc, degen = [], [], []
+    both_all, desc, degen = [], [], []
     for co in FEW:
         r = inp.csv(_res(args.b6_dir, co, "e7_r_per_run.csv"), dtype={"n_t": str})
         e7 = inp.csv(_res(args.b1_e7, co, "e7_per_run.csv"), dtype={"n_t": str})
         r = r[r.n_t.isin(e7.n_t.unique())].rename(columns={"method": "strategy"})
         cols = ["cohort", "split", "subset", "n_t", "strategy", "k", "auroc"]
         both = pd.concat([r[cols], e7[cols]], ignore_index=True)
-        lab = split_level_labels(both[both.strategy.isin(["ptlasso", "transglm", "target_only"])], "strategy", "target_only",
-                                 ["cohort", "n_t", "k"], seed_tag="b6")
-        labels.append(lab)
+        both_all.append(both)
         for ref in ("select_on_source", "pooled"):
             d = split_level_labels(both[both.strategy.isin(["ptlasso", "transglm", ref])], "strategy", ref, ["cohort", "n_t", "k"], seed_tag=f"b6{ref}")
             desc.append(d[["strategy", "cohort", "n_t", "k", "reference", "n_splits", "mean_delta", "ci_low", "ci_high"]])
@@ -430,7 +429,9 @@ def task_b6(args, prov):
                           "error_rate": float(x["error"].notna().mean()) if "error" in x else 0.0,
                           "filled_rate": float((x["n_filled"].fillna(0) > 0).mean()) if "n_filled" in x else np.nan,
                           "same_as_stage1_topk_rate": float(x["same_as_stage1_topk"].mean()) if "same_as_stage1_topk" in x and m == "ptlasso" else np.nan})
-    lab = pd.concat(labels, ignore_index=True)
+    both_all = pd.concat(both_all, ignore_index=True)   # Holm qua mọi ô của chiến lược trên bốn cohort (O49)
+    lab = split_level_labels(both_all[both_all.strategy.isin(["ptlasso", "transglm", "target_only"])], "strategy", "target_only",
+                             ["cohort", "n_t", "k"], seed_tag="b6")
     _save(lab, out, "b6_split_labels_vs_target_only.csv")
     _save(pd.concat(desc, ignore_index=True), out, "b6_delta_vs_naive.csv")
     _save(pd.DataFrame(degen), out, "b6_degeneracy.csv")

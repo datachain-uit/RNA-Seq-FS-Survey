@@ -286,6 +286,10 @@ def test_revision_pipeline_end_to_end(pipeline):
     assert pd.read_csv(res / "B4_tables" / "b4_gate_b0.csv")["pass"].all()
     lab = pd.read_csv(res / "B1_tables" / "b1_e7_split_labels.csv")
     assert (lab.n_splits == 7).all() and set(lab.label) <= {"positive transfer", "negative transfer", "practically equivalent", "inconclusive"}
+    # O49: Holm trong từng chiến lược qua MỌI ô của nó, trên mọi cohort (đặc tả 12/11), không phải trong từng cohort
+    assert lab.cohort.nunique() == 2
+    for _, g in lab.groupby("strategy"):
+        assert np.allclose(g.p_holm.to_numpy(), R.holm(g.p_wilcoxon.to_numpy()), equal_nan=True)
     assert (res / "B2_tables" / "b2_source_only_reversal.csv").exists()
     assert (res / "B5_tables" / "b5_noninferiority_b0.csv").exists()
     r1 = pd.read_csv(res / "B7_tables" / "b7_R1.csv")
