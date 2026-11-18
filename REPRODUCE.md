@@ -2,10 +2,10 @@
 
 This document describes the code and result files of the survey *Efficient, Stable and Transferable Gene Selection
 under a Panel Budget: A Survey and Empirical Evaluation in Lung Cancer Histology Diagnosis* (submitted to Data Mining
-and Knowledge Discovery). It applies to the tag `survey-v3-dmkd.2` of this repository (branch `dmkd-revision`).
+and Knowledge Discovery). It applies to the tag `survey-v3-dmkd.3` of this repository (branch `dmkd-revision`).
 
-The tag holds the benchmark code and result files of the first submission (tag `survey-v3-dmkd.1`, unchanged), the code
-and result files of the experiments added for the revision (Section 6), and this documentation. The other README files
+The tag holds the code and result files of the main benchmark (E0-E7; also tagged `survey-v3-dmkd.1`, unchanged), the
+code and result files of the sensitivity analyses and the second task (SA1-SA4, E8; Section 6), and this documentation. The other README files
 of the repository are internal working notes written in Vietnamese; this file is the reference for readers of the paper.
 
 ## 1. Contents of the tag
@@ -14,14 +14,14 @@ of the repository are internal working notes written in Vietnamese; this file is
 |---|---|
 | `survey_v2/` | Python package of the benchmark: data access, the thirteen selectors and five reference panels, resampling, classifier, metrics, stability, provenance |
 | `scripts/` | command-line runners (`run_survey_e1.py`, `run_survey_e1_wrappers.py`, `run_survey_e2_e3_timing.py`, `run_survey_e4_e5_stability.py`, ...), split builders (`build_v3_splits.py`), quality control (`geo_sample_qc.py`), table builder of the result files (`make_survey_tables.py`) |
-| `notebooks/kaggle/` | the Kaggle notebooks that ran every experiment (`kaggle_E0_signal_check.ipynb` ... `kaggle_E7_transfer.ipynb`, `kaggle_panels.ipynb`, `kaggle_ablation_no_IHC.ipynb`, `kaggle_redo_svm_rfe.ipynb`, `kaggle_00_sanity.ipynb`; revision: `kaggle_B1_fewshot20.ipynb`, `kaggle_B2_B5.ipynb`, `kaggle_B7_step1.ipynb`, `kaggle_B7_E1_E4.ipynb`) |
-| `notebooks/kaggle_r/kaggle_B6_e7_r.ipynb` | revision: ptLasso and Trans-GLM in E7 (Python kernel that installs R 4.5.3, ptLasso 1.0.2, glmtrans 2.1.0) |
+| `notebooks/kaggle/` | the Kaggle notebooks that ran every experiment (`kaggle_E0_signal_check.ipynb` ... `kaggle_E7_transfer.ipynb`, `kaggle_panels.ipynb`, `kaggle_ablation_no_IHC.ipynb`, `kaggle_redo_svm_rfe.ipynb`, `kaggle_00_sanity.ipynb`; Section 6: `kaggle_B1_fewshot20.ipynb`, `kaggle_B2_B5.ipynb`, `kaggle_B7_step1.ipynb`, `kaggle_B7_E1_E4.ipynb`) |
+| `notebooks/kaggle_r/kaggle_B6_e7_r.ipynb` | Section 6: ptLasso and Trans-GLM in E7 (Python kernel that installs R 4.5.3, ptLasso 1.0.2, glmtrans 2.1.0) |
 | `tests/` | unit tests (`python -m pytest -q`) |
 | `results/survey_v2/` | outputs of every experiment, one folder per experiment and cohort (Section 2) |
 | `results/run_info_*.json`, `results/logs/` | session information and logs of each Kaggle job, including `pip freeze` |
 | `splits/` | patient-level split files and quality-control files (Section 3) |
-| `paper_scripts/` | `make_tables.py` and `make_figures.py`: they write every table and the result figures (Figs. 5-12) of the first submission from `results/` (Section 4); `make_figures_dmkd2.py`: Figs. 8, 11 and 12 of the revised paper (Section 6.3) |
-| `paper_figure_sources/` | sources of the diagrams (Figs. 1-4, 13) and of the graphical abstract: draw.io files and TikZ |
+| `paper_scripts/` | `make_tables.py`: the tables of the main benchmark from `results/` (Section 4); `make_figures_dmkd.py` with `check_figure_lettering.py`: the result figures of the paper (Figs. 5-12, Section 6.3); `check_figure4.py`: check of Fig. 4; `make_figures.py`, `make_figures_dmkd2.py`: earlier layouts of the same figures, kept for the record |
+| `paper_figure_sources/` | sources of the diagrams (Figs. 1-4, 13): draw.io files and TikZ (`Figure_4_complexity.tex`, built with `pdflatex`) |
 | `requirements-kaggle.txt` | package versions of the environment that produced every reported number (Python 3.13.15) |
 
 ## 2. Result files (`results/survey_v2/`)
@@ -37,10 +37,10 @@ of the repository are internal working notes written in Vietnamese; this file is
 | `E2_E3/`, `E2_E3_ref/`, `E2_E3_p1/` ... `E2_E3_p3/` | E2 and E3, measured cost and scaling (calibration and machine files included) |
 | `E4_E5/` | E4 and E5, stability on TCGA and GSE37745 (Nogueira index with confidence intervals, subsamples), redundancy, seed variability, overlap |
 | `E7/` | E7, naive transfer strategies from TCGA to the four GEO cohorts (`e7_per_run.csv`, `e7_selected_genes.csv`) |
-| `E7_k2_evidence/` | gene-level analysis of the zero-shot rule at k = 2 (Section 7.4 of the paper) |
+| `E7_k2_evidence/` | gene-level analysis of the zero-shot rule at k = 2 (Table 20 of the paper) |
 | `tables/` | summary tables written by `scripts/make_survey_tables.py` (CSV and LaTeX) and `provenance_manifest.json` |
 | `figures/` | figures written by `scripts/make_survey_tables.py` |
-| `B1_…` … `B7_…`, `E0_b7/`, `E1_feature_selection_b7/`, `E1_classification_b7/`, `E4_E5_b7/` | experiments added for the revision (Section 6) |
+| `B1_…` … `B7_…`, `E0_b7/`, `E1_feature_selection_b7/`, `E1_classification_b7/`, `E4_E5_b7/` | sensitivity analyses SA1-SA4 and second task E8 (Section 6) |
 | `B6_reference_rq2_r_7f097da/` | reference files of the B6 equality gate (copied from the method paper's run, Section 6.1) |
 | `DMKD2_EXCLUDED_DATA.tsv` | the two expression matrices built for B7 that are not redistributed (path, size, SHA-256) |
 
@@ -48,9 +48,9 @@ The files store, for every fold and run, the five metrics of the paper (AUROC, b
 score), the decision threshold, the selected genes and the selection time. Per-sample predictions are not stored.
 
 Every folder holds a `config.json` with the commit of the code that produced it, the SHA-256 of the input data and of
-the split file, the package versions and the machine. The result files of the first submission were produced at
-commits 9b2d6a5, 6ea47e8, d870008, e15fb7c and 06ba993 (Appendix A of the paper); those of the revision at commits
-c1828d2, c50647a and f22597c (Section 6). The code at all these commits is in the history of this tag.
+the split file, the package versions and the machine. The result files of the main benchmark were produced at
+commits 9b2d6a5, 6ea47e8, d870008, e15fb7c and 06ba993 (Appendix A of the paper); those of Section 6 at commits
+c1828d2, c50647a and f22597c, and `B1_tables/`, `B6_tables/` were regenerated at 3fe6d99 (Section 6.1). The code at all these commits is in the history of this tag.
 
 ## 3. Splits and quality control (`splits/`)
 
@@ -58,8 +58,8 @@ c1828d2, c50647a and f22597c (Section 6). The code at all these commits is in th
 |---|---|
 | `<cohort>/repeated_splits.csv` | 5 repeats x 5 patient-grouped outer folds (seeds 42-46) of the five cohorts |
 | `<cohort>/fewshot_splits.csv` | few-shot design of the four GEO cohorts: 5 test/pool splits x 4 nested subsets per target size n_T |
-| `<cohort>/fewshot_splits_20.csv` | revision (B1): the same design with 20 splits (seeds 42-61); splits 0-4 are identical to `fewshot_splits.csv` |
-| `tcga_luad_egfr/`, `gse31210_egfr/` | revision (B7): metadata with EGFR labels, 5 x 5 splits, exclusions and data cards of the two EGFR data sets |
+| `<cohort>/fewshot_splits_20.csv` | Section 6 (B1): the same design with 20 splits (seeds 42-61); splits 0-4 are identical to `fewshot_splits.csv` |
+| `tcga_luad_egfr/`, `gse31210_egfr/` | Section 6 (E8, folder prefix B7): metadata with EGFR labels, 5 x 5 splits, exclusions and data cards of the two EGFR data sets |
 | `<cohort>/label_mapping.json`, `metadata.csv`, `class_stats.csv`, `excluded_samples_<cohort>.csv` | labels (LUAD = 0, LUSC = 1), sample metadata, class counts, samples removed by quality control |
 | `<cohort>/DATA_CARD.md` | data card of the cohort (in Vietnamese): source files, SHA-256, quality-control decisions |
 | `split_manifests/` | generator, commit, seeds and SHA-256 of every split file |
@@ -80,7 +80,8 @@ cd out/Tables && sha256sum -c ../../paper_scripts/EXPECTED_SHA256.txt
 `make_tables.py` writes the 22 table files of the paper and `numbers_log.json` (2,194 numbers, each with its source
 file and column); the checksums in `paper_scripts/EXPECTED_SHA256.txt` are those of the table files of the paper.
 On Windows, line endings may differ; compare with `diff --strip-trailing-cr` instead of the checksums.
-`make_figures.py` writes Figures 5-12. In the journal version, six tables use a wider float environment; their content
+`make_figures.py` writes an earlier layout of Figures 5-12; the figures of the paper are written by `make_figures_dmkd.py`
+(Section 6.3) from the same tables. In the journal version, six tables use a wider float environment; their content
 is unchanged.
 
 ## 5. Rerun the experiments
@@ -156,15 +157,21 @@ is unchanged.
 5. Tables: `python scripts/make_survey_tables.py` (options in `--help`) writes the summary tables of
    `results/survey_v2/tables/`; then Section 4.
 
-## 6. Experiments added for the revision (tag `survey-v3-dmkd.2`)
+## 6. Sensitivity analyses and the second task (SA1-SA4, E8)
 
 The specification and the reading rules of these experiments were fixed before they were run. Every run used the
-protocol of the first submission (same splits and seeds, label-free filter to 5,000 genes inside the training part,
+protocol of the main benchmark (same splits and seeds, label-free filter to 5,000 genes inside the training part,
 LR-L2 with C in {0.01, 0.1, 1, 10} chosen by inner cross-validation, balanced class weights, the same five metrics),
 except where a row below says otherwise. The new data sets were appended at the end of `DATASETS` in
-`survey_v2/config.py`, so the seed identifiers of the five cohorts of the first submission are unchanged (tested).
+`survey_v2/config.py`, so the seed identifiers of the five cohorts of the main benchmark are unchanged (tested).
 Settings that the specification did not fix are listed under `choices_to_confirm` in the `config.json` of each table
 folder.
+
+The folders keep their working names; the paper uses the names of the right-hand column: B1 (20 few-shot splits of E1b
+and E7), B6 (ptLasso and Trans-GLM in E7), B4 = SA1 (reference model B0, Table 15), B5 = SA2 (signatures cut to ten
+genes, Tables S17-S18), B2 = SA3 (k-TSP voting rule, Tables S19-S20), B3 = SA4 (zero-shot variants, Table 20 and
+Table S21), B7 = E8 (EGFR mutation, Table 22 and Tables S22-S25). Table and figure numbers follow the manuscript of
+18/11/2026.
 
 ### 6.1 Folders, commits and equality gates
 
@@ -192,7 +199,7 @@ checks of B7 (tissue source site, sex, sex-chromosome genes and EGFR in the pane
 `scripts/b7_confounder_check.py` to `B7_tables/b7_confounder_check.txt`:
 `python scripts/b7_confounder_check.py results/survey_v2 > results/survey_v2/B7_tables/b7_confounder_check.txt`.
 
-### 6.2 Regenerate the tables of the revision (no experiment is rerun)
+### 6.2 Regenerate the tables of Section 6 (no experiment is rerun)
 
 From a clean clone of the tag, with the repository as data root:
 
@@ -206,15 +213,26 @@ and the published results; `check_revision_tables.py` compares every rewritten C
 (values, absolute tolerance 1e-9) and prints one `OK` line per file. Only the `config.json` files change (commit,
 date).
 
-### 6.3 Figures 8, 11 and 12 of the revised paper
+### 6.3 Result figures of the paper (Figures 5-12)
 
 ```
-python paper_scripts/make_figures_dmkd2.py --results results/survey_v2/tables --b1 results/survey_v2/B1_tables --out out/Images_dmkd2
+python paper_scripts/make_figures_dmkd.py --results results/survey_v2/tables --e3 results/survey_v2/E2_E3        --b1 results/survey_v2/B1_tables --out out/Images
 ```
 
-Figures 8 and 12 are drawn by the functions of `make_figures.py` from the same official tables; only the export
-changes (print width 174 mm, every text at least 8 pt, vector PDF). Figure 11 is redrawn from the split-level labels of
-B1 (`B1_tables/b1_e7_split_labels.csv`). The script stops with an error if any text is below 8 pt.
+The script reads the official tables only and writes `Figure_5.pdf` ... `Figure_12.pdf` (E3, E4, E5, E1, pooled lower
+bound of k*, E1b, E7, E6) and `figures_dmkd_report.json`. Every figure is drawn at the text width of the manuscript
+(372 pt, at most 520 pt high) and inserted without scaling; the main text is 8 pt in one sans-serif family (Liberation
+Sans) and no glyph of the written PDF is below 7 pt (`check_figure_lettering.py`, which needs `pdfminer.six`; the page
+width is checked with `pikepdf`). The script also checks that every plotted value equals its table value and that no
+two texts overlap, and it exits with code 1 if a check fails. Without Liberation Sans installed, Matplotlib falls back
+to a wider font and the overlap check of Figure 11 fails. With `--b1`, Figure 11 is drawn from the split-level labels
+of B1 after O49 (`B1_tables/b1_e7_split_labels.csv`): cell = 100 x mean difference of AUROC; solid frame = positive or
+negative transfer, dashed frame = practically equivalent, no frame = inconclusive. `--only 11` draws one figure.
+`make_figures_dmkd2.py` (174 mm layout of Figures 8, 11 and 12 at tag `survey-v3-dmkd.2`) is superseded by this script.
+
+Figure 4 is built from `paper_figure_sources/Figure_4_complexity.tex` with `pdflatex`; `python paper_scripts/check_figure4.py
+--tex Figure_4_complexity.tex --csv results/survey_v2/tables/e3_exponents_vs_table5.csv --log Figure_4_complexity.log`
+checks its 11 pairs of exponents and its layout.
 
 ## 7. Licence and citation
 
