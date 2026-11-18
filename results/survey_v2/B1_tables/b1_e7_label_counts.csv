@@ -1,4 +1,4 @@
 ﻿strategy,inconclusive,negative transfer,positive transfer,practically equivalent
-pooled,11,0,31,13
-select_on_source,9,0,34,12
-source_only,13,19,17,6
+pooled,12,0,30,13
+select_on_source,10,0,33,12
+source_only,18,16,15,6

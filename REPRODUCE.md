@@ -182,6 +182,15 @@ folder.
 f22597c; f22597c only changes the layout of `b7_kstar.csv`, which now lists every selector and both margins). The
 two `expression.h5` files of B7 are not redistributed; their SHA-256 are in `DMKD2_EXCLUDED_DATA.tsv` and the files
 are rebuilt by `scripts/run_b7_step1.py` from the public GDC mutation files and GEO series GSE31210.
+The FILTER column of the TCGA-LUAD mutation files was not stored at step 0; the labels rest on the open Masked Somatic
+Mutation files as released by the GDC (`B7_data/experiment-data-b7/tcga_luad_egfr/data_card_tcga_luad_egfr_notes.md`).
+
+O49 (commit 3fe6d99): in `B1_tables/` and `B6_tables/` the Holm correction of the split-level labels now runs within
+each strategy over all its cells on the four cohorts, as the specification states (it previously ran within each
+strategy and cohort). The two folders were regenerated from that commit; no experiment was rerun. The confounder
+checks of B7 (tissue source site, sex, sex-chromosome genes and EGFR in the panels) are written by
+`scripts/b7_confounder_check.py` to `B7_tables/b7_confounder_check.txt`:
+`python scripts/b7_confounder_check.py results/survey_v2 > results/survey_v2/B7_tables/b7_confounder_check.txt`.
 
 ### 6.2 Regenerate the tables of the revision (no experiment is rerun)
 
