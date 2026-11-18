@@ -1,0 +1,4 @@
+TSS-only AUROC: mean 0.577, SD 0.084 over 25 folds
+sex-only AUROC (female = 1): 0.649; mutant female 47/58
+tcga_luad_egfr: 275 panels at k = 10; with a sex-chromosome gene 0; containing EGFR 231 (84%)
+gse31210_egfr: 275 panels at k = 10; with a sex-chromosome gene 2; containing EGFR 137 (50%)

@@ -1,46 +1,46 @@
 {
   "experiment": "B1_tables",
   "spec": "YEU-CAU-DOI-CODE-2026-11-12-GVHD-B1-B7.md §3 (reading rules fixed 12/11/2026)",
-  "published_root": "/kaggle/working/RNA-Seq-FS-Survey/results/survey_v2",
+  "published_root": "D:\\KLTN\\10_Ma-nguon\\dmkd-code\\results\\survey_v2",
   "published_tag": "survey-v3-dmkd.1",
   "inputs_sha256": {
-    "/kaggle/working/kltn_data/results/survey_v2/B1_E7_20/gse10245/e7_per_run.csv": "0a7e2ea3615abb41602ee5def0b4050a872346c2f55f8c51c551c300b69cf2a4",
-    "/kaggle/working/RNA-Seq-FS-Survey/results/survey_v2/E7/gse10245/e7_per_run.csv": "ec43befc029a876947c45a6229abdd0dbb87db5cef76eba108af144ecfbe834b",
-    "/kaggle/working/kltn_data/results/survey_v2/B1_E1b_20/gse10245/e1b_per_run.csv": "c9aabeee14acda3965595a8e334416d533e43645af6e5630b8d982fa62423cf1",
-    "/kaggle/working/RNA-Seq-FS-Survey/results/survey_v2/E1b/gse10245/e1b_per_run.csv": "90779b05c81a98273c4a75b3c4ce92b240e676155b19c00ec05cfba1d84dba5d",
-    "/kaggle/working/kltn_data/results/survey_v2/B1_E7_20/gse30219/e7_per_run.csv": "8c6c5a34d946baee787ecba0286f9130b9feb8294d1464906855559205488e69",
-    "/kaggle/working/RNA-Seq-FS-Survey/results/survey_v2/E7/gse30219/e7_per_run.csv": "91a52e66d65daf4e72463afc1d441dc744e4b098d14643956f054a800596a69b",
-    "/kaggle/working/kltn_data/results/survey_v2/B1_E1b_20/gse30219/e1b_per_run.csv": "a2739bd848fd00eebd9f9ec9a7da5db9405e247a4381813d90e47a031a95e001",
-    "/kaggle/working/RNA-Seq-FS-Survey/results/survey_v2/E1b/gse30219/e1b_per_run.csv": "77699117f8df24275123f1328d77afb4f705fc6482226dfc106a74e92a3ac7db",
-    "/kaggle/working/kltn_data/results/survey_v2/B1_E7_20/gse37745/e7_per_run.csv": "1f0045390b9af0c85e3d417d7bd423db151c28f822dfd94265ec00003d5d466a",
-    "/kaggle/working/RNA-Seq-FS-Survey/results/survey_v2/E7/gse37745/e7_per_run.csv": "d94a042f117ff802d285e14a0c6fd1b11c45f1b249ab6b047b241ed8ff5ef49d",
-    "/kaggle/working/kltn_data/results/survey_v2/B1_E1b_20/gse37745/e1b_per_run.csv": "82f0c5ec73605404fcb2c5b847b4448fafa295147da54af7ef228a49be92d90c",
-    "/kaggle/working/RNA-Seq-FS-Survey/results/survey_v2/E1b/gse37745/e1b_per_run.csv": "481d47e92d75da44d22f29adf821e603fbfa81a3fd89fb199e124d6597c7bd2f",
-    "/kaggle/working/kltn_data/results/survey_v2/B1_E7_20/gse42127/e7_per_run.csv": "f7b4483f5dd1c64f4e00bd57c3abf54af784ef137cb9d0aabc27f98e948d9d63",
-    "/kaggle/working/RNA-Seq-FS-Survey/results/survey_v2/E7/gse42127/e7_per_run.csv": "5897556e05c4bd8718b917bd10cf97a0ea569af8e9c3bec5f02996cbf7d381c2",
-    "/kaggle/working/kltn_data/results/survey_v2/B1_E1b_20/gse42127/e1b_per_run.csv": "f5d617e66d4b3eaedc9adf2f2f93b0dec0e6ec008f0890f78f05638923f85ecc",
-    "/kaggle/working/RNA-Seq-FS-Survey/results/survey_v2/E1b/gse42127/e1b_per_run.csv": "6e9cc38fcc12bc4f1c605503ad8c619e7210ed5bd23d42e9009b37d8b7b1f6da"
+    "D:\\KLTN\\10_Ma-nguon\\dmkd-code\\results\\survey_v2\\B1_E7_20\\gse10245\\e7_per_run.csv": "f9a12971dc0c41bbb3500f58cef40d1d2e60e11c702200f3c838a6364e1b938a",
+    "D:\\KLTN\\10_Ma-nguon\\dmkd-code\\results\\survey_v2\\E7\\gse10245\\e7_per_run.csv": "0f341674e07bd19158e644e0e935a872eae92044ec863ae3f2a811d0d63bb647",
+    "D:\\KLTN\\10_Ma-nguon\\dmkd-code\\results\\survey_v2\\B1_E1b_20\\gse10245\\e1b_per_run.csv": "72089254f8581055de570b8f3600bb93697bb258e5fc53311c010e0590eabd25",
+    "D:\\KLTN\\10_Ma-nguon\\dmkd-code\\results\\survey_v2\\E1b\\gse10245\\e1b_per_run.csv": "05c74f75680836030a33e517bfe18bcd221cb369bebdb524018ac8f9647f7a62",
+    "D:\\KLTN\\10_Ma-nguon\\dmkd-code\\results\\survey_v2\\B1_E7_20\\gse30219\\e7_per_run.csv": "4da5ea95655dc624f09b88bcf4ef80105281aa9b3511d31d3d7bd70b730d8631",
+    "D:\\KLTN\\10_Ma-nguon\\dmkd-code\\results\\survey_v2\\E7\\gse30219\\e7_per_run.csv": "ea4730d53838a72e8060835a8c3620aa508deafc6c318812d3b2489bcdf12b5b",
+    "D:\\KLTN\\10_Ma-nguon\\dmkd-code\\results\\survey_v2\\B1_E1b_20\\gse30219\\e1b_per_run.csv": "c9700dddeaca2422e6f1b2efbcac5a832f7b8d82428f99ea20ba2eeefb11dfa5",
+    "D:\\KLTN\\10_Ma-nguon\\dmkd-code\\results\\survey_v2\\E1b\\gse30219\\e1b_per_run.csv": "f3e0e759fc9fd967be23bca569e1e3542f2e2191d4611a2b252452fe3f8de5ea",
+    "D:\\KLTN\\10_Ma-nguon\\dmkd-code\\results\\survey_v2\\B1_E7_20\\gse37745\\e7_per_run.csv": "95d8e0879c8f4aa9f4f62ac0d8a5c3b5d28bea7811d7ec61975c2da685832593",
+    "D:\\KLTN\\10_Ma-nguon\\dmkd-code\\results\\survey_v2\\E7\\gse37745\\e7_per_run.csv": "3737bbb7752c876ac3dc21b1bcd14b7cdf22d47a8cde7134282385ca742a34e0",
+    "D:\\KLTN\\10_Ma-nguon\\dmkd-code\\results\\survey_v2\\B1_E1b_20\\gse37745\\e1b_per_run.csv": "364546557e2867fafea72898653d3986f1ea6aaf993cca3ad5a37d283fb8f6fb",
+    "D:\\KLTN\\10_Ma-nguon\\dmkd-code\\results\\survey_v2\\E1b\\gse37745\\e1b_per_run.csv": "9d1dd32a45f3e97cd6d8688eb1756a6ad73094ff04b1e3745982db583d5bdb8a",
+    "D:\\KLTN\\10_Ma-nguon\\dmkd-code\\results\\survey_v2\\B1_E7_20\\gse42127\\e7_per_run.csv": "a3e34e4cbf014381094117fc645b39a41d517de7d3e604f0f7da4416f3f4e813",
+    "D:\\KLTN\\10_Ma-nguon\\dmkd-code\\results\\survey_v2\\E7\\gse42127\\e7_per_run.csv": "33cd30c72dc960ded2a8014d826e01aa67c24d1d43d3aa8a614b30f8df57a212",
+    "D:\\KLTN\\10_Ma-nguon\\dmkd-code\\results\\survey_v2\\B1_E1b_20\\gse42127\\e1b_per_run.csv": "091b9a9d4bb842d10cd6a32255bad6e7718d116e89709bc03cec5ab5c949b7a0",
+    "D:\\KLTN\\10_Ma-nguon\\dmkd-code\\results\\survey_v2\\E1b\\gse42127\\e1b_per_run.csv": "0fc4ceb5a26175b3dc8bc324a02574b4370f0768d9530d48e3d0c3f7fd012251"
   },
   "summary": {
     "gates_pass": true,
     "gate_tol": 1e-12,
     "label_counts": {
       "pooled": {
-        "inconclusive": 11,
+        "inconclusive": 12,
         "negative transfer": 0,
-        "positive transfer": 31,
+        "positive transfer": 30,
         "practically equivalent": 13
       },
       "select_on_source": {
-        "inconclusive": 9,
+        "inconclusive": 10,
         "negative transfer": 0,
-        "positive transfer": 34,
+        "positive transfer": 33,
         "practically equivalent": 12
       },
       "source_only": {
-        "inconclusive": 13,
-        "negative transfer": 19,
-        "positive transfer": 17,
+        "inconclusive": 18,
+        "negative transfer": 16,
+        "positive transfer": 15,
         "practically equivalent": 6
       }
     }
@@ -51,59 +51,64 @@
     "E1b with 20 splits: descriptive per-split summary only (no reading rule was specified for E1b)"
   ],
   "versions": {
-    "numpy": "2.1.3",
-    "pandas": "2.3.3",
-    "scipy": "1.16.3",
-    "scikit-learn": "1.6.1",
-    "tables": "3.10.2",
-    "skrebate": "0.8.4",
+    "numpy": "2.5.0",
+    "pandas": "3.0.3",
+    "scipy": "1.18.1",
+    "scikit-learn": "1.9.0",
+    "tables": "3.11.1",
+    "skrebate": null,
     "joblib": "1.6.0",
-    "threadpoolctl": "3.7.0",
-    "psutil": "5.9.5",
-    "xgboost": "3.4.1",
-    "lightgbm": "4.6.0",
+    "threadpoolctl": "3.6.0",
+    "psutil": "7.2.2",
+    "xgboost": null,
+    "lightgbm": null,
     "codecarbon": null
   },
-  "generated_at": "2026-11-15T15:43:53+00:00",
-  "commit_hash": "c50647a82e2d0200f7aad2f89c41a4755a27bae2",
+  "generated_at": "2026-11-18T22:32:53+07:00",
+  "resumed_from": [
+    {
+      "commit_hash": "c50647a82e2d0200f7aad2f89c41a4755a27bae2",
+      "generated_at": "2026-11-15T15:43:53+00:00",
+      "note": "các dòng/checkpoint không tính lại trong lần chạy này được tạo ở commit này"
+    }
+  ],
+  "commit_hash": "3fe6d99f1047222178dd793dbcaa86b24b685c2a",
   "provenance": {
     "schema": "kltn-provenance/1",
-    "commit_hash": "c50647a82e2d0200f7aad2f89c41a4755a27bae2",
+    "commit_hash": "3fe6d99f1047222178dd793dbcaa86b24b685c2a",
     "tracked": true,
     "dirty": false,
-    "branch": "HEAD",
+    "branch": "dmkd-revision",
     "remote": "https://github.com/datachain-uit/RNA-Seq-FS-Survey.git",
     "untracked_reason": null,
     "script": "scripts/make_revision_tables.py",
-    "code_root": "/kaggle/working/RNA-Seq-FS-Survey",
-    "data_root": "/kaggle/working/kltn_data",
+    "code_root": "D:/KLTN/10_Ma-nguon/dmkd-code",
+    "data_root": "D:/KLTN/10_Ma-nguon/dmkd-code",
     "argv": [
-      "b1"
+      "b1",
+      "b6"
     ],
-    "started_at": "2026-11-15T15:43:51+00:00",
-    "python": "3.13.18",
+    "started_at": "2026-11-18T22:32:51+07:00",
+    "python": "3.14.6",
     "packages": {
-      "numpy": "2.1.3",
-      "pandas": "2.3.3",
-      "scikit-learn": "1.6.1",
-      "scipy": "1.16.3",
-      "tables": "3.10.2",
+      "numpy": "2.5.0",
+      "pandas": "3.0.3",
+      "scikit-learn": "1.9.0",
+      "scipy": "1.18.1",
+      "tables": "3.11.1",
       "openpyxl": "3.1.5",
-      "requests": "2.34.2",
-      "xgboost": "3.4.1",
-      "lightgbm": "4.6.0",
-      "abess": "0.4.11"
+      "requests": "2.34.2"
     },
     "machine": {
-      "platform": "Linux-6.18.55+-x86_64-with-glibc2.39",
-      "processor": "x86_64",
-      "machine": "x86_64",
-      "cpu_count": 4,
-      "hostname": "5fb956abcc14"
+      "platform": "Windows-11-10.0.22000-SP0",
+      "processor": "Intel64 Family 6 Model 140 Stepping 1, GenuineIntel",
+      "machine": "AMD64",
+      "cpu_count": 8,
+      "hostname": "DESKTOP-1LQ0FRI"
     },
     "data_sha256": {},
     "params": {
-      "tasks": "['b1']",
+      "tasks": "['b1', 'b6']",
       "b1_e7": "B1_E7_20",
       "b1_e1b": "B1_E1b_20",
       "b4_threshold": "0.935",
