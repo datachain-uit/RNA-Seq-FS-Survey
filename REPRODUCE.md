@@ -20,7 +20,7 @@ of the repository are internal working notes written in Vietnamese; this file is
 | `results/survey_v2/` | outputs of every experiment, one folder per experiment and cohort (Section 2) |
 | `results/run_info_*.json`, `results/logs/` | session information and logs of each Kaggle job, including `pip freeze` |
 | `splits/` | patient-level split files and quality-control files (Section 3) |
-| `paper_scripts/` | `make_tables.py`: the tables of the main benchmark from `results/` (Section 4); `make_figures_dmkd.py` with `check_figure_lettering.py`: the result figures of the paper (Figs. 5-12, Section 6.3); `check_figure4.py`: check of Fig. 4; `make_figures.py`, `make_figures_dmkd2.py`: earlier layouts of the same figures, kept for the record |
+| `paper_scripts/` | `make_tables.py`: the tables of the main benchmark from `results/` (Section 4); `make_figures_dmkd.py` with `check_figure_lettering.py`: the result figures of the paper (Figs. 5-12, Section 6.4); `make_supplementary_tables.py`: the tables of Section 6 and of Online Resource 1 (Section 6.3); `check_figure4.py`: check of Fig. 4; `make_figures.py`, `make_figures_dmkd2.py`: earlier layouts of the same figures, kept for the record |
 | `paper_figure_sources/` | sources of the diagrams (Figs. 1-4, 13): draw.io files and TikZ (`Figure_4_complexity.tex`, built with `pdflatex`) |
 | `requirements-kaggle.txt` | package versions of the environment that produced every reported number (Python 3.13.15) |
 
@@ -74,14 +74,14 @@ Tested on 11/11/2026 with Python 3.13 on Linux (numpy, pandas and matplotlib onl
 ```
 python paper_scripts/make_tables.py --results results/survey_v2/tables --e0-configs results/survey_v2/E0 --qc splits/qc --out out/Tables
 python paper_scripts/make_figures.py --results results/survey_v2/tables --e3 results/survey_v2/E2_E3 --out out/Images
-cd out/Tables && sha256sum -c ../../paper_scripts/EXPECTED_SHA256.txt
+(cd out/Tables && sha256sum -c --ignore-missing ../../paper_scripts/EXPECTED_SHA256.txt)
 ```
 
 `make_tables.py` writes the 22 table files of the paper and `numbers_log.json` (2,194 numbers, each with its source
 file and column); the checksums in `paper_scripts/EXPECTED_SHA256.txt` are those of the table files of the paper.
 On Windows, line endings may differ; compare with `diff --strip-trailing-cr` instead of the checksums.
 `make_figures.py` writes an earlier layout of Figures 5-12; the figures of the paper are written by `make_figures_dmkd.py`
-(Section 6.3) from the same tables. In the journal version, six tables use a wider float environment; their content
+(Section 6.4) from the same tables. In the journal version, six tables use a wider float environment; their content
 is unchanged.
 
 ## 5. Rerun the experiments
@@ -213,7 +213,29 @@ and the published results; `check_revision_tables.py` compares every rewritten C
 (values, absolute tolerance 1e-9) and prints one `OK` line per file. Only the `config.json` files change (commit,
 date).
 
-### 6.3 Result figures of the paper (Figures 5-12)
+### 6.3 Supplementary tables and the tables of SA1-SA4 and E8
+
+After Section 4 (the script compares the five files `tab_app_e1_<cohort>.tex` of `make_tables.py` cell by cell and
+rewrites them with the marks of the tests, so it works on a copy of them):
+
+```
+mkdir -p out/Supplement && cp out/Tables/tab_app_e1_*.tex out/Supplement/
+python paper_scripts/make_supplementary_tables.py --official results/survey_v2/tables --extra results/survey_v2 \
+       --k2 results/survey_v2/E7_k2_evidence --out out/Supplement
+(cd out/Supplement && grep numbers_supplement ../../paper_scripts/EXPECTED_SHA256.txt | sha256sum -c)
+```
+
+The script reads result tables only. It writes 25 table files: Table 15 (SA1, `tab_sens_reference.tex`), Table 20
+(two-gene rule and SA4 at k = 2, `tab_zeroshot_k2.tex`), Table 22 (E8 at k = 10, `tab_e8.tex`) and Tables S2-S6,
+S9-S25 of Online Resource 1, and `numbers_supplement.json`, the derived numbers quoted in the text. It stops if a cell
+of Tables S2-S6, without the new marks, differs from the file of `make_tables.py`, or if the k* re-analysis does not
+reproduce `e1_kstar_pooled_by_k.csv` and `e1_kstar_pooled.csv`. Every table file names its input files and columns in
+its first comment lines. The repository copy differs from the author's copy of 18/11/2026 (SHA-256
+`0eade5915d151371b619e1ab1a857f653f95bdfeddfbf37664925989441f157e`) in one place only: the table note of Tables
+S2-S6 is optional, because the files of `make_tables.py` have none (a one-line note on the cells is written instead); `numbers_supplement.json` is the same (checksum
+above). On Windows, strip the trailing carriage returns before checking (`sed 's/\r$//'`).
+
+### 6.4 Result figures of the paper (Figures 5-12)
 
 ```
 python paper_scripts/make_figures_dmkd.py --results results/survey_v2/tables --e3 results/survey_v2/E2_E3        --b1 results/survey_v2/B1_tables --out out/Images
