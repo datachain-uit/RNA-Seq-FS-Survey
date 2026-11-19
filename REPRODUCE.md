@@ -84,6 +84,17 @@ On Windows, line endings may differ; compare with `diff --strip-trailing-cr` ins
 (Section 6.4) from the same tables. In the journal version, six tables use a wider float environment; their content
 is unchanged.
 
+The derived numbers of Sections 7.2 and 7.3 that are not in a table (the Kendall rank correlation between the orderings of the
+selectors under LR-L2 and under the two secondary classifiers, the medians of the eleven data-driven selectors at n_T = 5, and
+the published signatures against the best 50-gene panel) are computed from the same tables:
+
+```
+python paper_scripts/reanalysis_2026-11-12.py --tables results/survey_v2/tables > out/reanalysis_2026-11-12.md
+(cd out && grep reanalysis ../paper_scripts/EXPECTED_SHA256.txt | sha256sum -c)
+```
+
+The report is in Markdown, with headings in Vietnamese as in the authors' working notes.
+
 ## 5. Rerun the experiments
 
 1. Environment: `pip install -r requirements-kaggle.txt` (the environment of every reported number). `abess` (selector
@@ -234,6 +245,8 @@ its first comment lines. The repository copy differs from the author's copy of 1
 `0eade5915d151371b619e1ab1a857f653f95bdfeddfbf37664925989441f157e`) in one place only: the table note of Tables
 S2-S6 is optional, because the files of `make_tables.py` have none (a one-line note on the cells is written instead); `numbers_supplement.json` is the same (checksum
 above). On Windows, strip the trailing carriage returns before checking (`sed 's/\r$//'`).
+Tables S2-S6 written from a clean clone have the same rows and marks as Online Resource 1; their caption is the long caption of
+make_tables.py and their note is the one-line note of this script, so their checksums differ from the files of the article.
 
 ### 6.4 Result figures of the paper (Figures 5-12)
 
