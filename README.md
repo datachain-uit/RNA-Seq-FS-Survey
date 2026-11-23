@@ -1,4 +1,4 @@
-> **Readers of the paper (Data Mining and Knowledge Discovery submission).** The tag `survey-v3-dmkd.1` holds the code,
+> **Readers of the paper (Data Mining and Knowledge Discovery submission).** The tag `survey-v3-dmkd.3` holds the code,
 > result files, splits and figure sources of the survey *Efficient, Stable and Transferable Gene Selection under a Panel
 > Budget*. Start with [REPRODUCE.md](REPRODUCE.md) (English): contents of the tag, result files, and the commands that
 > regenerate every table and result figure. Licences: [LICENSE](LICENSE) (MIT, code) and

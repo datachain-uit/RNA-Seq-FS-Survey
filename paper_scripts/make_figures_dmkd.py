@@ -1,17 +1,29 @@
 #!/usr/bin/env python3
 """
-make_figures_dmkd.py -- result figures 5-12 of the DMKD manuscript, drawn for the text width of the
+make_figures_dmkd.py -- the eight result figures of the DMKD manuscript, drawn for the text width of the
 Springer template (sn-jnl: \\textwidth = 372 TeX pt = 370.61 PDF pt = 130.7 mm) from the official result tables
-(commit e15fb7c, label [v03-11]).
+(commit e15fb7c, label [v03-11]) and, for the transfer figure, from the 20-split labels (B1_tables).
 
     python3 make_figures_dmkd.py --results <tables_official_2026-11-03 | results/survey_v2/tables> \
                                  --e3 <E2_E3 dir: e3_scaling_n.csv, e3_scaling_p.csv, e3_wrapper_evals.csv> \
-                                 --out Images/ [--b1 results/survey_v2/B1_tables] [--only 11]
+                                 --b1 <B1_tables dir: b1_e7_split_labels.csv> --out Images/ [--only e7 kstar]
 
---b1 (for the B1 version of Fig. 11, after the fix O49): Fig. 11 is drawn from B1_tables/b1_e7_split_labels.csv
-(20 splits; cell = mean_delta, outline = label: solid for positive or negative transfer, dashed for practically
-equivalent, none for inconclusive) instead of e7_transfer_table.csv (5 splits; outline = positive_transfer or
-negative_transfer).  The layout, the lettering and the checks are the same.
+Numbers of the figures (FIG below; manuscript of 21/11/2026, results in the order of the research questions).  Until
+20/11/2026 the eight files were Figure_5.pdf ... Figure_12.pdf in the order E3, E4, E5, E1, pooled bound, E1b, E7, E6:
+    article               Fig. 5  E1   AUROC against the budget             (Figure_5.pdf;  before: Figure_8.pdf)
+                          Fig. 6  E4   Nogueira index                       (Figure_6.pdf;  unchanged)
+                          Fig. 7  E6   AUROC, stability and cost            (Figure_7.pdf;  before: Figure_12.pdf)
+                          Fig. 8  E1b  few-shot learning curves             (Figure_8.pdf;  before: Figure_10.pdf)
+                          Fig. 9  E7   transfer strategies, 20 splits       (Figure_9.pdf;  before: Figure_11.pdf)
+    Online Resource 1     Fig. S2      pooled lower bound of k*             (Figure_S2.pdf; before: Figure_9.pdf)
+                          Fig. S3 E3   scaling of the selection time        (Figure_S3.pdf; before: Figure_5.pdf)
+                          Fig. S4 E5   redundancy and overlap               (Figure_S4.pdf; before: Figure_7.pdf)
+The drawings are those of 18/11/2026; only the file names and the titles in the document information changed.
+
+--b1: the transfer figure is drawn from B1_tables/b1_e7_split_labels.csv (20 splits; cell = mean_delta, outline =
+label: solid for positive or negative transfer, dashed for practically equivalent, none for inconclusive).  Without
+--b1 it is drawn from e7_transfer_table.csv (five splits; outline = positive_transfer or negative_transfer), which is
+no longer the version of the manuscript (QD226).  The layout, the lettering and the checks are the same.
 
 Why a new script (issue O53, 18/11/2026): the figures of make_figures.py were drawn for a page of 175-190 mm and
 are inserted at 131 mm, so their lettering prints at 3-5 pt; make_figures_dmkd2.py (tag survey-v3-dmkd.2) raises
@@ -24,9 +36,9 @@ width and inserted with width=\\textwidth, that is at scale 1:
     one sans-serif family (Liberation Sans, metric-compatible with Arial; DejaVu Sans only for missing glyphs);
   * data, scales and the colour of each family are those of make_figures.py; the panels are re-arranged where
     the old arrangement cannot carry 7-8 pt lettering (minor comment 24 of the pre-submission review):
-    Fig. 8 has one column per family instead of 13 lines per panel; Fig. 11 prints 100 x Delta AUROC and marks
-    a flagged cell by its outline instead of a sign glued to the number; Fig. 12 gives stability its own axis
-    instead of marker area and identifies the methods by marker and colour instead of overlapping names.
+    the E1 figure has one column per family instead of 13 lines per panel; the E7 figure prints 100 x Delta AUROC
+    and marks a labelled cell by its outline instead of a sign glued to the number; the E6 figure gives stability
+    its own axis instead of marker area and identifies the methods by marker and colour instead of overlapping names.
 After drawing, every figure is checked: smallest text >= 7 pt, no text outside the page, no two texts overlapping,
 page width 370.61 pt, every glyph of the written PDF >= 7 pt (check_figure_lettering.py, needs pdfminer.six), and
 the plotted values equal the values of the tables (re-read from the CSV files).
@@ -53,6 +65,12 @@ W_PDF_PT = W_IN * 72
 H_MAX_IN = 520 * PT
 MIN_PT = 7.0
 BASE, SMALL = 8.0, 7.5
+
+# Figure numbers of the manuscript (21/11/2026): key -> (file name, label written in the document information).
+FIG = {"e1": ("Figure_5.pdf", "Fig. 5"), "e4": ("Figure_6.pdf", "Fig. 6"), "e6": ("Figure_7.pdf", "Fig. 7"),
+       "e1b": ("Figure_8.pdf", "Fig. 8"), "e7": ("Figure_9.pdf", "Fig. 9"),
+       "kstar": ("Figure_S2.pdf", "Fig. S2"), "e3": ("Figure_S3.pdf", "Fig. S3"),
+       "e5": ("Figure_S4.pdf", "Fig. S4")}
 
 # Sub- and superscripts of mathtext ($n_T$, $N_\mathrm{eval}$) print at SHRINK_FACTOR times the size of the label,
 # 0.7 by default (5.6 pt for an 8 pt label).  0.875 prints them at 7 pt, the floor of the lettering (O53).
@@ -270,8 +288,8 @@ def lines_check(fig, lookup):
     return probs
 
 
-# ------------------------------------------------------------------ Fig. 5 (E3)
-def fig5(e3dir, out):
+# ------------------------------------------------------------------ E3: scaling of the selection time (Online Resource 1, Fig. S3)
+def fig_e3(e3dir, out):
     n = pd.read_csv(os.path.join(e3dir, "e3_scaling_n.csv"), encoding="utf-8-sig")
     p = pd.read_csv(os.path.join(e3dir, "e3_scaling_p.csv"), encoding="utf-8-sig")
     w = pd.read_csv(os.path.join(e3dir, "e3_wrapper_evals.csv"), encoding="utf-8-sig")
@@ -331,13 +349,13 @@ def fig5(e3dir, out):
             probs.append("annotation anchor differs from e3_wrapper_evals.csv")
         return probs
 
-    save(fig, out, "Figure_5.pdf", "Fig. 5. E3: wall time of the selection step against n, p and N_eval",
+    save(fig, out, FIG["e3"][0], FIG["e3"][1] + ". E3: wall time of the selection step against n, p and N_eval",
          "E3; computational cost; scaling", ["E2_E3/e3_scaling_n.csv", "E2_E3/e3_scaling_p.csv", "E2_E3/e3_wrapper_evals.csv"],
          data_check)
 
 
-# ------------------------------------------------------------------ Fig. 6 (E4)
-def fig6(results, out):
+# ------------------------------------------------------------------ E4: Nogueira index (Fig. 6)
+def fig_e4(results, out):
     s = rd(results, "e4_stability.csv")
     ks = [1, 2, 3, 4, 5, 10, 25, 50]
     fs = [0.5, 0.7, 0.9]
@@ -393,12 +411,12 @@ def fig6(results, out):
         return [float(s[(s.cohort == c) & (s.fraction == f) & (s.method == m) & (s.k == 10)].nogueira.iloc[0])
                 if len(s[(s.cohort == c) & (s.fraction == f) & (s.method == m) & (s.k == 10)]) else np.nan for f in fs]
 
-    save(fig, out, "Figure_6.pdf", "Fig. 6. E4: Nogueira index on TCGA and GSE37745", "E4; stability; Nogueira index",
+    save(fig, out, FIG["e4"][0], FIG["e4"][1] + ". E4: Nogueira index on TCGA and GSE37745", "E4; stability; Nogueira index",
          ["e4_stability.csv"], lambda f: lines_check(f, lookup))
 
 
-# ------------------------------------------------------------------ Fig. 7 (E5)
-def fig7(results, out):
+# ------------------------------------------------------------------ E5: redundancy and overlap (Online Resource 1, Fig. S4)
+def fig_e5(results, out):
     a = rd(results, "e5a_redundancy.csv")
     o = rd(results, "e5c_overlap_k10_gse37745.csv").set_index("method")
     fig = new_fig(6.45)
@@ -451,12 +469,12 @@ def fig7(results, out):
             probs.append("heatmap values differ from e5c_overlap_k10_gse37745.csv")
         return probs
 
-    save(fig, out, "Figure_7.pdf", "Fig. 7. E5: redundancy and overlap on GSE37745 at k = 10", "E5; redundancy; overlap; Jaccard",
+    save(fig, out, FIG["e5"][0], FIG["e5"][1] + ". E5: redundancy and overlap on GSE37745 at k = 10", "E5; redundancy; overlap; Jaccard",
          ["e5a_redundancy.csv", "e5c_overlap_k10_gse37745.csv"], data_check)
 
 
-# ------------------------------------------------------------------ Fig. 8 (E1)
-def fig8(results, out):
+# ------------------------------------------------------------------ E1: AUROC against the budget (Fig. 5)
+def fig_e1(results, out):
     s = rd(results, "e1_summary.csv")
     s = s[s.classifier == "lr_l2"]
     b0 = rd(results, "e1_b0_table.csv").set_index("cohort")
@@ -527,15 +545,15 @@ def fig8(results, out):
         n_lines = sum(1 for ax in f.axes for ln in ax.get_lines() if ln.get_gid())
         expected = len(COHORTS) * 4 + sum(1 for c in COHORTS for m in METHODS if s[(s.cohort == c) & (s.method == m)].auroc_mean.notna().any())
         if n_lines != expected:
-            probs.append("Fig. 8: %d tagged lines, expected %d" % (n_lines, expected))
+            probs.append("E1 figure: %d tagged lines, expected %d" % (n_lines, expected))
         return probs
 
-    save(fig, out, "Figure_8.pdf", "Fig. 8. E1: AUROC of LR-L2 as a function of the budget k", "E1; AUROC; budget k",
+    save(fig, out, FIG["e1"][0], FIG["e1"][1] + ". E1: AUROC of LR-L2 as a function of the budget k", "E1; AUROC; budget k",
          ["e1_summary.csv (classifier = lr_l2)", "e1_b0_table.csv"], data_check)
 
 
-# ------------------------------------------------------------------ Fig. 9 (pooled lower bound)
-def fig9(results, out):
+# ------------------------------------------------------------------ pooled lower bound of k* (Online Resource 1, Fig. S2)
+def fig_kstar(results, out):
     b = rd(results, "e1_kstar_pooled_by_k.csv")
     b = b[~b.method.str.startswith("panel_")]
     ks = [1, 2, 3, 4, 5, 10, 25, 50]
@@ -580,12 +598,12 @@ def fig9(results, out):
         v = b[b.method == m].set_index("k").reindex(ks)[col].values
         return v[~np.isnan(v)]
 
-    save(fig, out, "Figure_9.pdf", "Fig. 9. Pooled lower bound of AUROC(panel_k) - AUROC(B0)", "E1; minimum sufficient budget; non-inferiority",
+    save(fig, out, FIG["kstar"][0], FIG["kstar"][1] + ". Pooled lower bound of AUROC(panel_k) - AUROC(B0)", "E1; minimum sufficient budget; non-inferiority",
          ["e1_kstar_pooled_by_k.csv"], lambda f: lines_check(f, lookup))
 
 
-# ------------------------------------------------------------------ Fig. 10 (E1b)
-def fig10(results, out):
+# ------------------------------------------------------------------ E1b: few-shot learning curves (Fig. 8)
+def fig_e1b(results, out):
     b = rd(results, "e1b_learning_curves.csv")
     b["n_t"] = b["n_t"].astype(str)
     levels = ["5", "10", "20", "40", "pool"]
@@ -634,16 +652,16 @@ def fig10(results, out):
         v = b[(b.cohort == c) & (b.method == m) & (b.k == k)].set_index("n_t").reindex(levels).auroc_mean.values
         return v[~np.isnan(v)]
 
-    save(fig, out, "Figure_10.pdf", "Fig. 10. E1b: few-shot learning curves at k = 10", "E1b; few-shot; learning curve",
+    save(fig, out, FIG["e1b"][0], FIG["e1b"][1] + ". E1b: few-shot learning curves at k = 10", "E1b; few-shot; learning curve",
          ["e1b_learning_curves.csv"], lambda f: lines_check(f, lookup))
 
 
-# ------------------------------------------------------------------ Fig. 11 (E7)
+# ------------------------------------------------------------------ E7: transfer strategies (Fig. 9)
 B1_STYLE = {"positive transfer": "flag", "negative transfer": "flag", "practically equivalent": "equiv",
             "inconclusive": None}
 
 
-def fig11(results, out, b1=None):
+def fig_e7(results, out, b1=None):
     strategies = [("pooled", "pooled"), ("select_on_source", "select-on-source"), ("source_only", "source-only")]
     ks = [2, 3, 4, 5, 10]
     nts = [5, 10, 20]
@@ -656,7 +674,7 @@ def fig11(results, out, b1=None):
         e["style"] = e.label.map(B1_STYLE)
         src_name = "b1_e7_split_labels.csv"
         sources = ["B1_tables/b1_e7_split_labels.csv (mean_delta, label; 20 splits)"]
-        title = "Fig. 11. E7 (20 splits): transfer strategies against target-only L1-LR"
+        title = FIG["e7"][1] + ". E7 (20 splits): transfer strategies against target-only L1-LR"
         cb_label = "mean ΔAUROC over 20 splits = strategy − target-only (colour clipped at ±0.10)"
         handles = [Patch(facecolor="white", edgecolor=INK, linewidth=1.2, label="positive or\nnegative transfer"),
                    Patch(facecolor="white", edgecolor=INK, linewidth=1.0, linestyle=(0, (2, 1.5)),
@@ -666,7 +684,7 @@ def fig11(results, out, b1=None):
         e["style"] = [("flag" if (bool(p) or bool(n)) else None) for p, n in zip(e.positive_transfer, e.negative_transfer)]
         src_name = "e7_transfer_table.csv"
         sources = ["e7_transfer_table.csv"]
-        title = "Fig. 11. E7: transfer strategies against target-only L1-LR"
+        title = FIG["e7"][1] + ". E7 (five splits): transfer strategies against target-only L1-LR"
         cb_label = "ΔAUROC = strategy − target-only (colour clipped at ±0.10)"
         handles = [Patch(facecolor="white", edgecolor=INK, linewidth=1.2, label="flagged cell")]
     fig = new_fig(4.15)
@@ -747,11 +765,11 @@ def fig11(results, out, b1=None):
             probs.append("outlined cells differ from %s: %d drawn, %d in the table" % (src_name, len(drawn), len(want)))
         return probs
 
-    save(fig, out, "Figure_11.pdf", title, "E7; transfer learning; few-shot", sources, data_check)
+    save(fig, out, FIG["e7"][0], title, "E7; transfer learning; few-shot", sources, data_check)
 
 
-# ------------------------------------------------------------------ Fig. 12 (E6)
-def fig12(results, out):
+# ------------------------------------------------------------------ E6: AUROC, stability and cost (Fig. 7)
+def fig_e6(results, out):
     t = rd(results, "e6_tradeoff.csv")
     t = t[(t.k == 10) & (~t.method.str.startswith("panel_")) & (t.method != "random_k")]
     cs = ["tcga_luad_lusc_primary_tumor", "gse37745"]
@@ -800,10 +818,10 @@ def fig12(results, out):
         offs = [ax.collections for ax in f.axes]
         npts = sum(len(cl) for cl in offs)
         if npts != len(plotted):
-            probs.append("Fig. 12: %d markers, %d table rows" % (npts, len(plotted)))
+            probs.append("E6 figure: %d markers, %d table rows" % (npts, len(plotted)))
         return probs
 
-    save(fig, out, "Figure_12.pdf", "Fig. 12. E6: AUROC, stability and cost at k = 10", "E6; Pareto front; trade-off",
+    save(fig, out, FIG["e6"][0], FIG["e6"][1] + ". E6: AUROC, stability and cost at k = 10", "E6; Pareto front; trade-off",
          ["e6_tradeoff.csv"], data_check)
 
 
@@ -812,14 +830,16 @@ def main(argv=None):
     ap.add_argument("--results", required=True)
     ap.add_argument("--e3", required=True)
     ap.add_argument("--out", required=True)
-    ap.add_argument("--only", nargs="*", type=int, help="figure numbers, e.g. --only 8 12")
-    ap.add_argument("--b1", help="B1_tables folder: draw Fig. 11 from b1_e7_split_labels.csv (after O49)")
+    ap.add_argument("--only", nargs="*", choices=sorted(FIG), help="figures to draw, e.g. --only e7 kstar (default: all)")
+    ap.add_argument("--b1", help="B1_tables folder: draw the E7 figure from b1_e7_split_labels.csv (20 splits, QD226)")
     a = ap.parse_args(argv)
     os.makedirs(a.out, exist_ok=True)
-    jobs = {5: lambda: fig5(a.e3, a.out), 6: lambda: fig6(a.results, a.out), 7: lambda: fig7(a.results, a.out),
-            8: lambda: fig8(a.results, a.out), 9: lambda: fig9(a.results, a.out), 10: lambda: fig10(a.results, a.out),
-            11: lambda: fig11(a.results, a.out, a.b1), 12: lambda: fig12(a.results, a.out)}
-    for k in sorted(jobs):
+    jobs = {"e3": lambda: fig_e3(a.e3, a.out), "e4": lambda: fig_e4(a.results, a.out), "e5": lambda: fig_e5(a.results, a.out),
+            "e1": lambda: fig_e1(a.results, a.out), "kstar": lambda: fig_kstar(a.results, a.out), "e1b": lambda: fig_e1b(a.results, a.out),
+            "e7": lambda: fig_e7(a.results, a.out, a.b1), "e6": lambda: fig_e6(a.results, a.out)}
+    if not a.b1:
+        print("NOTE: without --b1 the E7 figure shows the five-split flags, not the version of the manuscript")
+    for k in ("e1", "e4", "e6", "e1b", "e7", "kstar", "e3", "e5"):
         if a.only and k not in a.only:
             continue
         jobs[k]()

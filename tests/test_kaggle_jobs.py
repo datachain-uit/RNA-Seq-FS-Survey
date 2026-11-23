@@ -93,7 +93,7 @@ def test_merge_e2e3(tmp_path, monkeypatch):
     assert not (out / "e3_wrapper_evals.csv").exists()                                                   # tệp rỗng bị bỏ qua, không lỗi
     e3 = pd.read_csv(out / "e3_scaling_n.csv")
     assert e3.method.tolist() == ["f_test", "l1_lr", "relieff"] and set(e3.session) == {"E2_E3_p1", "E2_E3_p2", "E2_E3_p3"}
-    cfg = json.loads((out / "config.json").read_text())
+    cfg = json.loads((out / "config.json").read_text(encoding="utf-8"))
     assert cfg["sources_commit_hash"] == "abc" and cfg["calibration_ok"] is True and "commit_hash" in cfg   # stamp bằng provenance
     assert (out / "machine_config.json").exists()
     (root / "E2_E3_p2" / "config.json").write_text(json.dumps({"traceable": True, "calibration_ok": False, "commit_hash": "abc", **new_fields}))

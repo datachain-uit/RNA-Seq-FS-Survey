@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
-make_figures_dmkd2.py -- Figures 8, 11 and 12 of the revised manuscript (tag survey-v3-dmkd.2; QĐ178, minor
-comment 24 of the referee report: Figures 8, 11, 12 hard to read).
+make_figures_dmkd2.py -- the figures of E1, E7 and E6 with lettering of at least 8 pt at a print width of 174 mm
+(tag survey-v3-dmkd.2; QĐ178).  Earlier layout, superseded by make_figures_dmkd.py; the file names follow the
+numbering of that tag.
 
 * Figure_8.pdf  (E1, AUROC against k) and Figure_12.pdf (E6, AUROC / stability / cost at k = 10) are drawn by the
   SAME functions of make_figures.py from the SAME official tables (results/survey_v2/tables, commit e15fb7c):
@@ -11,7 +12,7 @@ comment 24 of the referee report: Figures 8, 11, 12 hard to read).
 * Figure_11.pdf is redrawn from the split-level labels of B1 (results/survey_v2/B1_tables/b1_e7_split_labels.csv,
   20 splits; QĐ175): cell = mean over splits of Δ = strategy − target-only (split value = mean of the 4 subsets),
   mark = label of the reading rule fixed on 12/11 (+ positive transfer, − negative transfer, ≈ practically
-  equivalent, none = inconclusive). It replaces the descriptive 5-split flags of the submitted Fig. 11.
+  equivalent, none = inconclusive). It replaces the descriptive 5-split flags of e7_transfer_table.csv.
 
 Usage:
     python paper_scripts/make_figures_dmkd2.py --results results/survey_v2/tables \

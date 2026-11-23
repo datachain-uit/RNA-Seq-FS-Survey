@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 r"""
 make_supplementary_tables.py -- tables of the sensitivity analyses SA1-SA4, of the second task E8 and of the
-re-analyses of the stored results (18/11/2026, QD208-QD214; QD173 items 1-5, QD198-QD201).
+re-analyses of the stored results (18/11/2026, QD208-QD214; QD173 items 1-5, QD198-QD201), and tables of E7 over
+20 test/pool splits, of the two transfer methods with a model of the source and of n_T* over 20 splits
+(21/11/2026, QD226, QD227, QD236-QD238; item 6 of QD173).
 
 The script reads result tables only; it runs no experiment.  Every table file that it writes names its input file(s)
 and columns in its first comment lines, and every derived number used in the running text is written to
-Tables/numbers_supplement.json (logged in working/03_claims.md, Section W).
+Tables/numbers_supplement.json (logged in working/03_claims.md, Sections W and X).
 
 Inputs (parameters, so that the script can be run from a checkout of the code repository as well):
   --official  tables of the main benchmark, label [v03-11] (e1_summary.csv, e1_tests_vs_random_b0.csv,
@@ -16,6 +18,11 @@ Inputs (parameters, so that the script can be run from a checkout of the code re
               default: input/results/_received_2026-11-16/tables_survey-v3-dmkd.2
   --k2        gene-level evidence of the two-gene zero-shot rule (e7_k2_gene_directions.csv)
               default: input/results/_received_2026-11-09/E7_k2_evidence
+  --b1        tables of the 20-split runs, branch dmkd-revision at commit 61f6252 (folders B1_tables, B1_E7_20, B6_tables;
+              in the repository: results/survey_v2)
+              default: input/results/_received_2026-11-19/tables_dmkd-revision_61f6252
+  --derived   optional: the advisor's derived numbers of 19/11/2026, used for cross-checks only (skipped when absent)
+              default: input/results/_received_2026-11-19/derived
   --out       folder of the table files            default: paper/Springer/Tables
 
 Names used in the paper (the repository keeps the folder names of the right-hand column):
@@ -24,21 +31,36 @@ Names used in the paper (the repository keeps the folder names of the right-hand
   SA3  k-TSP pairs classified by the voting rule of the pairs                       B2_tables
   SA4  two variants of the zero-shot strategy                                       B3_tables
   E8   second task: EGFR mutation in lung adenocarcinoma                            B7_gate, B7_tables
+  E7 over 20 test/pool splits, n_T* over 20 splits (no separate name in the paper)  B1_tables, B1_E7_20
+  ptLasso and Trans-GLM in E7 (no separate name in the paper)                       B6_tables
 
-Tables written
-  article      tab_sens_reference.tex (SA1), tab_zeroshot_k2.tex (two-gene rule and SA4 at k = 2), tab_e8.tex (E8 at k = 10)
-  supplement   tab_app_e1_<cohort>.tex (Tables S2-S6, now with the marks of the corrected tests),
-               tab_app_e1_{bacc,mcc,logloss,brier}.tex, tab_app_e1b_secondary.tex, tab_app_e1b_stability.tex,
-               tab_app_ablation_full.tex, tab_app_kstar_sens.tex, tab_app_sig10.tex, tab_app_sig10_fewshot.tex,
-               tab_app_ktsp_vote.tex, tab_app_ktsp_vote_fewshot.tex, tab_app_zeroshot.tex, tab_app_e8_tcga.tex,
-               tab_app_e8_gse31210.tex, tab_app_e8_rank.tex, tab_app_e8_secondary.tex
+Tables written (numbers of the manuscript of 21/11/2026 in working/05_decisions_and_design.md, Section 64)
+  article      tab_e7_20splits.tex (E7 at k = 10 with the labels over 20 splits), tab_e8.tex (E8 at k = 10)
+  supplement   tab_app_e1_<cohort>.tex (AUROC at every budget with the marks of the corrected tests),
+               tab_app_e1_{bacc,mcc,logloss,brier}.tex, tab_app_e1b_secondary.tex and tab_app_e1b_stability.tex (two
+               landscape tables of two cohorts in each file, labels tab:app_e1b_secondary[_b], tab:app_e1b_stability[_b]),
+               tab_app_ablation_full.tex, tab_app_kstar_sens.tex, tab_app_sens_reference.tex (SA1), tab_app_sig10.tex,
+               tab_app_sig10_fewshot.tex, tab_app_ktsp_vote.tex, tab_app_ktsp_vote_fewshot.tex, tab_app_zeroshot.tex,
+               tab_app_zeroshot_k2.tex (two-gene rule and SA4 at k = 2), tab_app_e8_tcga.tex, tab_app_e8_gse31210.tex,
+               tab_app_e8_rank.tex, tab_app_e8_secondary.tex, tab_app_e7_20splits.tex (every cell of E7 over 20 splits,
+               with the five-split difference), tab_app_b6.tex, tab_app_b6_naive.tex, tab_app_nt_star.tex
+  Until 20/11/2026 tab_sens_reference.tex and tab_zeroshot_k2.tex were tables of the article; the five-split tables
+  tab_e7.tex and tab_app_e7.tex of make_tables.py are no longer used by the manuscript (QD226).
+  Layout of 21/11/2026 (QD241): no table of the supplementary file is printed below 6.9 pt.  Landscape: tab_app_e7_20splits,
+  tab_app_b6_naive, tab_app_zeroshot, tab_app_sig10 (interval beneath the difference), the two parts of tab_app_e1b_secondary
+  and of tab_app_e1b_stability.  The values of every table are unchanged.
 
 Checks made while writing
-  * Tables S2-S6: with the marks removed, every cell equals the cell of the table file that was in place before
-    (same mean and SD), so only the marks are new.
+  * tab_app_e1_<cohort>.tex (Tables S5-S9 of Online Resource 1 since 21/11/2026): with the marks removed, every cell
+    equals the cell of the table file that was in place before (same mean and SD), so only the marks are new.
   * k* re-analysis: the pooled differences, standard errors and bounds recomputed from the per-cohort tests
     (e1_tests_vs_random_b0.csv) equal the stored values of e1_kstar_pooled_by_k.csv to 1e-9 in all 92 rows, and the
     fixed-sequence rule applied to the stored bounds returns the stored k* of e1_kstar_pooled.csv for every method.
+  * Transfer labels: the label of each of the 165 + 110 cells follows from its stored Holm p-value, mean difference
+    and bootstrap interval by the rule fixed on 12/11/2026; the equality gates of the 20-split runs passed with a
+    maximum difference of 0; no cell of pooled or select-on-source is labelled negative transfer; in every cell
+    labelled positive or negative transfer, the five-split difference has the same sign.
+  * n_T*: the rule applied to the five-split table returns its stored n_t_star in every cell.
 
 Usage (from the project root or from paper/Springer/):  python3 paper/Springer/Scripts/make_supplementary_tables.py
 """
@@ -132,7 +154,8 @@ def family_rows(methods, row):
 
 
 # ---------------------------------------------------------------------------------------------------------------
-#  1. Tables S2-S6 with the marks of the corrected tests (QD173, item 4)
+#  1. AUROC at every budget, one table per cohort, with the marks of the corrected tests (QD173, item 4);
+#     Tables S5-S9 of Online Resource 1 since 21/11/2026 (Tables S2-S6 until 20/11/2026)
 # ---------------------------------------------------------------------------------------------------------------
 def tables_e1_marks(official, out):
     summ = {(r["cohort"], r["method"], r["k"]): r for r in rd(os.path.join(official, "e1_summary.csv"))
@@ -193,13 +216,15 @@ def tables_e1_marks(official, out):
                     below_b0 += 1
                 else:
                     above_b0 += 1
-        # 18/11/2026 (repository copy): the table files of make_tables.py use table* and have no \tablenote; the note is
-        # then empty and only the marks are explained.  Cells and numbers are unchanged.
+        # 18/11/2026 (repository copy, commit ae10367): the table files of make_tables.py use table* and have no \tablenote;
+        # the note is then empty and only the marks are explained.  Cells and numbers are unchanged.
         m_note = re.search(r"\\tablenote\{(.*)\}\s*\\end\{(?:sidewaystable|table)\*\}", old, re.S)
         note_old = m_note.group(1) if m_note else ""
         note = note_old.rstrip()
         if not note:
             note = "Cells: mean $\\pm$ SD of AUROC (LR-L2) over the 5 $\\times$ 5 patient-level cross-validation."
+        # 21/11/2026 (QD240): the missing panel genes are listed in the supplementary file itself (Section S3.1)
+        note = note.replace("is given in Section~4 of the article", "is given in Section~\\ref{sup:design_data}")
         if "$\\dagger$" not in note:
             note += (" $\\dagger$: above random-$k$ of the same size after Holm correction (one-sided Nadeau--Bengio test,"
                      " family = method $\\times$ its budgets); $\\ddagger$: differs from B0 after Holm correction (two-sided)."
@@ -295,68 +320,91 @@ LEVELS = ["5", "10", "20", "40", "pool"]
 
 
 def tables_e1b(official, out):
+    """E1b at k = 10: secondary metrics and Nogueira index at every target size.
+    21/11/2026 (QD241): each table is printed as two landscape tables of two cohorts, so that the body is set at 8 pt or more
+    (one upright table of the four cohorts was scaled to 5.6 and 6.1 pt)."""
     lc = {(r["cohort"], r["method"], r["k"], r["n_t"]): r for r in rd(os.path.join(official, "e1b_learning_curves.csv"))}
     methods = NONWRAPPER + ["random_k"]
-    lines = []
-    for ci, c in enumerate(GEO):
-        if ci:
-            lines.append("\\midrule")
-        first = True
-        for m in methods:
-            if not any((c, m, "10", lv) in lc for lv in LEVELS):
-                continue
-            cells = []
-            for key in ("bacc_mean", "logloss_mean", "brier_mean"):
-                for lv in LEVELS:
-                    r = lc.get((c, m, "10", lv))
-                    cells.append(f3(r[key]) if r is not None and r[key] != "" else "--")
-            lines.append("%s & %s & %s \\\\" % (CNAME[c] if first else "", NAME[m], " & ".join(cells)))
-            first = False
+    pairs = [GEO[:2], GEO[2:]]
+
+    def pair_name(pair):
+        return "%s and %s" % (CNAME[pair[0]], CNAME[pair[1]])
+
+    def secondary_rows(pair):
+        lines = []
+        for ci, c in enumerate(pair):
+            if ci:
+                lines.append("\\midrule")
+            first = True
+            for m in methods:
+                if not any((c, m, "10", lv) in lc for lv in LEVELS):
+                    continue
+                cells = []
+                for key in ("bacc_mean", "logloss_mean", "brier_mean"):
+                    for lv in LEVELS:
+                        r = lc.get((c, m, "10", lv))
+                        cells.append(f3(r[key]) if r is not None and r[key] != "" else "--")
+                lines.append("%s & %s & %s \\\\" % (CNAME[c] if first else "", NAME[m], " & ".join(cells)))
+                first = False
+        return lines
+
     head = " & ".join("$%s$" % ("n_T{=}" + lv) if lv != "pool" else "pool" for lv in LEVELS)
     text = ("% source: e1b_learning_curves.csv (bacc_mean, logloss_mean, brier_mean at k = 10 for every n_t level; the file stores no MCC and no SD of these metrics)\n"
             "% generated by Scripts/make_supplementary_tables.py from tables_official_2026-11-03 (label [v03-11]); do not edit by hand.\n"
-            "% 18/11/2026 (QD173 item 1, QD209).  Table of Online Resource 1 (ESM_1.tex).\n"
-            "\\begin{table*}[p]\n\\centering\n\\scriptsize\n\\caption{E1b: balanced accuracy, log-loss and Brier score at $k = 10$}\n\\label{tab:app_e1b_secondary}\n"
-            "\\setlength{\\tabcolsep}{2.5pt}\n\\renewcommand{\\arraystretch}{1.05}\n"
-            "\\begin{adjustbox}{max width=\\textwidth,max totalheight=0.9\\textheight}\n"
-            "\\begin{tabular}{ll" + "ccccc" * 3 + "}\n\\toprule\n"
-            " & & \\multicolumn{5}{c}{\\textbf{Balanced accuracy}} & \\multicolumn{5}{c}{\\textbf{Log-loss}} & \\multicolumn{5}{c}{\\textbf{Brier score}} \\\\\n"
-            "\\cmidrule(lr){3-7}\\cmidrule(lr){8-12}\\cmidrule(lr){13-17}\n"
-            "\\textbf{Cohort} & \\textbf{Method} & " + " & ".join([head] * 3) + " \\\\\n\\midrule\n")
-    text += "\n".join(lines) + ("\n\\bottomrule\n\\end{tabular}\n\\end{adjustbox}\n"
-                                "\\tablenote{Mean over the 20 runs of a cell (five splits, four nested subsets), by labelled target size $n_T$ per class."
-                                " ``--'' = level not available for the cohort. With $n_T \\le 10$ the classifier uses the fixed setting $C = 1$ and the threshold 0.5,"
-                                " so the balanced accuracy at these levels is not tuned. The stored summary of E1b holds the mean of these three metrics; it holds no MCC.}\n\\end{table*}\n")
+            "% 18/11/2026 (QD173 item 1, QD209); 21/11/2026 (QD241): two landscape tables.  Tables of Online Resource 1 (ESM_1.tex).\n")
+    for i, pair in enumerate(pairs):
+        label = "tab:app_e1b_secondary" + ("" if i == 0 else "_b")
+        note = ("Mean over the 20 runs of a cell (five splits, four nested subsets), by labelled target size $n_T$ per class."
+                " ``--'' = level not available for the cohort. With $n_T \\le 10$ the classifier uses the fixed setting $C = 1$ and the threshold 0.5,"
+                " so the balanced accuracy at these levels is not tuned. The stored summary of E1b holds the mean of these three metrics; it holds no MCC."
+                if i == 0 else "Continuation of Table~\\ref{tab:app_e1b_secondary}, with the same conventions.")
+        text += ("\\begin{sidewaystable*}\n\\centering\n\\scriptsize\n\\caption{E1b: balanced accuracy, log-loss and Brier score at $k = 10$ on %s}\n\\label{%s}\n"
+                 "\\setlength{\\tabcolsep}{3pt}\n\\renewcommand{\\arraystretch}{1.1}\n"
+                 "\\begin{adjustbox}{max width=\\linewidth,max totalheight=\\rotheight}\n"
+                 "\\begin{tabular}{ll" % (pair_name(pair), label) + "ccccc" * 3 + "}\n\\toprule\n"
+                 " & & \\multicolumn{5}{c}{\\textbf{Balanced accuracy}} & \\multicolumn{5}{c}{\\textbf{Log-loss}} & \\multicolumn{5}{c}{\\textbf{Brier score}} \\\\\n"
+                 "\\cmidrule(lr){3-7}\\cmidrule(lr){8-12}\\cmidrule(lr){13-17}\n"
+                 "\\textbf{Cohort} & \\textbf{Method} & " + " & ".join([head] * 3) + " \\\\\n\\midrule\n"
+                 + "\n".join(secondary_rows(pair)) + "\n\\bottomrule\n\\end{tabular}\n\\end{adjustbox}\n"
+                 "\\tablenote{" + note + "}\n\\end{sidewaystable*}\n")
     write(out, "tab_app_e1b_secondary.tex", text)
 
     stab = {(r["cohort"], r["method"], r["k"], r["n_t"]): r for r in rd(os.path.join(official, "e1b_stability.csv"))}
-    lines = []
-    for ci, c in enumerate(GEO):
-        if ci:
-            lines.append("\\midrule")
-        first = True
-        for m in NONWRAPPER:
-            cells = []
-            for lv in LEVELS:
-                r = stab.get((c, m, "10", lv))
-                if r is None or r["nogueira"] == "":
-                    cells.append("--")
-                else:
-                    cells.append("%s [%s; %s]" % (f3(r["nogueira"]), f3(r["nogueira_ci_low"]), f3(r["nogueira_ci_high"])))
-            lines.append("%s & %s & %s \\\\" % (CNAME[c] if first else "", NAME[m], " & ".join(cells)))
-            first = False
+
+    def stability_rows(pair):
+        lines = []
+        for ci, c in enumerate(pair):
+            if ci:
+                lines.append("\\midrule")
+            first = True
+            for m in NONWRAPPER:
+                cells = []
+                for lv in LEVELS:
+                    r = stab.get((c, m, "10", lv))
+                    if r is None or r["nogueira"] == "":
+                        cells.append("--")
+                    else:
+                        cells.append("%s [%s; %s]" % (f3(r["nogueira"]), f3(r["nogueira_ci_low"]), f3(r["nogueira_ci_high"])))
+                lines.append("%s & %s & %s \\\\" % (CNAME[c] if first else "", NAME[m], " & ".join(cells)))
+                first = False
+        return lines
+
     text = ("% source: e1b_stability.csv (nogueira, nogueira_ci_low, nogueira_ci_high at k = 10 for every n_t level)\n"
             "% generated by Scripts/make_supplementary_tables.py from tables_official_2026-11-03 (label [v03-11]); do not edit by hand.\n"
-            "% 18/11/2026 (QD173 item 2, QD209).  Table of Online Resource 1 (ESM_1.tex).\n"
-            "\\begin{table*}[p]\n\\centering\n\\scriptsize\n\\caption{E1b: Nogueira index of the few-shot panels at $k = 10$}\n\\label{tab:app_e1b_stability}\n"
-            "\\setlength{\\tabcolsep}{3pt}\n\\renewcommand{\\arraystretch}{1.05}\n"
-            "\\begin{adjustbox}{max width=\\textwidth,max totalheight=0.9\\textheight}\n"
-            "\\begin{tabular}{llccccc}\n\\toprule\n"
-            "\\textbf{Cohort} & \\textbf{Method} & $n_T = 5$ & $n_T = 10$ & $n_T = 20$ & $n_T = 40$ & pool \\\\\n\\midrule\n")
-    text += "\n".join(lines) + ("\n\\bottomrule\n\\end{tabular}\n\\end{adjustbox}\n"
-                                "\\tablenote{Nogueira index $\\hat{\\Phi}$ over the 20 panels of a cell (five splits, four nested subsets), with its asymptotic interval in brackets."
-                                " The interval is descriptive, because the nested subsets of one split overlap (at the pool level the four subsets of a split are the same patients)."
-                                " ``--'' = level not available for the cohort.}\n\\end{table*}\n")
+            "% 18/11/2026 (QD173 item 2, QD209); 21/11/2026 (QD241): two landscape tables.  Tables of Online Resource 1 (ESM_1.tex).\n")
+    for i, pair in enumerate(pairs):
+        label = "tab:app_e1b_stability" + ("" if i == 0 else "_b")
+        note = ("Nogueira index $\\hat{\\Phi}$ over the 20 panels of a cell (five splits, four nested subsets), with its asymptotic interval in brackets."
+                " The interval is descriptive, because the nested subsets of one split overlap (at the pool level the four subsets of a split are the same patients)."
+                " ``--'' = level not available for the cohort."
+                if i == 0 else "Continuation of Table~\\ref{tab:app_e1b_stability}, with the same conventions.")
+        text += ("\\begin{sidewaystable*}\n\\centering\n\\scriptsize\n\\caption{E1b: Nogueira index of the few-shot panels at $k = 10$ on %s}\n\\label{%s}\n"
+                 "\\setlength{\\tabcolsep}{4pt}\n\\renewcommand{\\arraystretch}{1.1}\n"
+                 "\\begin{adjustbox}{max width=\\linewidth,max totalheight=\\rotheight}\n"
+                 "\\begin{tabular}{llccccc}\n\\toprule\n"
+                 "\\textbf{Cohort} & \\textbf{Method} & $n_T = 5$ & $n_T = 10$ & $n_T = 20$ & $n_T = 40$ & pool \\\\\n\\midrule\n" % (pair_name(pair), label)
+                 + "\n".join(stability_rows(pair)) + "\n\\bottomrule\n\\end{tabular}\n\\end{adjustbox}\n"
+                 "\\tablenote{" + note + "}\n\\end{sidewaystable*}\n")
     write(out, "tab_app_e1b_stability.tex", text)
     for c in GEO:
         v5 = [float(stab[(c, m, "10", "5")]["nogueira"]) for m in NONWRAPPER]
@@ -574,8 +622,8 @@ def table_sa1(extra, official, out):
             b.append("%s & %s & %s & %s & %s & %s \\\\" % (fam if i == 0 else "", NAME[m], kk(r["k_star_ivw_b0"]), kk(r["k_star_both_b0"]),
                                                              kk(r["k_star_ivw_b0_p5000_wide"]), kk(r["k_star_both_b0_p5000_wide"])))
     text = ("% source: B4_tables/b4_b0_variants.csv (auroc_mean, auroc_sd by cohort and variant), B4_tables/b4_kstar_sensitivity.csv (k_star_ivw_b0, k_star_both_b0, k_star_ivw_b0_p5000_wide, k_star_both_b0_p5000_wide), B4_tables/b4_gate_b0.csv (the rerun of B0 equals the published folds, max_abs_diff_auroc = 0), tag survey-v3-dmkd.2\n"
-            "% generated by Scripts/make_supplementary_tables.py; do not edit by hand.  18/11/2026 (QD198, QD200, QD208).\n"
-            "\\begin{table*}[tp]\n\\centering\n\\scriptsize\n\\caption{SA1: the reference model under a wider grid of $C$ and on the pre-filtered genes, and the resulting $k^{*}$}\n\\label{tab:sens_reference}\n"
+            "% generated by Scripts/make_supplementary_tables.py; do not edit by hand.  18/11/2026 (QD198, QD200, QD208).  Table of Online Resource 1 since 21/11/2026 (QD240; until then tab_sens_reference.tex, a table of the article).\n"
+            "\\begin{table*}[tp]\n\\centering\n\\scriptsize\n\\caption{SA1: the reference model under a wider grid of $C$ and on the pre-filtered genes, and the resulting $k^{*}$}\n\\label{tab:app_sens_reference}\n"
             "\\setlength{\\tabcolsep}{3.5pt}\n\\renewcommand{\\arraystretch}{1.12}\n"
             "\\begin{adjustbox}{max width=\\textwidth}\n"
             "\\begin{tabular}{lcccc}\n\\toprule\n"
@@ -591,9 +639,9 @@ def table_sa1(extra, official, out):
             "\\cmidrule(lr){3-4}\\cmidrule(lr){5-6}\n"
             "\\textbf{Family} & \\textbf{Method} & $\\boldsymbol{k^{*}_{\\mathrm{IVW}}}$ & $\\boldsymbol{k^{*}_{\\mathrm{both}}}$ & $\\boldsymbol{k^{*}_{\\mathrm{IVW}}}$ & $\\boldsymbol{k^{*}_{\\mathrm{both}}}$ \\\\\n\\midrule\n"
             + "\n".join(b) + "\n\\bottomrule\n\\end{tabular}\n\\end{adjustbox}\n"
-            "\\tablenote{(a) Mean $\\pm$ SD over the 25 folds of E1. All variants are LR-L2 with $C$ chosen by three-fold internal cross-validation; the wide grid adds $10^{-4}$ and $10^{-3}$, and the pre-filtered variants use the 5,000 genes with the largest variance on the training patients. The first column is B0 as used in every other table. (b) $k^{*}$ as in Table~\\ref{tab:kstar}, with B0 replaced by the variant that has the highest mean AUROC on the three GPL570 cohorts; ``--'' = no tested budget satisfies the bound.}\n"
+            "\\tablenote{(a) Mean $\\pm$ SD over the 25 folds of E1. All variants are LR-L2 with $C$ chosen by three-fold internal cross-validation; the wide grid adds $10^{-4}$ and $10^{-3}$, and the pre-filtered variants use the 5,000 genes with the largest variance on the training patients. The first column is B0 as used in every other table. (b) $k^{*}$ as in Table~\\artnum{tab:kstar} of the article, with B0 replaced by the variant that has the highest mean AUROC on the three GPL570 cohorts; ``--'' = no tested budget satisfies the bound.}\n"
             "\\end{table*}\n")
-    write(out, "tab_sens_reference.tex", text)
+    write(out, "tab_app_sens_reference.tex", text)
     NUMBERS["sa1_b0_variants"] = {CNAME[c]: {v: round(float(var[(c, v)]["auroc_mean"]), 4) for v, _, _, _ in VARIANTS} for c in COHORTS}
     NUMBERS["sa1_max_abs_shift_other_cohorts"] = round(max(abs(float(var[(c, v)]["auroc_mean"]) - float(var[(c, "b0")]["auroc_mean"]))
                                                            for c in COHORTS if c != "gse42127" for v, _, _, _ in VARIANTS), 4)
@@ -632,7 +680,7 @@ def tables_sa2(extra, out):
     lines.append(" & IHC-4 & %s \\\\" % " & ".join(f3(comp[(s0, c, "ihc_4")]["auroc_reference"]) for c in COHORTS))
     lines.append(" & B0 & %s \\\\" % " & ".join(f3(comp[(s0, c, "b0")]["auroc_reference"]) for c in COHORTS))
     lines.append("\\midrule")
-    lines.append("\\multicolumn{7}{l}{\\textit{(b) Difference, signature minus reference, with its 95\\% interval}} \\\\")
+    lines.append("\\multicolumn{7}{l}{\\textit{(b) Difference, signature minus reference, with its 95\\% interval beneath}} \\\\")
     sig_cells = []
     for s, label in SIG:
         for j, (ref, rl) in enumerate((("best_selector_k10", "best selector at $k = 10$"), ("ihc_4", "IHC-4"), ("b0", "B0"))):
@@ -642,7 +690,8 @@ def tables_sa2(extra, out):
                 star = "$^{*}$" if float(r["p_holm"]) < 0.05 else ""
                 if star:
                     sig_cells.append((s, CNAME[c], ref, round(float(r["diff"]), 4), round(float(r["p_holm"]), 4)))
-                cells.append("$%+.3f$ [$%+.3f$; $%+.3f$]%s" % (float(r["diff"]), float(r["ci_low"]), float(r["ci_high"]), star))
+                # 21/11/2026 (QD241): the interval stands beneath the difference, so that the table is set at 8 pt (one line: 6.3 pt)
+                cells.append("\\begin{tabular}[c]{@{}c@{}}$%+.3f$%s\\\\{}[$%+.3f$; $%+.3f$]\\end{tabular}" % (float(r["diff"]), star, float(r["ci_low"]), float(r["ci_high"])))
             lines.append("%s & minus %s & %s \\\\" % (label if j == 0 else "", rl, " & ".join(cells)))
     text = ("% source: B5_tables/b5_comparisons.csv (auroc_signature, auroc_reference, reference_method, diff, ci_low, ci_high, p_holm), tag survey-v3-dmkd.2\n"
             "% generated by Scripts/make_supplementary_tables.py; do not edit by hand.  18/11/2026 (QD198, QD208).  Table of Online Resource 1 (ESM_1.tex).\n"
@@ -740,7 +789,7 @@ def tables_sa3(extra, out):
     text = ("% source: B2_tables/b2_e1b_delta.csv and B2_tables/b2_e7_delta.csv (strategy = select_on_source): auroc_vote, delta_mean; 20 runs per cell, tag survey-v3-dmkd.2\n"
             "% generated by Scripts/make_supplementary_tables.py; do not edit by hand.  18/11/2026 (QD198, QD208).  Table of Online Resource 1 (ESM_1.tex).\n"
             "\\begin{table*}[tp]\n\\centering\n\\scriptsize\n\\caption{SA3 in the few-shot regime: AUROC of the voting rule and its difference to LR-L2 on the same pairs}\n\\label{tab:app_ktsp_vote_fewshot}\n"
-            "\\setlength{\\tabcolsep}{4pt}\n\\renewcommand{\\arraystretch}{1.1}\n"
+            "\\setlength{\\tabcolsep}{2.5pt}\n\\renewcommand{\\arraystretch}{1.1}\n"
             "\\begin{adjustbox}{max width=\\textwidth}\n"
             "\\begin{tabular}{llcccccc}\n\\toprule\n"
             " & & \\multicolumn{3}{c}{\\textbf{Target-only (E1b)}} & \\multicolumn{3}{c}{\\textbf{Select-on-source (E7)}} \\\\\n"
@@ -785,14 +834,14 @@ def tables_sa4(extra, k2dir, out):
             lines.append("%s & %s & %s \\\\" % (CNAME[c] if i == 0 else "", lab, " & ".join(pm(zt[(c, v, k)]["auroc_mean"], zt[(c, v, k)]["auroc_sd"]) for k in ks)))
     text = ("% source: B3_tables/b3_zero_shot_table.csv (auroc_mean, auroc_sd by cohort, variant and k; five test sets), B3_tables/b3_gate_e7_source_only.csv (the reference rows equal the published E7 values), tag survey-v3-dmkd.2\n"
             "% generated by Scripts/make_supplementary_tables.py; do not edit by hand.  18/11/2026 (QD198, QD208).  Table of Online Resource 1 (ESM_1.tex).\n"
-            "\\begin{table*}[tp]\n\\centering\n\\scriptsize\n\\caption{SA4: AUROC of the zero-shot strategy and of its two variants}\n\\label{tab:app_zeroshot}\n"
+            "\\begin{sidewaystable*}\n\\centering\n\\scriptsize\n\\caption{SA4: AUROC of the zero-shot strategy and of its two variants}\n\\label{tab:app_zeroshot}\n"
             "\\setlength{\\tabcolsep}{4pt}\n\\renewcommand{\\arraystretch}{1.1}\n"
-            "\\begin{adjustbox}{max width=\\textwidth}\n"
+            "\\begin{adjustbox}{max width=\\linewidth,max totalheight=\\rotheight}\n"
             "\\begin{tabular}{llccccc}\n\\toprule\n"
             "\\textbf{Cohort} & \\textbf{Variant} & $k = 2$ & $k = 3$ & $k = 4$ & $k = 5$ & $k = 10$ \\\\\n\\midrule\n"
             + "\n".join(lines) + "\n\\bottomrule\n\\end{tabular}\n\\end{adjustbox}\n"
             "\\tablenote{Mean $\\pm$ SD of the AUROC over the five test sets of a target cohort; no target label is used. Reference: genes selected with L1-LR on the source standardised per gene, classifier fitted on the within-sample normalisation $\\varphi$ of the panel. Variant (i): the genes are selected on the source after the within-sample standardisation, so that selection and classification use the same representation. Variant (ii): each panel gene is standardised on the source for training and on all samples of the target cohort, without their labels, for scoring.}\n"
-            "\\end{table*}\n")
+            "\\end{sidewaystable*}\n")
     write(out, "tab_app_zeroshot.tex", text)
     NUMBERS["sa4"] = {v: {CNAME[c]: {k: round(float(zt[(c, v, k)]["auroc_mean"]), 4) for k in ks} for c in GEO} for v, _ in ZVAR}
     NUMBERS["sa4_reversal_cells"] = {v: [(CNAME[c], k) for c in GEO for k in ks if float(zt[(c, v, k)]["auroc_mean"]) < 0.5] for v, _ in ZVAR}
@@ -812,8 +861,8 @@ def tables_sa4(extra, k2dir, out):
         if i == 0:
             lines.append("\\addlinespace[2pt]")
     text = ("% source: input/results/_received_2026-11-09/E7_k2_evidence/e7_k2_gene_directions.csv (shift = mean LUSC - mean LUAD of DSG3, KRT5 and of phi = DSG3 - KRT5; auroc_as_lusc_score of phi); B3_tables/b3_zero_shot_table.csv (auroc_mean at k = 2 of e7_phi, consistent_phi, target_gene_zscore), tag survey-v3-dmkd.2\n"
-            "% generated by Scripts/make_supplementary_tables.py; do not edit by hand.  18/11/2026 (QD174, QD198, QD211).\n"
-            "\\begin{table*}[tp]\n\\centering\n\\scriptsize\n\\caption{The two-gene zero-shot rule: class shifts of DSG3 and KRT5 and AUROC at $k = 2$}\n\\label{tab:zeroshot_k2}\n"
+            "% generated by Scripts/make_supplementary_tables.py; do not edit by hand.  18/11/2026 (QD174, QD198, QD211).  Table of Online Resource 1 since 21/11/2026 (QD240; until then tab_zeroshot_k2.tex, a table of the article).\n"
+            "\\begin{table*}[tp]\n\\centering\n\\scriptsize\n\\caption{The two-gene zero-shot rule: class shifts of DSG3 and KRT5 and AUROC at $k = 2$}\n\\label{tab:app_zeroshot_k2}\n"
             "\\setlength{\\tabcolsep}{4pt}\n\\renewcommand{\\arraystretch}{1.12}\n"
             "\\begin{adjustbox}{max width=\\textwidth}\n"
             "\\begin{tabular}{lccccccc}\n\\toprule\n"
@@ -821,9 +870,9 @@ def tables_sa4(extra, k2dir, out):
             "\\cmidrule(lr){2-4}\\cmidrule(lr){6-8}\n"
             "\\textbf{Cohort} & DSG3 & KRT5 & $\\varphi$ & \\textbf{as a LUSC score} & reference & variant (i) & variant (ii) \\\\\n\\midrule\n"
             + "\n".join(lines) + "\n\\bottomrule\n\\end{tabular}\n\\end{adjustbox}\n"
-            "\\tablenote{Shift = mean log-expression in LUSC minus mean in LUAD over all samples of the cohort; $\\varphi = x_{\\mathrm{DSG3}} - x_{\\mathrm{KRT5}}$. The fourth column is the AUROC obtained when $\\varphi$ itself is read as a score for LUSC, so a value below 0.5 means that $\\varphi$ is lower in LUSC. The source classifier gives $\\varphi$ a negative weight. Reference = zero-shot strategy of E7. Variants (i) and (ii) are those of SA4 (Section~\\ref{sec:sensitivity_protocol}); variant (i) selects its own two genes on the source, so its rule is not $\\varphi$ of the first columns.}\n"
+            "\\tablenote{Shift = mean log-expression in LUSC minus mean in LUAD over all samples of the cohort; $\\varphi = x_{\\mathrm{DSG3}} - x_{\\mathrm{KRT5}}$. The fourth column is the AUROC obtained when $\\varphi$ itself is read as a score for LUSC, so a value below 0.5 means that $\\varphi$ is lower in LUSC. The source classifier gives $\\varphi$ a negative weight. Reference = zero-shot strategy of E7. Variants (i) and (ii) are those of SA4 (Section~\\ref{sup:design_sensitivity}); variant (i) selects its own two genes on the source, so its rule is not $\\varphi$ of the first columns.}\n"
             "\\end{table*}\n")
-    write(out, "tab_zeroshot_k2.tex", text)
+    write(out, "tab_app_zeroshot_k2.tex", text)
     NUMBERS["k2_rule"] = {CNAME[c]: {"shift_DSG3": round(float(gd[(c, "DSG3")]["shift"]), 3), "shift_KRT5": round(float(gd[(c, "KRT5")]["shift"]), 3),
                                      "shift_phi": round(float(gd[(c, "phi_DSG3_minus_KRT5")]["shift"]), 3),
                                      "auroc_phi_as_lusc": round(float(gd[(c, "phi_DSG3_minus_KRT5")]["auroc_as_lusc_score"]), 4)} for c in COHORTS}
@@ -1009,11 +1058,394 @@ def tables_e8(extra, official, out):
     NUMBERS["e4_tcga_f0.7_k10"] = {m: round(v, 3) for m, v in zip(sel, s_h)}
 
 
+# ---------------------------------------------------------------------------------------------------------------
+#  11. E7 over 20 splits (repository folder B1), model-based transfer (B6) and n_T* over 20 splits
+#      21/11/2026 (QD226, QD227, QD236-QD238)
+# ---------------------------------------------------------------------------------------------------------------
+STRATEGIES = [("pooled", "pooled"), ("select_on_source", "select-on-source"), ("source_only", "source-only (zero-shot)")]
+MODELS = [("ptlasso", "ptLasso"), ("transglm", "Trans-GLM")]
+LABELS4 = ["positive transfer", "negative transfer", "practically equivalent", "inconclusive"]
+MARK = {"positive transfer": "+", "negative transfer": "-", "practically equivalent": "=", "inconclusive": ""}
+KS = ["2", "3", "4", "5", "10"]
+NTS = ["5", "10", "20"]
+TOP_LEVEL = {"gse10245": "10", "gse30219": "40", "gse37745": "40", "gse42127": "20"}
+MARK_NOTE = ("Superscripts give the label of a cell over the 20 splits: $+$ positive transfer and $-$ negative transfer "
+             "(two-sided Wilcoxon signed-rank test over the splits, Holm correction over the 55 cells of the strategy, corrected $p < 0.05$, "
+             "and a mean difference beyond $\\pm 0.01$), $=$ practically equivalent (95\\% bootstrap interval of the mean difference within $\\pm 0.01$); "
+             "a cell without superscript is inconclusive.")
+
+
+def dcell(v, label=None):
+    """Signed difference in math mode, with the mark of its label as a superscript."""
+    s = "%+.3f" % float(v)
+    m = MARK[label] if label else ""
+    return "$%s^{%s}$" % (s, m) if m else "$%s$" % s
+
+
+def counts4(rows):
+    return [sum(r["label"] == lab for r in rows) for lab in LABELS4]
+
+
+def tables_transfer20(b1dir, official, out, derived=None):
+    lab = rd(os.path.join(b1dir, "B1_tables", "b1_e7_split_labels.csv"))
+    b6 = rd(os.path.join(b1dir, "B6_tables", "b6_split_labels_vs_target_only.csv"))
+    naive = rd(os.path.join(b1dir, "B6_tables", "b6_delta_vs_naive.csv"))
+    degen = rd(os.path.join(b1dir, "B6_tables", "b6_degeneracy.csv"))
+    gates = rd(os.path.join(b1dir, "B1_tables", "b1_gates.csv"))
+    e7 = rd(os.path.join(official, "e7_transfer_table.csv"))
+    assert all(g["pass"] == "True" and float(g["max_abs_diff_auroc"]) == 0.0 for g in gates) and len(gates) == 8
+    assert len(lab) == 165 and len(b6) == 110 and len(naive) == 220 and len(degen) == 110 and len(e7) == 165
+    assert all(r["n_splits"] == "20" and r["reference"] == "target_only" for r in lab + b6)
+    L = {(r["strategy"], r["cohort"], r["n_t"], r["k"]): r for r in lab + b6}
+    N = {(r["strategy"], r["reference"], r["cohort"], r["n_t"], r["k"]): r for r in naive}
+    E5 = {(r["strategy"], r["cohort"], r["n_t"], r["k"]): r for r in e7}
+    cells = [(c, n, k) for c in GEO for n in NTS for k in KS if not (c == "gse10245" and n == "20")]
+    assert len(cells) == 55 and all((s, c, n, k) in L for s, _ in STRATEGIES + MODELS for c, n, k in cells)
+
+    # the label of every cell follows from the stored test and interval by the rule fixed on 12/11/2026
+    for r in lab + b6:
+        p, d, lo, hi = float(r["p_holm"]), float(r["mean_delta"]), float(r["ci_low"]), float(r["ci_high"])
+        rule = ("positive transfer" if p < 0.05 and d > 0.01 else "negative transfer" if p < 0.05 and d < -0.01
+                else "practically equivalent" if lo > -0.01 and hi < 0.01 else "inconclusive")
+        assert rule == r["label"], (r["strategy"], r["cohort"], r["n_t"], r["k"], rule, r["label"])
+
+    # target-only AUROC over 20 splits: mean of the four nested subsets within a split, then mean over the splits
+    target = {}
+    for c in GEO:
+        acc = {}
+        for r in rd(os.path.join(b1dir, "B1_E7_20", c, "e7_per_run.csv")):
+            if r["strategy"] == "target_only":
+                acc.setdefault((r["n_t"], r["k"], r["split"]), []).append(float(r["auroc"]))
+        for n in NTS:
+            for k in KS:
+                per_split = [statistics.mean(v) for (nn, kk, s), v in acc.items() if nn == n and kk == k]
+                if per_split:
+                    assert len(per_split) == 20 and all(len(v) == 4 for (nn, kk, s), v in acc.items() if nn == n and kk == k)
+                    target[(c, n, k)] = statistics.mean(per_split)
+    # absolute AUROC of the zero-shot strategy over 20 splits and over the five splits of the few-shot design
+    zero = {}
+    for c in GEO:
+        acc = {}
+        for r in rd(os.path.join(b1dir, "B1_E7_20", c, "e7_per_run.csv")):
+            if r["strategy"] == "source_only":
+                acc.setdefault((r["k"], int(r["split"])), []).append(float(r["auroc"]))
+        for k in KS:
+            ps = {s: statistics.mean(v) for (kk, s), v in acc.items() if kk == k}
+            assert len(ps) == 20
+            zero[(c, k)] = {"mean20": statistics.mean(ps.values()), "mean5": statistics.mean(ps[s] for s in range(5)),
+                            "min20": min(ps.values()), "below05": sum(v < 0.5 for v in ps.values())}
+
+    # ---- article table: k = 10, five strategies, label counts over all budgets ----
+    def block(key, name):
+        rows = []
+        for i, c in enumerate(GEO):
+            cs = []
+            for n in NTS:
+                r = L.get((key, c, n, "10"))
+                cs.append(dcell(r["mean_delta"], r["label"]) if r else "--")
+            cnt = counts4([L[(key, cc, n, k)] for cc, n, k in cells if cc == c])
+            rows.append("%s & %s & %s & %s \\\\" % (name if i == 0 else "", CNAME[c], " & ".join(cs), " / ".join(map(str, cnt))))
+        cnt = counts4([L[(key, c, n, k)] for c, n, k in cells])
+        rows.append(" & \\textit{all cohorts} & & & & \\textit{%s} \\\\" % " / ".join(map(str, cnt)))
+        return rows
+
+    lines = ["\\multicolumn{6}{l}{\\textit{AUROC of target-only selection (L1-LR on $L_T$)}} \\\\"]
+    for i, c in enumerate(GEO):
+        lines.append("%s & %s & %s & \\\\" % ("target-only" if i == 0 else "", CNAME[c],
+                                             " & ".join(f3(target[(c, n, "10")]) if (c, n, "10") in target else "--" for n in NTS)))
+    lines.append("\\midrule")
+    lines.append("\\multicolumn{6}{l}{\\textit{Difference to target-only selection, naive strategies}} \\\\")
+    for j, (key, name) in enumerate(STRATEGIES):
+        if j:
+            lines.append("\\addlinespace[2pt]")
+        lines += block(key, name)
+    lines.append("\\midrule")
+    lines.append("\\multicolumn{6}{l}{\\textit{Difference to target-only selection, transfer methods with a model of the source}} \\\\")
+    for j, (key, name) in enumerate(MODELS):
+        if j:
+            lines.append("\\addlinespace[2pt]")
+        lines += block(key, name)
+    text = ("% source: B1_tables/b1_e7_split_labels.csv and B6_tables/b6_split_labels_vs_target_only.csv (mean_delta, label; 20 splits, Holm over the 55 cells of a strategy); B1_E7_20/<cohort>/e7_per_run.csv (target_only, k = 10: mean of the four subsets of a split, then mean over the 20 splits); branch dmkd-revision, commit 61f6252 (tables written at 3fe6d99)\n"
+            "% generated by Scripts/make_supplementary_tables.py; do not edit by hand.  21/11/2026 (QD226, QD236): replaces the table of the five-split flags.\n"
+            "\\begin{table*}[tp]\n\\centering\n\\scriptsize\n\\caption{E7: transfer from the TCGA source at $k = 10$ and labels of all cells over 20 splits}\n\\label{tab:e7}\n"
+            # arraystretch 1.16: the table is a page of its own.  With 1.1 its height (0.885 of the text height) falls between the
+            # limit of a top float (0.87) and that of a float page (0.887) of sn-jnl, and LaTeX defers it to the end of the article.
+            "\\setlength{\\tabcolsep}{6pt}\n\\renewcommand{\\arraystretch}{1.16}\n"
+            "\\begin{adjustbox}{max width=\\textwidth}\n"
+            "\\begin{tabular}{llcccc}\n\\toprule\n"
+            " & & \\multicolumn{3}{c}{\\textbf{Budget} $\\boldsymbol{k = 10}$} & \\textbf{Labels over all} $\\boldsymbol{k}$ \\\\\n"
+            "\\cmidrule(lr){3-5}\n"
+            "\\textbf{Strategy} & \\textbf{Cohort} & $n_T = 5$ & $n_T = 10$ & $n_T = 20$ & $+$ / $-$ / $=$ / none \\\\\n\\midrule\n"
+            + "\n".join(lines) + "\n\\bottomrule\n\\end{tabular}\n\\end{adjustbox}\n"
+            "\\tablenote{Mean over 20 test/pool splits, each split being the mean of its four nested subsets. The first block gives the AUROC of target-only selection, and the other blocks the difference AUROC(strategy) $-$ AUROC(target-only) on identical subsets. " + MARK_NOTE +
+            " The last column counts the cells of a cohort over the five budgets and the available target sizes (10 cells for GSE10245, 15 otherwise, 55 in all) by label, in the order positive transfer, negative transfer, practically equivalent, inconclusive. GSE10245 has no $n_T = 20$ level. The differences of ptLasso and Trans-GLM to the naive strategies are given in Online Resource~1 (Table~\\suppnum{tab:app_b6_naive}).}\n"
+            "\\end{table*}\n")
+    write(out, "tab_e7_20splits.tex", text)
+
+    # ---- supplementary table: every cell over 20 splits, with the five-split difference ----
+    lines = []
+    for j, (key, name) in enumerate(STRATEGIES):
+        if j:
+            lines.append("\\midrule")
+        first = True
+        for c in GEO:
+            for i, n in enumerate(NTS):
+                if (key, c, n, "2") not in L:
+                    continue
+                cs = ["%s (%s)" % (dcell(L[(key, c, n, k)]["mean_delta"], L[(key, c, n, k)]["label"]), dcell(E5[(key, c, n, k)]["diff_mean"])) for k in KS]
+                lines.append("%s & %s & %s & %s \\\\" % (name if first else "", CNAME[c] if i == 0 else "", n, " & ".join(cs)))
+                first = False
+    text = ("% source: B1_tables/b1_e7_split_labels.csv (mean_delta, label; 20 splits), commit 61f6252; e7_transfer_table.csv (diff_mean; five splits, label [v03-11]) for the value in parentheses\n"
+            "% generated by Scripts/make_supplementary_tables.py; do not edit by hand.  21/11/2026 (QD226, QD236; item 6 of QD173).  Table of Online Resource 1 (ESM_1.tex).\n"
+            "\\begin{sidewaystable*}\n\\centering\n\\scriptsize\n\\caption{E7: difference to target-only selection in every cell over 20 splits, with the difference over the five splits of the few-shot design}\n\\label{tab:app_e7}\n"
+            "\\setlength{\\tabcolsep}{3.5pt}\n\\renewcommand{\\arraystretch}{0.98}\n"
+            "\\begin{adjustbox}{max width=\\linewidth,max totalheight=\\rotheight}\n"
+            "\\begin{tabular}{llrccccc}\n\\toprule\n"
+            "\\textbf{Strategy} & \\textbf{Cohort} & $\\boldsymbol{n_T}$ & $k = 2$ & $k = 3$ & $k = 4$ & $k = 5$ & $k = 10$ \\\\\n\\midrule\n"
+            + "\n".join(lines) + "\n\\bottomrule\n\\end{tabular}\n\\end{adjustbox}\n"
+            "\\tablenote{Cells give AUROC(strategy) $-$ AUROC(target-only) as the mean over 20 splits (seeds 42--61), each split being the mean of its four nested subsets. " + MARK_NOTE +
+            " The value in parentheses is the mean difference over the 20 runs of the first five splits, on which E1b and the sensitivity analyses SA3 and SA4 were run. It is given for comparison and carries no label.}\n"
+            "\\end{sidewaystable*}\n")
+    write(out, "tab_app_e7_20splits.tex", text)
+
+    # ---- supplementary tables of the two model-based methods ----
+    lines = []
+    for j, (key, name) in enumerate(MODELS):
+        if j:
+            lines.append("\\midrule")
+        first = True
+        for c in GEO:
+            for i, n in enumerate(NTS):
+                if (key, c, n, "2") not in L:
+                    continue
+                cs = [dcell(L[(key, c, n, k)]["mean_delta"], L[(key, c, n, k)]["label"]) for k in KS]
+                lines.append("%s & %s & %s & %s \\\\" % (name if first else "", CNAME[c] if i == 0 else "", n, " & ".join(cs)))
+                first = False
+    text = ("% source: B6_tables/b6_split_labels_vs_target_only.csv (mean_delta, label; 20 splits, Holm over the 55 cells of a method), commit 61f6252\n"
+            "% generated by Scripts/make_supplementary_tables.py; do not edit by hand.  21/11/2026 (QD226, QD236).  Table of Online Resource 1 (ESM_1.tex).\n"
+            "\\begin{table*}[tp]\n\\centering\n\\scriptsize\n\\caption{E7: ptLasso and Trans-GLM against target-only selection in every cell over 20 splits}\n\\label{tab:app_b6}\n"
+            "\\setlength{\\tabcolsep}{5pt}\n\\renewcommand{\\arraystretch}{1.1}\n"
+            "\\begin{adjustbox}{max width=\\textwidth}\n"
+            "\\begin{tabular}{llrccccc}\n\\toprule\n"
+            "\\textbf{Method} & \\textbf{Cohort} & $\\boldsymbol{n_T}$ & $k = 2$ & $k = 3$ & $k = 4$ & $k = 5$ & $k = 10$ \\\\\n\\midrule\n"
+            + "\n".join(lines) + "\n\\bottomrule\n\\end{tabular}\n\\end{adjustbox}\n"
+            "\\tablenote{Cells give AUROC(method) $-$ AUROC(target-only) as the mean over 20 splits, on the subsets of E7. The panel of a method consists of the $k$ genes with the largest absolute coefficient and is classified with LR-L2 fitted on $L_T$, like the panels of the naive strategies. " + MARK_NOTE + "}\n"
+            "\\end{table*}\n")
+    write(out, "tab_app_b6.tex", text)
+
+    def ncell(key, ref, c, n, k):
+        r = N[(key, ref, c, n, k)]
+        d, lo, hi = float(r["mean_delta"]), float(r["ci_low"]), float(r["ci_high"])
+        m = "\\dagger" if hi < 0 else "\\ddagger" if lo > 0 else ""
+        return "$%+.3f^{%s}$" % (d, m) if m else "$%+.3f$" % d
+
+    lines = []
+    for j, (key, name) in enumerate(MODELS):
+        if j:
+            lines.append("\\midrule")
+        first = True
+        for c in GEO:
+            for i, n in enumerate(NTS):
+                if (key, "select_on_source", c, n, "2") not in N:
+                    continue
+                cs = ["%s / %s" % (ncell(key, "select_on_source", c, n, k), ncell(key, "pooled", c, n, k)) for k in KS]
+                lines.append("%s & %s & %s & %s \\\\" % (name if first else "", CNAME[c] if i == 0 else "", n, " & ".join(cs)))
+                first = False
+    text = ("% source: B6_tables/b6_delta_vs_naive.csv (mean_delta, ci_low, ci_high for reference = select_on_source and pooled; 20 splits; no test, no multiplicity correction), commit 61f6252\n"
+            "% generated by Scripts/make_supplementary_tables.py; do not edit by hand.  21/11/2026 (QD226, QD236).  Table of Online Resource 1 (ESM_1.tex).\n"
+            "\\begin{sidewaystable*}\n\\centering\n\\scriptsize\n\\caption{E7: ptLasso and Trans-GLM against the two naive strategies that use target labels (descriptive)}\n\\label{tab:app_b6_naive}\n"
+            "\\setlength{\\tabcolsep}{4pt}\n\\renewcommand{\\arraystretch}{1.1}\n"
+            "\\begin{adjustbox}{max width=\\linewidth,max totalheight=\\rotheight}\n"
+            "\\begin{tabular}{llrccccc}\n\\toprule\n"
+            "\\textbf{Method} & \\textbf{Cohort} & $\\boldsymbol{n_T}$ & $k = 2$ & $k = 3$ & $k = 4$ & $k = 5$ & $k = 10$ \\\\\n\\midrule\n"
+            + "\n".join(lines) + "\n\\bottomrule\n\\end{tabular}\n\\end{adjustbox}\n"
+            "\\tablenote{Each cell gives AUROC(method) $-$ AUROC(select-on-source) and, after the slash, AUROC(method) $-$ AUROC(pooled), as means over 20 splits on identical subsets. $\\dagger$ = the 95\\% bootstrap interval of the mean difference over the splits lies below zero, $\\ddagger$ = above zero. These comparisons are descriptive: no test is applied and the intervals are not corrected for the number of cells.}\n"
+            "\\end{sidewaystable*}\n")
+    write(out, "tab_app_b6_naive.tex", text)
+
+    # ---- numbers used in the running text ----
+    nb = {}
+    for key, name in STRATEGIES + MODELS:
+        rows = [L[(key, c, n, k)] for c, n, k in cells]
+        d = {"labels": dict(zip(LABELS4, counts4(rows))),
+             "labels_by_cohort": {CNAME[c]: counts4([L[(key, cc, n, k)] for cc, n, k in cells if cc == c]) for c in GEO},
+             "labels_by_n_t": {n: counts4([L[(key, c, nn, k)] for c, nn, k in cells if nn == n]) for n in NTS},
+             "cells_mean_below_0": sum(float(r["mean_delta"]) < 0 for r in rows)}
+        for tag, f in (("min", min), ("max", max)):
+            r = f(rows, key=lambda r: float(r["mean_delta"]))
+            d[tag] = {"cohort": CNAME[r["cohort"]], "n_t": r["n_t"], "k": r["k"], "mean_delta": round(float(r["mean_delta"]), 4),
+                      "ci_low": round(float(r["ci_low"]), 4), "ci_high": round(float(r["ci_high"]), 4), "label": r["label"]}
+        d["k10"] = {CNAME[c]: {n: [round(float(L[(key, c, n, "10")]["mean_delta"]), 4), L[(key, c, n, "10")]["label"]] for n in NTS if (key, c, n, "10") in L} for c in GEO}
+        d["negative_cells"] = [(CNAME[r["cohort"]], r["n_t"], r["k"]) for r in rows if r["label"] == "negative transfer"]
+        d["positive_cells_n_t"] = sorted(set(r["n_t"] for r in rows if r["label"] == "positive transfer"))
+        nb[key] = d
+    assert nb["pooled"]["labels"]["negative transfer"] == 0 and nb["select_on_source"]["labels"]["negative transfer"] == 0
+    assert all(k in ("2", "3") for _, _, k in nb["source_only"]["negative_cells"])
+    nb["target_only_auroc_k10"] = {CNAME[c]: {n: round(target[(c, n, "10")], 4) for n in NTS if (c, n, "10") in target} for c in GEO}
+    nb["zero_shot_auroc"] = {CNAME[c]: {k: {kk: (round(v, 4) if isinstance(v, float) else v) for kk, v in zero[(c, k)].items()} for k in KS} for c in GEO}
+    nb["zero_shot_k4_range_20"] = [round(min(zero[(c, "4")]["mean20"] for c in GEO), 4), round(max(zero[(c, "4")]["mean20"] for c in GEO), 4)]
+    nb["zero_shot_delta"] = {CNAME[c]: {k: {n: [round(float(L[("source_only", c, n, k)]["mean_delta"]), 4), L[("source_only", c, n, k)]["label"]]
+                                             for n in NTS if ("source_only", c, n, k) in L} for k in KS} for c in GEO}
+    # change against the five-split design (item 6 of QD173)
+    ch = {}
+    for key, _ in STRATEGIES:
+        ch[key] = {(c, n, k): float(L[(key, c, n, k)]["mean_delta"]) - float(E5[(key, c, n, k)]["diff_mean"]) for c, n, k in cells}
+    two = [(key, c, n, k, v) for key in ("pooled", "select_on_source") for (c, n, k), v in ch[key].items()]
+    big = max(two, key=lambda t: abs(t[4]))
+    nb["change_5_to_20_splits"] = {
+        "cells_abs_change_gt_0.01_pooled_and_select": sum(abs(t[4]) > 0.01 for t in two), "cells_pooled_and_select": len(two),
+        "largest_change": {"strategy": big[0], "cohort": CNAME[big[1]], "n_t": big[2], "k": big[3], "change": round(big[4], 4)},
+        "gse42127_n_t10_change_range": [round(min(ch[key][("gse42127", "10", k)] for key in ("pooled", "select_on_source") for k in KS), 4),
+                                        round(max(ch[key][("gse42127", "10", k)] for key in ("pooled", "select_on_source") for k in KS), 4)],
+        "sign_agreement_of_labelled_cells": {
+            key: "%d of %d" % (sum((float(E5[(key, c, n, k)]["diff_mean"]) > 0) == (float(L[(key, c, n, k)]["mean_delta"]) > 0)
+                                   for c, n, k in cells if L[(key, c, n, k)]["label"] in ("positive transfer", "negative transfer")),
+                               sum(L[(key, c, n, k)]["label"] in ("positive transfer", "negative transfer") for c, n, k in cells))
+            for key, _ in STRATEGIES}}
+    assert all(v.split(" of ")[0] == v.split(" of ")[1] for v in nb["change_5_to_20_splits"]["sign_agreement_of_labelled_cells"].values())
+    flag = lambda r: "positive" if r["positive_transfer"] == "True" else "negative" if r["negative_transfer"] == "True" else "none"
+    cross = {}
+    for key, _ in STRATEGIES:
+        for c, n, k in cells:
+            cross.setdefault(key, {}).setdefault(flag(E5[(key, c, n, k)]), dict.fromkeys(LABELS4, 0))[L[(key, c, n, k)]["label"]] += 1
+    nb["five_split_flag_vs_label"] = cross
+    for key, _ in STRATEGIES:   # no cell changes direction between the two designs
+        assert cross[key].get("positive", {}).get("negative transfer", 0) == 0 and cross[key].get("negative", {}).get("positive transfer", 0) == 0
+    # the two model-based methods against the naive strategies (descriptive)
+    for key, _ in MODELS:
+        for ref in ("select_on_source", "pooled"):
+            rows = [N[(key, ref, c, n, k)] for c, n, k in cells]
+            dm = [float(r["mean_delta"]) for r in rows]
+            nb.setdefault("vs_naive", {})["%s_vs_%s" % (key, ref)] = {
+                "mean_of_55": round(statistics.mean(dm), 4), "min": round(min(dm), 4), "max": round(max(dm), 4),
+                "cells_interval_below_0": sum(float(r["ci_high"]) < 0 for r in rows), "cells_interval_above_0": sum(float(r["ci_low"]) > 0 for r in rows)}
+    dg = {}
+    for key, _ in MODELS:
+        rows = [r for r in degen if r["method"] == key]
+        assert len(rows) == 55 and all(r["n_runs"] == "80" for r in rows)
+        dg[key] = {"runs": sum(int(r["n_runs"]) for r in rows), "error_rate_max": max(float(r["error_rate"]) for r in rows),
+                   "filled_rate_max": max(float(r["filled_rate"]) for r in rows), "cells_with_fill": sum(float(r["filled_rate"]) > 0 for r in rows),
+                   "same_as_stage1_min": min(float(r["same_as_stage1_topk_rate"] or "nan") for r in rows) if key == "ptlasso" else None,
+                   "same_as_stage1_max": max(float(r["same_as_stage1_topk_rate"] or "nan") for r in rows) if key == "ptlasso" else None,
+                   "same_as_stage1_mean": round(statistics.mean(float(r["same_as_stage1_topk_rate"]) for r in rows), 4) if key == "ptlasso" else None}
+    nb["degeneracy"] = dg
+    NUMBERS["transfer_20_splits"] = nb
+
+    if derived and os.path.isdir(derived):   # cross-check with the advisor's derived numbers of 19/11/2026
+        draft = rd(os.path.join(derived, "table19_b1_draft_numbers.csv"))
+        for r in draft:
+            if r["cohort"] == "all cohorts":
+                continue
+            for n in NTS:
+                v = r["target_only_auroc_k10_nT" + n]
+                if v:
+                    assert abs(float(v) - target[(r["cohort"], n, "10")]) < 5.1e-4, (r["cohort"], n)
+                    cell = r["delta_k10_nT" + n]
+                    mine = L[(r["strategy"], r["cohort"], n, "10")]
+                    assert cell[:6] == "%+.3f" % float(mine["mean_delta"]) and cell[6:] == (MARK[mine["label"]] or "?"), (cell, mine["mean_delta"], mine["label"])
+        vs = {(r["strategy"], r["reference"]): r for r in rd(os.path.join(derived, "b6_vs_naive_descriptive_summary.csv"))}
+        for (key, ref), r in vs.items():
+            m = nb["vs_naive"]["%s_vs_%s" % (key, ref)]
+            assert (abs(m["mean_of_55"] - float(r["mean_of_mean_delta"])) < 1e-4 and m["cells_interval_below_0"] == int(r["cells_ci_below_0"])
+                    and m["cells_interval_above_0"] == int(r["cells_ci_above_0"])), (key, ref, m, r)
+        zs = rd(os.path.join(derived, "zero_shot_numbers_b1.csv"))
+        for r in zs:
+            z = zero[(r["cohort"], r["k"])]
+            assert abs(z["mean20"] - float(r["auroc_mean_20splits"])) < 5.1e-4 and abs(z["mean5"] - float(r["auroc_mean_splits0to4"])) < 5.1e-4
+            assert z["below05"] == int(r["splits_below_0.5_of_20"])
+        # 21/11/2026: the result of this optional cross-check is printed and not written to numbers_supplement.json, so that
+        # the file is the same with and without the folder --derived (the code repository does not hold that folder).
+        print("cross-check with %s: transfer labels, comparisons with the naive strategies and zero-shot values agree" % derived)
+
+
+def table_nt_star(b1dir, official, out, derived=None):
+    """n_T* of the five methods rerun over 20 splits, with the rule of the published table (smallest n_T within 0.02 of the pool value)."""
+    order = {"5": 0, "10": 1, "20": 2, "40": 3, "pool": 9}
+    b1 = rd(os.path.join(b1dir, "B1_tables", "b1_e1b_split_summary.csv"))
+    pub = rd(os.path.join(official, "e1b_learning_curves.csv"))
+    methods = ["f_test", "l1_lr", "ktsp", "random_k", "ihc_4"]
+
+    def star(rows):
+        rows = sorted((r for r in rows if r["auroc_mean"] not in ("", "nan")), key=lambda r: order[r["n_t"]])
+        pool = [r for r in rows if r["n_t"] == "pool"]
+        if not pool:
+            return None, None
+        ref = float(pool[0]["auroc_mean"])
+        for r in rows:
+            if r["n_t"] != "pool" and float(r["auroc_mean"]) >= ref - 0.02:
+                return r["n_t"], ref
+        return ">", ref
+
+    res = {}
+    for m in methods:
+        for c in GEO:
+            for k in KS:
+                r20 = [r for r in b1 if r["method"] == m and r["cohort"] == c and r["k"] == k]
+                r5 = [r for r in pub if r["method"] == m and r["cohort"] == c and r["k"] == k]
+                s20, s5 = star(r20)[0], star(r5)[0]
+                if s20 is None and s5 is None:
+                    continue
+                stored = set(r["n_t_star"] for r in r5)
+                assert len(stored) == 1
+                st = stored.pop()
+                assert (st == "" and s5 == ">") or (st != "" and str(int(float(st))) == s5), (m, c, k, st, s5)
+                res[(m, c, k)] = (s5, s20)
+    assert len(res) == 76
+    same = sum(a == b for a, b in res.values())
+    fmt = lambda s, c: ("$>$" + TOP_LEVEL[c]) if s == ">" else s
+    lines = []
+    for mi, m in enumerate(methods):
+        if mi:
+            lines.append("\\addlinespace[2pt]")
+        first = True
+        for k in KS:
+            if not any((m, c, k) in res for c in GEO):
+                continue
+            cs = []
+            for c in GEO:
+                a, b = res[(m, c, k)]
+                cs.append("%s / %s" % (fmt(a, c), fmt(b, c)) if a == b else "\\textit{%s / %s}" % (fmt(a, c), fmt(b, c)))
+            lines.append("%s & %s & %s \\\\" % (NAME[m] if first else "", k, " & ".join(cs)))
+            first = False
+    text = ("% source: e1b_learning_curves.csv (auroc_mean, n_t_star; five splits, label [v03-11]); B1_tables/b1_e1b_split_summary.csv (auroc_mean over 20 splits), commit 61f6252; rule of the published table: smallest n_T whose mean AUROC is within 0.02 of the pool value\n"
+            "% generated by Scripts/make_supplementary_tables.py; do not edit by hand.  21/11/2026 (QD227, QD237).  Table of Online Resource 1 (ESM_1.tex).\n"
+            "\\begin{table*}[tp]\n\\centering\n\\scriptsize\n\\caption{E1b: minimum sufficient target size $n_T^{*}$ over five and over 20 splits}\n\\label{tab:app_nt_star}\n"
+            "\\setlength{\\tabcolsep}{6pt}\n\\renewcommand{\\arraystretch}{1.1}\n"
+            "\\begin{adjustbox}{max width=\\textwidth}\n"
+            "\\begin{tabular}{lccccc}\n\\toprule\n"
+            "\\textbf{Method} & $\\boldsymbol{k}$ & \\textbf{GSE10245} & \\textbf{GSE30219} & \\textbf{GSE37745} & \\textbf{GSE42127} \\\\\n\\midrule\n"
+            + "\n".join(lines) + "\n\\bottomrule\n\\end{tabular}\n\\end{adjustbox}\n"
+            "\\tablenote{Each cell gives $n_T^{*}$ over the five splits of the few-shot design and, after the slash, over 20 splits (seeds 42--61), for the three selectors and the two reference panels that were rerun on 20 splits. $n_T^{*}$ is the smallest number of labelled patients per class whose mean AUROC is within 0.02 of the value obtained with the whole pool; $>$ = no tested level below the pool reaches it. Cells in italics differ between the two designs (%d of %d). $k$-TSP exists for even $k$ only, and IHC-4 at $k = 4$.}\n"
+            "\\end{table*}\n" % (len(res) - same, len(res)))
+    write(out, "tab_app_nt_star.tex", text)
+    NUMBERS["nt_star_20_splits"] = {"cells_with_a_value": len(res), "cells_same": same, "cells_different": len(res) - same,
+                                    "k10": {"%s %s" % (NAME[m], CNAME[c]): list(v) for (m, c, k), v in res.items() if k == "10"},
+                                    "k10_same": sum(a == b for (m, c, k), (a, b) in res.items() if k == "10"),
+                                    "k10_cells": sum(k == "10" for (m, c, k) in res),
+                                    "different_by_method": {NAME[m]: sum(a != b for (mm, c, k), (a, b) in res.items() if mm == m) for m in methods}}
+    if derived and os.path.isdir(derived):
+        adv = rd(os.path.join(derived, "e1b_nt_star_5_vs_20_splits.csv"))
+        n_adv_same = 0
+        for r in adv:
+            key = (r["method"], r["cohort"], r["k"])
+            conv = lambda s: ">" if s == "" else str(int(float(s)))
+            if key in res:
+                assert res[key] == (conv(r["n_t_star_5splits"]), conv(r["n_t_star_20splits"])), (key, res[key], r)
+            else:
+                assert r["auroc_pool_5splits"] == "" and r["auroc_pool_20splits"] == ""   # k-TSP at odd k: no value in either design
+            n_adv_same += r["n_t_star_5splits"] == r["n_t_star_20splits"]
+        print("cross-check with %s: n_T* agrees in every cell; the file counts %d of %d rows as unchanged, which includes the %d"
+              " cells of k-TSP at an odd budget that hold no value in either design" % (derived, n_adv_same, len(adv), len(adv) - len(res)))
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--official", default=os.path.join(PROJECT, "input", "results", "_received_2026-11-03", "tables_official_2026-11-03"))
     ap.add_argument("--extra", default=os.path.join(PROJECT, "input", "results", "_received_2026-11-16", "tables_survey-v3-dmkd.2"))
     ap.add_argument("--k2", default=os.path.join(PROJECT, "input", "results", "_received_2026-11-09", "E7_k2_evidence"))
+    ap.add_argument("--b1", default=os.path.join(PROJECT, "input", "results", "_received_2026-11-19", "tables_dmkd-revision_61f6252"))
+    ap.add_argument("--derived", default=os.path.join(PROJECT, "input", "results", "_received_2026-11-19", "derived"),
+                    help="optional: the advisor's derived numbers of 19/11/2026, used for cross-checks only")
     ap.add_argument("--out", default=os.path.join(os.path.dirname(HERE), "Tables"))
     a = ap.parse_args()
     tables_e1_marks(a.official, a.out)
@@ -1026,6 +1458,8 @@ def main():
     tables_sa3(a.extra, a.out)
     tables_sa4(a.extra, a.k2, a.out)
     tables_e8(a.extra, a.official, a.out)
+    tables_transfer20(a.b1, a.official, a.out, a.derived)
+    table_nt_star(a.b1, a.official, a.out, a.derived)
     with open(os.path.join(a.out, "numbers_supplement.json"), "w", encoding="utf-8") as f:
         json.dump(NUMBERS, f, indent=1, ensure_ascii=False, sort_keys=True, default=lambda o: o.item() if hasattr(o, "item") else str(o))
     print("written %d table files and numbers_supplement.json in %s" % (len(WRITTEN), a.out))

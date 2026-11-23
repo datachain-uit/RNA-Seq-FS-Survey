@@ -197,7 +197,7 @@ def test_05_e2_e3_timing(data_root):
     assert cost.maxrss_isolated_mb.notna().all() and (cost.maxrss_child_mb < 1500).all()         # bộ nhớ của chính tiến trình con
     exps = pd.read_csv(out / "e3_exponents.csv")
     assert set(exps.method) == {"f_test", "ktsp"}
-    cfg = json.loads((out / "config.json").read_text())
+    cfg = json.loads((out / "config.json").read_text(encoding="utf-8"))
     assert (out / "machine_config.json").exists() and cfg["k_e3"] == 4 and cfg["timing_tracemalloc"] is False
     if sys.platform.startswith("linux"):
         assert cfg["peak_source"] == "VmHWM" and (cost.peak_source == "VmHWM").all()

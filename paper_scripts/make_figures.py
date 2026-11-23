@@ -15,8 +15,8 @@ embedded orange, constrained aqua, wrapper violet) and line style / marker per
 member, so that identity never rests on colour alone; references in neutral ink.
 Document information of every PDF: Author = Thu Nguyen, Title, Subject = source CSV files
 (Scripts/set_figure_metadata.py adds the same fields as XMP).
-Output file names = figure numbers of the manuscript (Figure_5.pdf ... Figure_12.pdf, order of appearance;
-IPM asks for Figure_1, Figure_2, ...); the mapping is the dictionary FILE below.
+Output file names = figure numbers of an earlier layout of the manuscript (Figure_5.pdf ... Figure_12.pdf, order of
+appearance); the mapping is the dictionary FILE below.
 """
 import argparse
 import json

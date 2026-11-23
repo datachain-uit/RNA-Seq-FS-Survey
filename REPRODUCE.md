@@ -20,8 +20,8 @@ of the repository are internal working notes written in Vietnamese; this file is
 | `results/survey_v2/` | outputs of every experiment, one folder per experiment and cohort (Section 2) |
 | `results/run_info_*.json`, `results/logs/` | session information and logs of each Kaggle job, including `pip freeze` |
 | `splits/` | patient-level split files and quality-control files (Section 3) |
-| `paper_scripts/` | `make_tables.py`: the tables of the main benchmark from `results/` (Section 4); `make_figures_dmkd.py` with `check_figure_lettering.py`: the result figures of the paper (Figs. 5-12, Section 6.4); `make_supplementary_tables.py`: the tables of Section 6 and of Online Resource 1 (Section 6.3); `check_figure4.py`: check of Fig. 4; `make_figures.py`, `make_figures_dmkd2.py`: earlier layouts of the same figures, kept for the record |
-| `paper_figure_sources/` | sources of the diagrams (Figs. 1-4, 13): draw.io files and TikZ (`Figure_4_complexity.tex`, built with `pdflatex`) |
+| `paper_scripts/` | `make_tables.py`: the tables of the main benchmark from `results/` (Section 4); `make_figures_dmkd.py` with `check_figure_lettering.py`: the result figures of the paper (Figs. 5-9 of the article and Figs. S2-S4 of Online Resource 1, Section 6.4); `make_supplementary_tables.py`: the tables of E7 over 20 splits, of Section 6 and of Online Resource 1 (Section 6.3); `NUMBERING.md`: numbers, titles, files and labels of the sections, tables and figures of the manuscript of 21/11/2026; `check_figure4.py`: check of Fig. 4; `make_figures.py`, `make_figures_dmkd2.py`: earlier layouts of the same figures, kept for the record |
+| `paper_figure_sources/` | sources of the diagrams (Figs. 1-4, 10): draw.io files and TikZ (`Figure_4_complexity.tex`, built with `pdflatex`) |
 | `requirements-kaggle.txt` | package versions of the environment that produced every reported number (Python 3.13.15) |
 
 ## 2. Result files (`results/survey_v2/`)
@@ -37,7 +37,7 @@ of the repository are internal working notes written in Vietnamese; this file is
 | `E2_E3/`, `E2_E3_ref/`, `E2_E3_p1/` ... `E2_E3_p3/` | E2 and E3, measured cost and scaling (calibration and machine files included) |
 | `E4_E5/` | E4 and E5, stability on TCGA and GSE37745 (Nogueira index with confidence intervals, subsamples), redundancy, seed variability, overlap |
 | `E7/` | E7, naive transfer strategies from TCGA to the four GEO cohorts (`e7_per_run.csv`, `e7_selected_genes.csv`) |
-| `E7_k2_evidence/` | gene-level analysis of the zero-shot rule at k = 2 (Table 20 of the paper) |
+| `E7_k2_evidence/` | gene-level analysis of the zero-shot rule at k = 2 (Table S39 of Online Resource 1) |
 | `tables/` | summary tables written by `scripts/make_survey_tables.py` (CSV and LaTeX) and `provenance_manifest.json` |
 | `figures/` | figures written by `scripts/make_survey_tables.py` |
 | `B1_…` … `B7_…`, `E0_b7/`, `E1_feature_selection_b7/`, `E1_classification_b7/`, `E4_E5_b7/` | sensitivity analyses SA1-SA4 and second task E8 (Section 6) |
@@ -49,7 +49,7 @@ score), the decision threshold, the selected genes and the selection time. Per-s
 
 Every folder holds a `config.json` with the commit of the code that produced it, the SHA-256 of the input data and of
 the split file, the package versions and the machine. The result files of the main benchmark were produced at
-commits 9b2d6a5, 6ea47e8, d870008, e15fb7c and 06ba993 (Appendix A of the paper); those of Section 6 at commits
+commits 9b2d6a5, 6ea47e8, d870008, e15fb7c and 06ba993 (Section S9 of Online Resource 1); those of Section 6 at commits
 c1828d2, c50647a and f22597c, and `B1_tables/`, `B6_tables/` were regenerated at 3fe6d99 (Section 6.1). The code at all these commits is in the history of this tag.
 
 ## 3. Splits and quality control (`splits/`)
@@ -73,27 +73,38 @@ Tested on 11/11/2026 with Python 3.13 on Linux (numpy, pandas and matplotlib onl
 
 ```
 python paper_scripts/make_tables.py --results results/survey_v2/tables --e0-configs results/survey_v2/E0 --qc splits/qc --out out/Tables
-python paper_scripts/make_figures.py --results results/survey_v2/tables --e3 results/survey_v2/E2_E3 --out out/Images
+python paper_scripts/make_figures.py --results results/survey_v2/tables --e3 results/survey_v2/E2_E3 --out out/Images_earlier_layout
 (cd out/Tables && sha256sum -c --ignore-missing ../../paper_scripts/EXPECTED_SHA256.txt)
 ```
 
-`make_tables.py` writes the 22 table files of the paper and `numbers_log.json` (2,194 numbers, each with its source
-file and column); the checksums in `paper_scripts/EXPECTED_SHA256.txt` are those of the table files of the paper.
+`make_tables.py` writes 22 table files of the main benchmark and `numbers_log.json` (2,194 numbers, each with its source
+file and column); `paper_scripts/EXPECTED_SHA256.txt` holds the checksums of these files.
 On Windows, line endings may differ; compare with `diff --strip-trailing-cr` instead of the checksums.
-`make_figures.py` writes an earlier layout of Figures 5-12; the figures of the paper are written by `make_figures_dmkd.py`
-(Section 6.4) from the same tables. In the journal version, six tables use a wider float environment; their content
-is unchanged.
+The numbers of these files are the numbers of the tables of the manuscript: Tables 5, 7, 8 and 9 of the article
+(`tab_datasets.tex`, `tab_e1_k10.tex`, `tab_kstar.tex`, `tab_e2.tex`) and Tables S4, S14, S17, S19 and S21-S27 of Online
+Resource 1 (`tab_e0.tex`, `tab_rope.tex`, `tab_panels.tex`, `tab_ablation.tex`, `tab_e3.tex`, `tab_e4.tex`, `tab_e5a.tex`,
+`tab_e5b.tex`, `tab_e6.tex`, `tab_e1b.tex`, `tab_app_e1b.tex`). In the manuscript these tables have a short caption and
+their explanations stand in a note beneath the table, some use a wider float environment, and the files of Online
+Resource 1 are named `tab_app_*.tex`. Tables S5-S9 are the five files `tab_app_e1_<cohort>.tex` with the marks of
+Section 6.3. `tab_e7.tex` and `tab_app_e7.tex` (E7 over the five splits of the few-shot design) are not printed: the
+manuscript reports E7 over 20 splits (Table 10 and Table S36, Section 6.3) and gives the five-split difference in
+parentheses in Table S36. `paper_scripts/NUMBERING.md` lists every table and figure of the manuscript with its file.
+`make_figures.py` writes an earlier layout of the result figures, whose file names follow an earlier numbering (it is
+written to a folder of its own for that reason); the figures of the paper are written by `make_figures_dmkd.py`
+(Section 6.4) from the same tables.
 
-The derived numbers of Sections 7.2 and 7.3 that are not in a table (the Kendall rank correlation between the orderings of the
-selectors under LR-L2 and under the two secondary classifiers, the medians of the eleven data-driven selectors at n_T = 5, and
-the published signatures against the best 50-gene panel) are computed from the same tables:
+The derived numbers of Sections 5.1.4 and 5.4.1 of the article and of Sections S4.4 and S7.1 of Online Resource 1 that are
+not in a table (the Kendall rank correlation between the orderings of the selectors under LR-L2 and under the two secondary
+classifiers, the medians of the eleven data-driven selectors at n_T = 5, and the published signatures against the best
+50-gene panel) are computed from the same tables:
 
 ```
 python paper_scripts/reanalysis_2026-11-12.py --tables results/survey_v2/tables > out/reanalysis_2026-11-12.md
 (cd out && grep reanalysis ../paper_scripts/EXPECTED_SHA256.txt | sha256sum -c)
 ```
 
-The report is in Markdown, with headings in Vietnamese as in the authors' working notes.
+The report is in Markdown, with headings in Vietnamese as in the authors' working notes. Its headings name the sections as
+they were numbered on 12/11/2026 (7.2 and 7.3).
 
 ## 5. Rerun the experiments
 
@@ -179,10 +190,12 @@ Settings that the specification did not fix are listed under `choices_to_confirm
 folder.
 
 The folders keep their working names; the paper uses the names of the right-hand column: B1 (20 few-shot splits of E1b
-and E7), B6 (ptLasso and Trans-GLM in E7), B4 = SA1 (reference model B0, Table 15), B5 = SA2 (signatures cut to ten
-genes, Tables S17-S18), B2 = SA3 (k-TSP voting rule, Tables S19-S20), B3 = SA4 (zero-shot variants, Table 20 and
-Table S21), B7 = E8 (EGFR mutation, Table 22 and Tables S22-S25). Table and figure numbers follow the manuscript of
-18/11/2026.
+and E7; Table 10, Fig. 9, Tables S28 and S36), B6 (ptLasso and Trans-GLM in E7; Table 10, Tables S37-S38), B4 = SA1
+(reference model B0, Table S15), B5 = SA2 (signatures cut to ten genes, Tables S18 and S31), B2 = SA3 (k-TSP voting rule,
+Tables S29-S30), B3 = SA4 (zero-shot variants, Tables S39-S40), B7 = E8 (EGFR mutation, Table 11 and Tables S41-S44).
+The paper gives no separate name to B1 and B6: it writes "E7 (and E1b) over 20 test/pool splits" and "two transfer
+methods with a model of the source (ptLasso, Trans-GLM)". Table and figure numbers follow the manuscript of 21/11/2026
+(`paper_scripts/NUMBERING.md`).
 
 ### 6.1 Folders, commits and equality gates
 
@@ -224,7 +237,7 @@ and the published results; `check_revision_tables.py` compares every rewritten C
 (values, absolute tolerance 1e-9) and prints one `OK` line per file. Only the `config.json` files change (commit,
 date).
 
-### 6.3 Supplementary tables and the tables of SA1-SA4 and E8
+### 6.3 Supplementary tables and the tables of E7 over 20 splits, SA1-SA4 and E8
 
 After Section 4 (the script compares the five files `tab_app_e1_<cohort>.tex` of `make_tables.py` cell by cell and
 rewrites them with the marks of the tests, so it works on a copy of them):
@@ -232,38 +245,47 @@ rewrites them with the marks of the tests, so it works on a copy of them):
 ```
 mkdir -p out/Supplement && cp out/Tables/tab_app_e1_*.tex out/Supplement/
 python paper_scripts/make_supplementary_tables.py --official results/survey_v2/tables --extra results/survey_v2 \
-       --k2 results/survey_v2/E7_k2_evidence --out out/Supplement
-(cd out/Supplement && grep numbers_supplement ../../paper_scripts/EXPECTED_SHA256.txt | sha256sum -c)
+       --k2 results/survey_v2/E7_k2_evidence --b1 results/survey_v2 --out out/Supplement
+(cd out/Supplement && sha256sum -c --ignore-missing ../../paper_scripts/EXPECTED_SHA256_SUPPLEMENT.txt)
 ```
 
-The script reads result tables only. It writes 25 table files: Table 15 (SA1, `tab_sens_reference.tex`), Table 20
-(two-gene rule and SA4 at k = 2, `tab_zeroshot_k2.tex`), Table 22 (E8 at k = 10, `tab_e8.tex`) and Tables S2-S6,
-S9-S25 of Online Resource 1, and `numbers_supplement.json`, the derived numbers quoted in the text. It stops if a cell
-of Tables S2-S6, without the new marks, differs from the file of `make_tables.py`, or if the k* re-analysis does not
-reproduce `e1_kstar_pooled_by_k.csv` and `e1_kstar_pooled.csv`. Every table file names its input files and columns in
-its first comment lines. The repository copy differs from the author's copy of 18/11/2026 (SHA-256
-`0eade5915d151371b619e1ab1a857f653f95bdfeddfbf37664925989441f157e`) in one place only: the table note of Tables
-S2-S6 is optional, because the files of `make_tables.py` have none (a one-line note on the cells is written instead); `numbers_supplement.json` is the same (checksum
-above). On Windows, strip the trailing carriage returns before checking (`sed 's/\r$//'`).
-Tables S2-S6 written from a clean clone have the same rows and marks as Online Resource 1; their caption is the long caption of
-make_tables.py and their note is the one-line note of this script, so their checksums differ from the files of the article.
+The script reads result tables only. It writes 30 table files and `numbers_supplement.json`, the derived numbers quoted
+in the text. The table files are Table 10 (E7 at k = 10 with the labels over 20 splits, `tab_e7_20splits.tex`) and
+Table 11 (E8 at k = 10, `tab_e8.tex`) of the article, and Tables S5-S13, S15, S16, S18, S20 and S28-S44 of Online
+Resource 1 (28 files; `tab_app_e1b_stability.tex` and `tab_app_e1b_secondary.tex` hold two tables each). `--b1` names the
+folder that holds `B1_tables/`, `B1_E7_20/` and `B6_tables/`. The script stops if a cell of Tables S5-S9, without the
+marks, differs from the file of `make_tables.py`, if the k* re-analysis does not reproduce `e1_kstar_pooled_by_k.csv` and
+`e1_kstar_pooled.csv`, if an equality gate of `B1_tables/b1_gates.csv` did not pass with a difference of 0, or if the
+label of one of the 275 cells of `B1_tables/b1_e7_split_labels.csv` and `B6_tables/b6_split_labels_vs_target_only.csv`
+does not follow from its stored Holm p-value, mean difference and bootstrap interval. Every table file names its input
+files and columns in its first comment lines. The repository copy is the author's copy of 21/11/2026 (SHA-256
+`0aa97c4285ad9d234beedd986b9ad48b478d8366591ddd0476b18ccb2f7b2871`); the optional parameter `--derived` (cross-checks against
+derived files of the authors) is not used here. `EXPECTED_SHA256_SUPPLEMENT.txt` holds the checksums of 25 of the 30
+table files and of `numbers_supplement.json` as used in the manuscript, and of the figure report of Section 6.4. On
+Windows, strip the trailing carriage returns before checking (`sed 's/\r$//'`).
+Tables S5-S9 written from a clean clone have the same rows and marks as Online Resource 1; their caption is the long caption of
+make_tables.py and their note is the one-line note of this script, so these five files have no checksum.
 
-### 6.4 Result figures of the paper (Figures 5-12)
+### 6.4 Result figures of the paper (Figures 5-9 of the article, Figures S2-S4 of Online Resource 1)
 
 ```
-python paper_scripts/make_figures_dmkd.py --results results/survey_v2/tables --e3 results/survey_v2/E2_E3        --b1 results/survey_v2/B1_tables --out out/Images
+python paper_scripts/make_figures_dmkd.py --results results/survey_v2/tables --e3 results/survey_v2/E2_E3 \
+       --b1 results/survey_v2/B1_tables --out out/Images
+(cd out/Images && sha256sum -c --ignore-missing ../../paper_scripts/EXPECTED_SHA256_SUPPLEMENT.txt)
 ```
 
-The script reads the official tables only and writes `Figure_5.pdf` ... `Figure_12.pdf` (E3, E4, E5, E1, pooled lower
-bound of k*, E1b, E7, E6) and `figures_dmkd_report.json`. Every figure is drawn at the text width of the manuscript
+The script reads the official tables only and writes `Figure_5.pdf` ... `Figure_9.pdf` (E1, E4, E6, E1b, E7),
+`Figure_S2.pdf`, `Figure_S3.pdf`, `Figure_S4.pdf` (pooled lower bound of k*, E3, E5) and `figures_dmkd_report.json`
+(title, sources, page size and lettering of each figure). Every figure is drawn at the text width of the manuscript
 (372 pt, at most 520 pt high) and inserted without scaling; the main text is 8 pt in one sans-serif family (Liberation
 Sans) and no glyph of the written PDF is below 7 pt (`check_figure_lettering.py`, which needs `pdfminer.six`; the page
 width is checked with `pikepdf`). The script also checks that every plotted value equals its table value and that no
 two texts overlap, and it exits with code 1 if a check fails. Without Liberation Sans installed, Matplotlib falls back
-to a wider font and the overlap check of Figure 11 fails. With `--b1`, Figure 11 is drawn from the split-level labels
+to a wider font and the overlap check of Figure 9 fails. With `--b1`, Figure 9 is drawn from the split-level labels
 of B1 after O49 (`B1_tables/b1_e7_split_labels.csv`): cell = 100 x mean difference of AUROC; solid frame = positive or
-negative transfer, dashed frame = practically equivalent, no frame = inconclusive. `--only 11` draws one figure.
-`make_figures_dmkd2.py` (174 mm layout of Figures 8, 11 and 12 at tag `survey-v3-dmkd.2`) is superseded by this script.
+negative transfer, dashed frame = practically equivalent, no frame = inconclusive. `--only e7` draws one figure.
+Two runs write PDF files that differ in their creation date only, so the check above compares the figure report.
+`make_figures_dmkd2.py` (174 mm layout of the figures of E1, E7 and E6 at tag `survey-v3-dmkd.2`) is superseded by this script.
 
 Figure 4 is built from `paper_figure_sources/Figure_4_complexity.tex` with `pdflatex`; `python paper_scripts/check_figure4.py
 --tex Figure_4_complexity.tex --csv results/survey_v2/tables/e3_exponents_vs_table5.csv --log Figure_4_complexity.log`
