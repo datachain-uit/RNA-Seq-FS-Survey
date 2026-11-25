@@ -142,20 +142,6 @@ def test_b7_kstar_table_keeps_selectors_without_kstar_and_every_delta():
     assert pd.isna(r.loc[("a", "svm_rfe"), "k_star_delta_0.02"]) and "không đạt ở k = 50" in r.loc[("b", "l1_lr"), "reading_delta_0.01"]
 
 
-def test_figures_dmkd2_text_at_least_8pt_at_print_width(tmp_path):
-    """Hình 8, 11, 12 của bản sửa: vẽ từ bảng đã công bố và bảng B1 trong kho; chữ nhỏ nhất ≥ 8 pt ở bề rộng in."""
-    res = REPO / "results" / "survey_v2"
-    if not (res / "B1_tables" / "b1_e7_split_labels.csv").exists():
-        pytest.skip("chưa có B1_tables trong results/")
-    sys.path.insert(0, str(REPO / "paper_scripts"))
-    mf2 = importlib.import_module("make_figures_dmkd2")
-    assert mf2.main(["--results", str(res / "tables"), "--b1", str(res / "B1_tables"), "--out", str(tmp_path)]) == 0
-    rep = json.loads((tmp_path / "figures_sources_dmkd2.json").read_text(encoding="utf-8"))
-    assert set(rep) == {"Figure_8.pdf", "Figure_11.pdf", "Figure_12.pdf"}
-    assert all(v["min_text_pt"] >= 8.0 and v["print_width_mm"] == 174.0 for v in rep.values())
-    assert all((tmp_path / f).read_bytes()[:5] == b"%PDF-" for f in rep)
-
-
 def test_check_revision_tables_compares_values_not_bytes():
     sys.path.insert(0, str(REPO / "paper_scripts"))
     chk = importlib.import_module("check_revision_tables")

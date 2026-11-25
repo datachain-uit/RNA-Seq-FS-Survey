@@ -2,7 +2,7 @@
 
 This document describes the code and result files of the survey *Efficient, Stable and Transferable Gene Selection
 under a Panel Budget: A Survey and Empirical Evaluation in Lung Cancer Histology Diagnosis* (submitted to Data Mining
-and Knowledge Discovery). It applies to the tag `survey-v3-dmkd.3` of this repository (branch `dmkd-revision`).
+and Knowledge Discovery). It applies to the tag `survey-v3-dmkd.4` of this repository (branch `dmkd-revision`).
 
 The tag holds the code and result files of the main benchmark (E0-E7; also tagged `survey-v3-dmkd.1`, unchanged), the
 code and result files of the sensitivity analyses and the second task (SA1-SA4, E8; Section 6), and this documentation. The other README files
@@ -20,8 +20,7 @@ of the repository are internal working notes written in Vietnamese; this file is
 | `results/survey_v2/` | outputs of every experiment, one folder per experiment and cohort (Section 2) |
 | `results/run_info_*.json`, `results/logs/` | session information and logs of each Kaggle job, including `pip freeze` |
 | `splits/` | patient-level split files and quality-control files (Section 3) |
-| `paper_scripts/` | `make_tables.py`: the tables of the main benchmark from `results/` (Section 4); `make_figures_dmkd.py` with `check_figure_lettering.py`: the result figures of the paper (Figs. 5-9 of the article and Figs. S2-S4 of Online Resource 1, Section 6.4); `make_supplementary_tables.py`: the tables of E7 over 20 splits, of Section 6 and of Online Resource 1 (Section 6.3); `NUMBERING.md`: numbers, titles, files and labels of the sections, tables and figures of the manuscript of 21/11/2026; `check_figure4.py`: check of Fig. 4; `make_figures.py`, `make_figures_dmkd2.py`: earlier layouts of the same figures, kept for the record |
-| `paper_figure_sources/` | sources of the diagrams (Figs. 1-4, 10): draw.io files and TikZ (`Figure_4_complexity.tex`, built with `pdflatex`) |
+| `paper_scripts/` | `make_tables.py`: the tables of the main benchmark from `results/` (Section 4); `make_supplementary_tables.py`: the tables of E7 over 20 splits, of Section 6 and of Online Resource 1 (Section 6.3); `NUMBERING.md`: numbers, titles, files and labels of the sections, tables and figures of the manuscript of 25/11/2026 |
 | `requirements-kaggle.txt` | package versions of the environment that produced every reported number (Python 3.13.15) |
 
 ## 2. Result files (`results/survey_v2/`)
@@ -49,7 +48,7 @@ score), the decision threshold, the selected genes and the selection time. Per-s
 
 Every folder holds a `config.json` with the commit of the code that produced it, the SHA-256 of the input data and of
 the split file, the package versions and the machine. The result files of the main benchmark were produced at
-commits 9b2d6a5, 6ea47e8, d870008, e15fb7c and 06ba993 (Section S9 of Online Resource 1); those of Section 6 at commits
+commits 9b2d6a5, 6ea47e8, d870008, e15fb7c and 06ba993; those of Section 6 at commits
 c1828d2, c50647a and f22597c, and `B1_tables/`, `B6_tables/` were regenerated at 3fe6d99 (Section 6.1). The code at all these commits is in the history of this tag.
 
 ## 3. Splits and quality control (`splits/`)
@@ -67,13 +66,12 @@ c1828d2, c50647a and f22597c, and `B1_tables/`, `B6_tables/` were regenerated at
 
 The SHA-256 of each split file in `split_manifests/` is the value recorded in the `config.json` of the runs that used it.
 
-## 4. Regenerate the tables and result figures (no experiment is rerun)
+## 4. Regenerate the tables (no experiment is rerun)
 
-Tested on 11/11/2026 with Python 3.13 on Linux (numpy, pandas and matplotlib only):
+Tested on 11/11/2026 with Python 3.13 on Linux (numpy and pandas only):
 
 ```
 python paper_scripts/make_tables.py --results results/survey_v2/tables --e0-configs results/survey_v2/E0 --qc splits/qc --out out/Tables
-python paper_scripts/make_figures.py --results results/survey_v2/tables --e3 results/survey_v2/E2_E3 --out out/Images_earlier_layout
 (cd out/Tables && sha256sum -c --ignore-missing ../../paper_scripts/EXPECTED_SHA256.txt)
 ```
 
@@ -89,9 +87,6 @@ Resource 1 are named `tab_app_*.tex`. Tables S5-S9 are the five files `tab_app_e
 Section 6.3. `tab_e7.tex` and `tab_app_e7.tex` (E7 over the five splits of the few-shot design) are not printed: the
 manuscript reports E7 over 20 splits (Table 10 and Table S36, Section 6.3) and gives the five-split difference in
 parentheses in Table S36. `paper_scripts/NUMBERING.md` lists every table and figure of the manuscript with its file.
-`make_figures.py` writes an earlier layout of the result figures, whose file names follow an earlier numbering (it is
-written to a folder of its own for that reason); the figures of the paper are written by `make_figures_dmkd.py`
-(Section 6.4) from the same tables.
 
 The derived numbers of Sections 5.1.4 and 5.4.1 of the article and of Sections S4.4 and S7.1 of Online Resource 1 that are
 not in a table (the Kendall rank correlation between the orderings of the selectors under LR-L2 and under the two secondary
@@ -194,7 +189,7 @@ and E7; Table 10, Fig. 9, Tables S28 and S36), B6 (ptLasso and Trans-GLM in E7; 
 (reference model B0, Table S15), B5 = SA2 (signatures cut to ten genes, Tables S18 and S31), B2 = SA3 (k-TSP voting rule,
 Tables S29-S30), B3 = SA4 (zero-shot variants, Tables S39-S40), B7 = E8 (EGFR mutation, Table 11 and Tables S41-S44).
 The paper gives no separate name to B1 and B6: it writes "E7 (and E1b) over 20 test/pool splits" and "two transfer
-methods with a model of the source (ptLasso, Trans-GLM)". Table and figure numbers follow the manuscript of 21/11/2026
+methods with a model of the source (ptLasso, Trans-GLM)". Table and figure numbers follow the manuscript of 25/11/2026
 (`paper_scripts/NUMBERING.md`).
 
 ### 6.1 Folders, commits and equality gates
@@ -261,38 +256,13 @@ does not follow from its stored Holm p-value, mean difference and bootstrap inte
 files and columns in its first comment lines. The repository copy is the author's copy of 21/11/2026 (SHA-256
 `0aa97c4285ad9d234beedd986b9ad48b478d8366591ddd0476b18ccb2f7b2871`); the optional parameter `--derived` (cross-checks against
 derived files of the authors) is not used here. `EXPECTED_SHA256_SUPPLEMENT.txt` holds the checksums of 25 of the 30
-table files and of `numbers_supplement.json` as used in the manuscript, and of the figure report of Section 6.4. On
+table files and of `numbers_supplement.json` as used in the manuscript. On
 Windows, strip the trailing carriage returns before checking (`sed 's/\r$//'`).
 Tables S5-S9 written from a clean clone have the same rows and marks as Online Resource 1; their caption is the long caption of
 make_tables.py and their note is the one-line note of this script, so these five files have no checksum.
 
-### 6.4 Result figures of the paper (Figures 5-9 of the article, Figures S2-S4 of Online Resource 1)
-
-```
-python paper_scripts/make_figures_dmkd.py --results results/survey_v2/tables --e3 results/survey_v2/E2_E3 \
-       --b1 results/survey_v2/B1_tables --out out/Images
-(cd out/Images && sha256sum -c --ignore-missing ../../paper_scripts/EXPECTED_SHA256_SUPPLEMENT.txt)
-```
-
-The script reads the official tables only and writes `Figure_5.pdf` ... `Figure_9.pdf` (E1, E4, E6, E1b, E7),
-`Figure_S2.pdf`, `Figure_S3.pdf`, `Figure_S4.pdf` (pooled lower bound of k*, E3, E5) and `figures_dmkd_report.json`
-(title, sources, page size and lettering of each figure). Every figure is drawn at the text width of the manuscript
-(372 pt, at most 520 pt high) and inserted without scaling; the main text is 8 pt in one sans-serif family (Liberation
-Sans) and no glyph of the written PDF is below 7 pt (`check_figure_lettering.py`, which needs `pdfminer.six`; the page
-width is checked with `pikepdf`). The script also checks that every plotted value equals its table value and that no
-two texts overlap, and it exits with code 1 if a check fails. Without Liberation Sans installed, Matplotlib falls back
-to a wider font and the overlap check of Figure 9 fails. With `--b1`, Figure 9 is drawn from the split-level labels
-of B1 after O49 (`B1_tables/b1_e7_split_labels.csv`): cell = 100 x mean difference of AUROC; solid frame = positive or
-negative transfer, dashed frame = practically equivalent, no frame = inconclusive. `--only e7` draws one figure.
-Two runs write PDF files that differ in their creation date only, so the check above compares the figure report.
-`make_figures_dmkd2.py` (174 mm layout of the figures of E1, E7 and E6 at tag `survey-v3-dmkd.2`) is superseded by this script.
-
-Figure 4 is built from `paper_figure_sources/Figure_4_complexity.tex` with `pdflatex`; `python paper_scripts/check_figure4.py
---tex Figure_4_complexity.tex --csv results/survey_v2/tables/e3_exponents_vs_table5.csv --log Figure_4_complexity.log`
-checks its 11 pairs of exponents and its layout.
-
 ## 7. Licence and citation
 
-The source code is licensed under the MIT licence (`LICENSE`). The result files, splits and figure sources are licensed
-under CC BY 4.0 (`LICENSE-DATA.md`), with the third-party notices of `paper_figure_sources/THIRD_PARTY_NOTICES.md`.
+The source code is licensed under the MIT licence (`LICENSE`). The result files and splits are licensed
+under CC BY 4.0 (`LICENSE-DATA.md`).
 Please cite the paper when you reuse the benchmark; the citation will be added here after publication.
