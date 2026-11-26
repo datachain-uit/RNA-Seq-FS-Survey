@@ -1,6 +1,7 @@
-"""B6 (QĐ176): panel và đánh giá ptLasso, Trans-GLM trong E7 từ hệ số do scripts/r/e7_r_baselines.R ghi. Chép nguyên
-scripts/run_rq2_r_eval.py của kho datachain-uit/CN-23520899-LuanNT tại 7f097da (QĐ68 bài 2): cùng quy tắc chọn α, β_eff, panel,
-bổ sung F-test, cờ same_as_stage1_topk, cùng đánh giá. Khác bản gốc: tên tệp đầu ra e7_r_*.csv, thư mục mặc định B6_E7_principled.
+"""B6 (QĐ176): panels and evaluation of ptLasso and Trans-GLM in E7 from the coefficients written by
+scripts/r/e7_r_baselines.R. Copied unchanged from an earlier code base of the authors (commit 7f097da): same rules for α,
+β_eff, the panel, the F-test completion and the flag same_as_stage1_topk, same evaluation. Differences: output files
+e7_r_*.csv, default folder B6_E7_principled.
 
 ptLasso:
   * chọn α: LL(α) = cvm(λ2)/2 (deviance CV chia 2 = log-loss CV); xét α giảm dần từ 0,75, α nhỏ hơn thay α đang giữ chỉ khi
@@ -9,8 +10,8 @@ ptLasso:
     thiếu thì bổ sung F-test trên L_T (n_filled);
   * cờ same_as_stage1_topk = panel trùng tập k gen có |β1| lớn nhất (NaN khi |S1| < k).
 Trans-GLM: panel = k gen có |β| > 0 lớn nhất (bỏ hệ số chặn), hoà theo thứ tự, thiếu thì F-test.
-Đánh giá: evaluate_panel (LR-L2, M5) với seed_for(cid, seed, subset, n_t, k) như MVP; rq2_r_per_run.csv cùng cột với rq2_mvp_per_run.csv
-(method = ptlasso, transglm), điểm từng mẫu trong rq2_r_scores.csv.
+Evaluation: evaluate_panel (LR-L2, M5) with seed_for(cid, seed, subset, n_t, k), as in the reference run; rq2_r_per_run.csv
+(method = ptlasso, transglm) has the columns of the reference files; per-sample scores in rq2_r_scores.csv.
 
     python scripts/run_e7_r_eval.py --inputs <B6_r_inputs> --r-out <thư mục kết quả R> --save-scores
 
@@ -37,8 +38,8 @@ from survey_v2.runlog import DATA_ROOT, all_versions, results_dir, start_run, wr
 
 ALPHAS = (0.75, 0.5, 0.25)
 ALPHA_MARGIN = 0.01
-# QĐ70: đánh giá phải cùng môi trường với MVP để AUROC so được theo cặp. Giá trị = trường versions của RQ2_mvp/*/config.json
-# (rq2_mvp_1b7c021_results.zip), trùng E1b, E7 (9b2d6a5, d870008). Lệch thì dừng mã 2 trước khi tính gì.
+# QĐ70: the evaluation runs in the environment of E1b and E7 (9b2d6a5, d870008), so that the AUROC can be compared
+# in pairs. If the versions differ, the script stops with code 2 before computing anything.
 REFERENCE_VERSIONS = {"numpy": "2.1.3", "pandas": "2.3.3", "scipy": "1.16.3", "scikit-learn": "1.6.1"}
 METHODS = ("ptlasso", "transglm")
 
@@ -224,13 +225,13 @@ def main(argv=None, script=__file__) -> int:
         if args.save_scores:
             pd.DataFrame(score_rows).to_csv(out / "e7_r_scores.csv", index=False)
         pt = diag[diag.method == "ptlasso"]
-        cfg = {"experiment": "B6_E7_principled", "copied_from": "CN-23520899-LuanNT@7f097da scripts/run_rq2_r_eval.py", "dataset": name, "space": data["space"], "k_grid": args.k, "methods": list(METHODS), "alphas": list(ALPHAS),
+        cfg = {"experiment": "B6_E7_principled", "copied_from": "earlier code base of the authors, commit 7f097da, scripts/run_rq2_r_eval.py", "dataset": name, "space": data["space"], "k_grid": args.k, "methods": list(METHODS), "alphas": list(ALPHAS),
                "alpha_margin": ALPHA_MARGIN, "stage1": stage1[stage1.space == data["space"]].to_dict("records"),
                "n_runs": int(len(data["runs"])), "n_rows": len(rows), "n_errors": int(diag["error"].notna().sum()) if "error" in diag else 0,
                "same_as_stage1_topk_rate": float(pt.same_as_stage1_topk.mean()) if "same_as_stage1_topk" in pt and pt.same_as_stage1_topk.notna().any() else None,
                "r_session_info": session.read_text(encoding="utf-8", errors="replace").splitlines()[:40] if session.exists() else None,
                "panel_rule": "k gen |β| > 0 lớn nhất, hoà theo thứ tự 5.000 gen, thiếu thì F-test trên L_T; ptLasso β_eff = (1 − α̂)β1 + β2",
-               "evaluation": "evaluate_panel lr_l2, seed_for(cid, seed, subset, n_t, k) như MVP", "elapsed_s": time.time() - t0, "versions": all_versions()}
+               "evaluation": "evaluate_panel lr_l2, seed_for(cid, seed, subset, n_t, k) as in the reference run", "elapsed_s": time.time() - t0, "versions": all_versions()}
         write_config(out, prov, cfg, data_files=[args.r_out / "stage1_summary.csv"])
         print(f"[{name}] {len(rows)} dòng, lỗi {cfg['n_errors']}, same_as_stage1_topk {cfg['same_as_stage1_topk_rate']}", flush=True)
     return 0

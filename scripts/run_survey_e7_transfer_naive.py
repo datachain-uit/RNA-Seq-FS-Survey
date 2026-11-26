@@ -1,11 +1,11 @@
 """E7 — ba chiến lược chuyển giao ĐƠN GIẢN nguồn TCGA → cohort GEO trên đúng tập con few-shot của E1b (survey v3, ưu tiên 2).
 
-Chiến lược (survey_v2/transfer.py; = baseline D3 của RQ2 bài phương pháp): source_only (zero-shot, chuẩn hoá mức panel φ,
+Chiến lược (survey_v2/transfer.py): source_only (zero-shot, chuẩn hoá mức panel φ,
 không dùng nhãn đích), select_on_source (panel từ nguồn, fit LR-L2 trên L_T), pooled (nguồn ⊕ L_T, z-score theo từng bộ,
 chọn gen trên ma trận gộp, fit trên L_T) và target_only (ghép cặp). Bộ chọn gen chung: TRANSFER_SELECTOR (L1-LR đúng k).
 Lưới: n_T ∈ TRANSFER_N_T = {5, 10, 20}; k ∈ TRANSFER_K_GRID = {2, 3, 4, 5, 10}; 3 cohort GPL570 so sánh, GSE42127 mô tả.
 Không gian gen G = giao gen cohort ∩ TCGA; lọc sơ bộ không nhãn tính trên NGUỒN cho ba chiến lược chuyển giao, trên L_T cho
-target_only. ptLasso và Trans-GLM chạy ở B6 (scripts/run_e7_r_eval.py, QĐ176); MVP thuộc bài 2.
+target_only. ptLasso and Trans-GLM run in B6 (scripts/run_e7_r_eval.py, QĐ176).
 
     python scripts/run_survey_e7_transfer_naive.py --n-jobs 4
     python scripts/run_survey_e7_transfer_naive.py --datasets gse37745 --n-t 5 --k 2 5
@@ -137,7 +137,7 @@ def main(argv=None, script=__file__):
                "source_selector_info": {kk: (vv if not hasattr(vv, "tolist") else vv.tolist()) for kk, vv in
                                         {k: ctx.source_info.get(k) for k in ("C", "exact", "n_filled")}.items()},
                "fewshot_splits_file": str(path), "fewshot_splits_sha256": sha256(path), "n_rows": int(len(df)),
-               "note": "ptLasso and Trans-GLM are reported in the survey (B6, QĐ176); MVP belongs to the method paper",
+               "note": "ptLasso and Trans-GLM are evaluated separately (B6, QĐ176)",
                "elapsed_s": time.time() - t_all, "versions": all_versions()}
         write_config(out, prov, cfg, data_files=[ds.data_dir / "expression.h5", ds.data_dir / "metadata.csv", path,
                                                  source.data_dir / "expression.h5", source.data_dir / "metadata.csv"])

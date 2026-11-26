@@ -1,5 +1,5 @@
-"""B6 (QĐ176): mã R của bài 2 (7f097da) chép sang kho survey — chép nguyên test tests/test_rq2_r_baselines.py của kho đó, chỉ đổi
-tên module/tệp (export_e7_r_inputs, run_e7_r_eval, e7_r_baselines.R, B6_r_inputs); thêm test cho notebook B6 và cổng.
+"""B6 (QĐ176): tests of the code copied from an earlier code base of the authors (commit 7f097da), copied with it; only the
+names of modules and files differ (export_e7_r_inputs, run_e7_r_eval, e7_r_baselines.R, B6_r_inputs); tests of the B6 notebook and gate added.
 
 R không có trên máy cá nhân: phần R (e7_r_baselines.R) chỉ kiểm tĩnh (phiên bản ghim, tên tệp khớp với hai script Python); đầu ra R được
 giả lập để kiểm toàn bộ phần Python. Test (b) của Review (giai đoạn 2 bằng glmnet trùng ptLasso) đã có ở scripts/r/check_r_questions.R (câu 1c).
@@ -103,7 +103,7 @@ def test_same_as_stage1_topk_and_nan_when_s1_too_small():
 
 
 # ------------------------------------------------------------------------------------------------- đầu vào cho R
-def test_export_matches_mvp_prefilter_folds_and_seeds(data_root, exported):
+def test_export_matches_reference_prefilter_folds_and_seeds(data_root, exported):
     from survey_v2 import config as C
     from survey_v2.data import align_to_genes, common_genes, load_dataset, variance_prefilter
     from export_e7_r_inputs import inner_splits
@@ -158,7 +158,7 @@ def _fake_r_output(exported, r_out: Path, rng):
     return genes, beta1
 
 
-def test_evaluation_builds_panels_by_rule_and_evaluates_like_mvp(data_root, exported, tmp_path):
+def test_evaluation_builds_panels_by_rule_and_evaluates_like_reference(data_root, exported, tmp_path):
     ev = _mod("run_e7_r_eval")
     from survey_v2 import config as C
     from survey_v2.classify import evaluate_panel
@@ -181,7 +181,7 @@ def test_evaluation_builds_panels_by_rule_and_evaluates_like_mvp(data_root, expo
     assert d[(d.method == "transglm") & d.error.notna()].shape[0] == 2
     tg5 = per[(per.method == "transglm") & (per.k == 5)].iloc[0]
     assert tg5.n_filled == 4 and not tg5.exact_k                      # Trans-GLM giả chỉ có 1 gen khác 0
-    # đánh giá trùng gọi trực tiếp evaluate_panel với seed của MVP
+    # the evaluation equals a direct call of evaluate_panel with the seed of the reference run
     row = per[(per.method == "ptlasso") & (per.k == 2)].iloc[0]
     run = data["runs"][(data["runs"].split == row.split) & (data["runs"].subset == row.subset) & (data["runs"].n_t == row.n_t)].iloc[0]
     mem = data["members"][data["members"].run_id == run.run_id]
@@ -220,8 +220,8 @@ def test_eval_stops_with_code_2_when_library_versions_differ_from_reference(caps
 
 
 
-def test_inner_splits_copy_matches_bai2_definition():
-    """inner_splits chép từ survey_v2/mvp.py (7f097da): 5 fold một lần khi n_T ≤ 10 mỗi lớp, 5 fold × 3 lần khi lớn hơn."""
+def test_inner_splits_copy_matches_reference_definition():
+    """inner_splits copied from the earlier code base (7f097da): 5 folds once when n_T ≤ 10 per class, else 5 folds × 3."""
     ex = _mod("export_e7_r_inputs")
     from survey_v2 import config as C
     from sklearn.model_selection import StratifiedKFold
@@ -235,7 +235,7 @@ def test_inner_splits_copy_matches_bai2_definition():
 
 
 def test_r_script_is_the_7f097da_copy():
-    """Chỉ đổi chú thích: mọi dòng mã (bỏ dòng chú thích) giống bản R đã chạy ở bài 2 (STAGE = all, 7f097da)."""
+    """Only comments differ: every code line (comment lines removed) equals the R code of the reference run (STAGE = all, 7f097da)."""
     r = (REPO / "scripts" / "r" / "e7_r_baselines.R").read_text(encoding="utf-8")
     code = [ln for ln in r.splitlines() if not ln.lstrip().startswith("#")]
     assert "ALPHAS <- c(0.75, 0.5, 0.25)" in code and 'PINNED <- c(ptLasso = "1.0.2", glmtrans = "2.1.0")' in code

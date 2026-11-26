@@ -159,7 +159,7 @@ def load_dataset(root: Path, name: str, gene_space: str | None = "reference", da
 
 
 def drop_genes(ds: Dataset, genes) -> Dataset:
-    """Bản sao của ds không có các gen trong `genes` (ablation loại 4 gen IHC — RQ1/RQ2 của khoá luận)."""
+    """Copy of ds without the genes in `genes` (ablation without the 4 IHC genes)."""
     drop = set(str(g) for g in genes)
     keep = np.array([g not in drop for g in ds.genes], dtype=bool)
     out = Dataset(name=ds.name, X=np.ascontiguousarray(ds.X[:, keep]), y=ds.y, groups=ds.groups, genes=ds.genes[keep],
@@ -189,7 +189,7 @@ def repeated_patient_splits(y: np.ndarray, groups: np.ndarray, seeds=C.REPEAT_SE
     """Sinh các lần chia (repeat, fold, train_idx, test_idx) phân tầng theo nhãn, nhóm theo bệnh nhân.
 
     Nếu mỗi bệnh nhân chỉ có một mẫu (trường hợp của ba bộ giai đoạn) thì StratifiedKFold(shuffle)
-    là đủ và trùng với cách chia của RQ0′; nếu có bệnh nhân nhiều mẫu thì dùng StratifiedGroupKFold.
+    là đủ; nếu có bệnh nhân nhiều mẫu thì dùng StratifiedGroupKFold.
     Luôn assert không có bệnh nhân nằm ở cả train và test.
     """
     one_sample_per_patient = len(np.unique(groups)) == len(groups)

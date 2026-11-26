@@ -1,0 +1,5 @@
+# Line endings: LF for text files. The result files and the splits keep their bytes as produced (some have CRLF),
+# because the config.json files and the split manifests record their SHA-256.
+* text=auto eol=lf
+results/** -text
+splits/** -text

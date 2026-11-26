@@ -1,7 +1,7 @@
 # Sections, tables and figures of the manuscript
 
-Numbers, titles, source files and LaTeX labels of the manuscript of 25/11/2026: the article (60 pages) and its supplementary
-file, Online Resource 1 (97 pages). The files of the manuscript lie in one directory. The last column names the script of
+Numbers, titles, source files and LaTeX labels of the manuscript of 26/11/2026: the article (60 pages) and its supplementary
+file, Online Resource 1 (96 pages). The files of the manuscript lie in one directory. The last column names the script of
 `paper_scripts/` that writes the numbers of a table, with the name of its output file when it differs from the file of the
 manuscript (REPRODUCE.md, Sections 4 and 6.3). The figures belong to the manuscript and are not written by this repository.
 

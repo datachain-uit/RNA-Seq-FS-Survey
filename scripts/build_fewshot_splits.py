@@ -1,4 +1,4 @@
-"""Tạo và kiểm tra bản chia few-shot (test_T / pool_T × tập con n_T) cho các cohort GEO — dùng chung E1b, E7, RQ2, RQ4.
+"""Build and check the few-shot splits (test_T / pool_T × subsets n_T) of the GEO cohorts, shared by E1b and E7.
 
 Ghi ``<thư mục dữ liệu cohort>/fewshot_splits.csv`` (hoặc ``--out-root/<cohort>/fewshot_splits.csv``) và
 ``$KLTN_DATA_ROOT/experiment-data-geo-target/fewshot_splits_manifest.json`` (SHA-256 từng tệp). Giao thức: KBTN v2 Mục 6

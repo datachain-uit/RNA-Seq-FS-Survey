@@ -17,8 +17,8 @@ Quy tắc:
   để kết quả không bao giờ bị nhầm là đã truy vết được.
 
 Code và dữ liệu ở hai nơi:
-- CODE_ROOT: thư mục kho Git chứa script này (vd. D:\KLTN-github\RNA-Seq-FS-Survey). Git được kiểm tra ở đây.
-- DATA_ROOT: thư mục dữ liệu và kết quả (vd. D:\KLTN), đặt bằng biến môi trường KLTN_DATA_ROOT;
+- CODE_ROOT: thư mục kho Git chứa script này (a clone of RNA-Seq-FS-Survey). Git được kiểm tra ở đây.
+- DATA_ROOT: thư mục dữ liệu và kết quả (e.g. D:/data), đặt bằng biến môi trường KLTN_DATA_ROOT;
   mặc định trùng CODE_ROOT. Dữ liệu được ghi nhận bằng SHA-256, không cần nằm trong Git.
 """
 

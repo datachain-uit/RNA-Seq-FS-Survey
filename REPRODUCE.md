@@ -2,11 +2,18 @@
 
 This document describes the code and result files of the survey *Efficient, Stable and Transferable Gene Selection
 under a Panel Budget: A Survey and Empirical Evaluation in Lung Cancer Histology Diagnosis* (submitted to Data Mining
-and Knowledge Discovery). It applies to the tag `survey-v3-dmkd.4` of this repository (branch `dmkd-revision`).
+and Knowledge Discovery). It applies to the tag `survey-v3-dmkd.4` of this repository (branch `dmkd-revision`). The tag was set
+on 25/11/2026 at commit d916062 and moved on 26/11/2026 to the next commit, which brings the documentation in English
+and removes material that the paper does not use.
 
-The tag holds the code and result files of the main benchmark (E0-E7; also tagged `survey-v3-dmkd.1`, unchanged), the
-code and result files of the sensitivity analyses and the second task (SA1-SA4, E8; Section 6), and this documentation. The other README files
-of the repository are internal working notes written in Vietnamese; this file is the reference for readers of the paper.
+The tag holds the code and result files of the main benchmark (E0-E7; the result files are those of tag
+`survey-v3-dmkd.1`, unchanged), the code and result files of the sensitivity analyses and the second task (SA1-SA4, E8;
+Section 6), and this documentation. `README.md` gives an overview of the repository and the names used in the code;
+this file is the reference for the result files and the commands. The program is that of commit d916062: once
+their docstrings are removed, the Python files of `survey_v2/`, `scripts/` and `paper_scripts/` have the same syntax
+trees in the two commits, except for four notes that the runs write into `config.json` and the text of one generated
+notebook; in `tests/`, three tests are renamed and one assertion follows the new note; the Kaggle notebooks clone
+branch `dmkd-revision`.
 
 ## 1. Contents of the tag
 
@@ -16,11 +23,14 @@ of the repository are internal working notes written in Vietnamese; this file is
 | `scripts/` | command-line runners (`run_survey_e1.py`, `run_survey_e1_wrappers.py`, `run_survey_e2_e3_timing.py`, `run_survey_e4_e5_stability.py`, ...), split builders (`build_v3_splits.py`), quality control (`geo_sample_qc.py`), table builder of the result files (`make_survey_tables.py`) |
 | `notebooks/kaggle/` | the Kaggle notebooks that ran every experiment (`kaggle_E0_signal_check.ipynb` ... `kaggle_E7_transfer.ipynb`, `kaggle_panels.ipynb`, `kaggle_ablation_no_IHC.ipynb`, `kaggle_redo_svm_rfe.ipynb`, `kaggle_00_sanity.ipynb`; Section 6: `kaggle_B1_fewshot20.ipynb`, `kaggle_B2_B5.ipynb`, `kaggle_B7_step1.ipynb`, `kaggle_B7_E1_E4.ipynb`) |
 | `notebooks/kaggle_r/kaggle_B6_e7_r.ipynb` | Section 6: ptLasso and Trans-GLM in E7 (Python kernel that installs R 4.5.3, ptLasso 1.0.2, glmtrans 2.1.0) |
+| `notebooks/kaggle_e7_k2_evidence.ipynb` | the gene-level analysis of the zero-shot rule at k = 2 (`E7_k2_evidence/`) |
+| `notebooks/phase_0/00_data/` | the notebooks that built the TCGA and GEO cohort files (Section 5, step 2) |
 | `tests/` | unit tests (`python -m pytest -q`) |
 | `results/survey_v2/` | outputs of every experiment, one folder per experiment and cohort (Section 2) |
 | `results/run_info_*.json`, `results/logs/` | session information and logs of each Kaggle job, including `pip freeze` |
 | `splits/` | patient-level split files and quality-control files (Section 3) |
-| `paper_scripts/` | `make_tables.py`: the tables of the main benchmark from `results/` (Section 4); `make_supplementary_tables.py`: the tables of E7 over 20 splits, of Section 6 and of Online Resource 1 (Section 6.3); `NUMBERING.md`: numbers, titles, files and labels of the sections, tables and figures of the manuscript of 25/11/2026 |
+| `paper_scripts/` | `make_tables.py`: the tables of the main benchmark from `results/` (Section 4); `make_supplementary_tables.py`: the tables of E7 over 20 splits, of Section 6 and of Online Resource 1 (Section 6.3); `NUMBERING.md`: numbers, titles, files and labels of the sections, tables and figures of the manuscript of 26/11/2026 |
+| `docs/RECORDS_GLOSSARY.md` | English translation of the Vietnamese strings that occur in the result files, logs, exclusion lists and quality-control files |
 | `requirements-kaggle.txt` | package versions of the environment that produced every reported number (Python 3.13.15) |
 
 ## 2. Result files (`results/survey_v2/`)
@@ -40,7 +50,7 @@ of the repository are internal working notes written in Vietnamese; this file is
 | `tables/` | summary tables written by `scripts/make_survey_tables.py` (CSV and LaTeX) and `provenance_manifest.json` |
 | `figures/` | figures written by `scripts/make_survey_tables.py` |
 | `B1_…` … `B7_…`, `E0_b7/`, `E1_feature_selection_b7/`, `E1_classification_b7/`, `E4_E5_b7/` | sensitivity analyses SA1-SA4 and second task E8 (Section 6) |
-| `B6_reference_rq2_r_7f097da/` | reference files of the B6 equality gate (copied from the method paper's run, Section 6.1) |
+| `B6_reference_rq2_r_7f097da/` | reference files of the B6 equality gate: an earlier run of the same code at commit 7f097da (Section 6.1) |
 | `DMKD2_EXCLUDED_DATA.tsv` | the two expression matrices built for B7 that are not redistributed (path, size, SHA-256) |
 
 The files store, for every fold and run, the five metrics of the paper (AUROC, balanced accuracy, MCC, log-loss, Brier
@@ -48,7 +58,7 @@ score), the decision threshold, the selected genes and the selection time. Per-s
 
 Every folder holds a `config.json` with the commit of the code that produced it, the SHA-256 of the input data and of
 the split file, the package versions and the machine. The result files of the main benchmark were produced at
-commits 9b2d6a5, 6ea47e8, d870008, e15fb7c and 06ba993; those of Section 6 at commits
+commits 9b2d6a5, 68e7c7d (E4 and E5), 6ea47e8, d870008, e15fb7c and 06ba993; those of Section 6 at commits
 c1828d2, c50647a and f22597c, and `B1_tables/`, `B6_tables/` were regenerated at 3fe6d99 (Section 6.1). The code at all these commits is in the history of this tag.
 
 ## 3. Splits and quality control (`splits/`)
@@ -60,7 +70,7 @@ c1828d2, c50647a and f22597c, and `B1_tables/`, `B6_tables/` were regenerated at
 | `<cohort>/fewshot_splits_20.csv` | Section 6 (B1): the same design with 20 splits (seeds 42-61); splits 0-4 are identical to `fewshot_splits.csv` |
 | `tcga_luad_egfr/`, `gse31210_egfr/` | Section 6 (E8, folder prefix B7): metadata with EGFR labels, 5 x 5 splits, exclusions and data cards of the two EGFR data sets |
 | `<cohort>/label_mapping.json`, `metadata.csv`, `class_stats.csv`, `excluded_samples_<cohort>.csv` | labels (LUAD = 0, LUSC = 1), sample metadata, class counts, samples removed by quality control |
-| `<cohort>/DATA_CARD.md` | data card of the cohort (in Vietnamese): source files, SHA-256, quality-control decisions |
+| `<cohort>/DATA_CARD.md` | data card of the cohort: source files, SHA-256, quality-control decisions (English version of the authors' card; the original, in Vietnamese, is at the same path in commit d916062) |
 | `split_manifests/` | generator, commit, seeds and SHA-256 of every split file |
 | `qc/` | label cross-checks of the GEO cohorts, duplicate-sample screen, sex consistency checks, coverage of the panel genes |
 
@@ -68,7 +78,7 @@ The SHA-256 of each split file in `split_manifests/` is the value recorded in th
 
 ## 4. Regenerate the tables (no experiment is rerun)
 
-Tested on 11/11/2026 with Python 3.13 on Linux (numpy and pandas only):
+Tested on 11/11/2026 with Python 3.13 on Linux (numpy and pandas only), and again on 26/11/2026 at this tag:
 
 ```
 python paper_scripts/make_tables.py --results results/survey_v2/tables --e0-configs results/survey_v2/E0 --qc splits/qc --out out/Tables
@@ -98,13 +108,15 @@ python paper_scripts/reanalysis_2026-11-12.py --tables results/survey_v2/tables 
 (cd out && grep reanalysis ../paper_scripts/EXPECTED_SHA256.txt | sha256sum -c)
 ```
 
-The report is in Markdown, with headings in Vietnamese as in the authors' working notes. Its headings name the sections as
-they were numbered on 12/11/2026 (7.2 and 7.3).
+The report is in Markdown, with headings in Vietnamese as in the authors' working notes; the report is compared with its
+checksum, so the script is kept unchanged. Its headings name the sections as they were numbered on 12/11/2026 (7.2 and
+7.3).
 
 ## 5. Rerun the experiments
 
 1. Environment: `pip install -r requirements-kaggle.txt` (the environment of every reported number). `abess` (selector
-   abess) and `skrebate` (selector ReliefF) are part of it; without `abess`, two tests are skipped.
+   abess) and `skrebate` (selector ReliefF) are part of it; without `abess`, two tests are skipped. On Windows, set
+   `PYTHONUTF8=1` before running the tests and the scripts.
 2. Data: the expression data are public and are not redistributed here. TCGA-LUAD and TCGA-LUSC come from the Genomic
    Data Commons (https://portal.gdc.cancer.gov/), GSE10245, GSE30219, GSE37745 and GSE42127 from the Gene Expression
    Omnibus (https://www.ncbi.nlm.nih.gov/geo/). The data cards in `splits/<cohort>/DATA_CARD.md` give the SHA-256 of the
@@ -135,8 +147,6 @@ they were numbered on 12/11/2026 (7.2 and 7.3).
       (14/10/2026) then rewrote the stage and diagnosis columns of `metadata.csv` only; the expression matrix was
       unchanged. This script expects the earlier layout `experiment-data-v2/` and `experiment-data/h5/` and does not
       run against the layout above without editing its paths; the stage columns are not used by the survey.
-      `notebooks/phase_0/00_data/lung_download_label_5fold.ipynb` is the earlier version of this notebook and was
-      not used for the paper's cohort file.
    2. GEO: `notebooks/phase_0/00_data/geo_luad_lusc_target_cohorts_5fold.ipynb` (16-17/10/2026) downloads the series
       matrices into `$KLTN_GEO_WORKDIR/raw/` and writes one folder per series into `$KLTN_GEO_OUTDIR` (use
       `$KLTN_DATA_ROOT/experiment-data-geo-target`). Only samples with an explicit LUAD or LUSC label are kept. The
@@ -162,15 +172,16 @@ they were numbered on 12/11/2026 (7.2 and 7.3).
       Copy these lists into the cohort folders to apply the same exclusions. `rebuild` refuses to run from code that is
       not committed and pushed (set `KLTN_ALLOW_UNPUSHED=1` for a local check).
 
-   *Check.* Compare the SHA-256 of the files you built with the values in the section of 29/10/2026 of each
-   `splits/<cohort>/DATA_CARD.md` ("SHA-256 mới"), for example `sha256sum expression.h5 metadata.csv` in each cohort
+   *Check.* Compare the SHA-256 of the files you built with the values in the update of 29 October 2026 of each
+   `splits/<cohort>/DATA_CARD.md` ("New SHA-256"), for example `sha256sum expression.h5 metadata.csv` in each cohort
    folder; the same values are recorded in the `config.json` of every result folder. A rebuild may not match byte
    for byte: GDC and GEO may have revised the source files since October 2026, and the bytes of `expression.h5`
    depend on the versions of pandas and PyTables. In that case, compare sample identifiers, labels and values instead.
 3. Splits: `python scripts/build_v3_splits.py` rebuilds the split files; their SHA-256 must equal `split_manifests/`.
 4. Experiments: run the notebooks of `notebooks/kaggle/` (or the runners of `scripts/`) at the commit recorded in the
-   `config.json` of each result folder. Every run refuses to start from a working tree with uncommitted changes and
-   writes its own `config.json`.
+   `config.json` of each result folder: set `REPO_COMMIT` in the configuration cell of the notebook to that commit. The
+   notebooks clone branch `dmkd-revision`, the only branch of the repository, which contains every such commit. Every
+   run refuses to start from a working tree with uncommitted changes and writes its own `config.json`.
 5. Tables: `python scripts/make_survey_tables.py` (options in `--help`) writes the summary tables of
    `results/survey_v2/tables/`; then Section 4.
 
@@ -189,7 +200,7 @@ and E7; Table 10, Fig. 9, Tables S28 and S36), B6 (ptLasso and Trans-GLM in E7; 
 (reference model B0, Table S15), B5 = SA2 (signatures cut to ten genes, Tables S18 and S31), B2 = SA3 (k-TSP voting rule,
 Tables S29-S30), B3 = SA4 (zero-shot variants, Tables S39-S40), B7 = E8 (EGFR mutation, Table 11 and Tables S41-S44).
 The paper gives no separate name to B1 and B6: it writes "E7 (and E1b) over 20 test/pool splits" and "two transfer
-methods with a model of the source (ptLasso, Trans-GLM)". Table and figure numbers follow the manuscript of 25/11/2026
+methods with a model of the source (ptLasso, Trans-GLM)". Table and figure numbers follow the manuscript of 26/11/2026
 (`paper_scripts/NUMBERING.md`).
 
 ### 6.1 Folders, commits and equality gates
@@ -201,7 +212,7 @@ methods with a model of the source (ptLasso, Trans-GLM)". Table and figure numbe
 | B3, two zero-shot variants | `B3_zero_shot/`, `B3_tables/` | `run_b3_zero_shot.py` | `b2_b3_b5`, c50647a | the recomputed E7 source-only rule equals the published one (difference 0); source panels equal |
 | B4, variants of the reference B0 | `B4_b0_variants/`, `B4_tables/` | `run_b4_b0_variants.py` | `b4`, c50647a | the original B0 rerun equals the published B0 (difference 0, 25 folds x 5 cohorts) |
 | B5, published signatures cut to 10 genes inside the fold | `B5_signatures10/`, `B5_tables/` | `run_b5_signatures10.py` | `b2_b3_b5`, c50647a | — |
-| B6, ptLasso and Trans-GLM in E7 | `B6_r_inputs/`, `B6_r_inputs_20/`, `B6_E7_gate5/`, `B6_gate/`, `B6_E7_principled/`, `B6_tables/` | `export_e7_r_inputs.py`, `r/e7_r_baselines.R`, `run_e7_r_eval.py` (copied from the method paper's code, commit 7f097da) | notebook `kaggle_B6_e7_r.ipynb`, c50647a | on seeds 42-46, panels and AUROC of every run equal the method paper's run (`B6_reference_rq2_r_7f097da/`; difference 0, 2,200 panels) |
+| B6, ptLasso and Trans-GLM in E7 | `B6_r_inputs/`, `B6_r_inputs_20/`, `B6_E7_gate5/`, `B6_gate/`, `B6_E7_principled/`, `B6_tables/` | `export_e7_r_inputs.py`, `r/e7_r_baselines.R`, `run_e7_r_eval.py` (copied unchanged from an earlier code base of the authors, commit 7f097da) | notebook `kaggle_B6_e7_r.ipynb`, c50647a | on seeds 42-46, panels and AUROC of every run equal the reference run (`B6_reference_rq2_r_7f097da/`; difference 0, 2,200 panels) |
 | B7, EGFR mutation in lung adenocarcinoma | `B7_data/`, `B7_gate/`, `E0_b7/`, `E1_feature_selection_b7/`, `E1_classification_b7/`, `E4_E5_b7/`, `B7_tables/` | `run_b7_step1.py`, `build_b7_egfr_datasets.py`, `b7_gate.py`, then the E1 and E4 runners | `b7_step1` (c1828d2); `b7_e1_phaseA`, `b7_e4`, `b7_e1_phaseB` (c50647a) | gates G1 and G2 passed on both data sets (`B7_gate/b7_gate_table.csv`); every later session checks the SHA-256 of the 20 data files against `B7_data/config.json` |
 
 `B6_tables/` and `B7_tables/` were written on a workstation from the result folders above (commits c50647a and
@@ -229,8 +240,9 @@ python paper_scripts/check_revision_tables.py
 
 `make_revision_tables.py` rewrites the folders `results/survey_v2/B*_tables/` from the result folders of Section 6.1
 and the published results; `check_revision_tables.py` compares every rewritten CSV file with the committed one
-(values, absolute tolerance 1e-9) and prints one `OK` line per file. Only the `config.json` files change (commit,
-date).
+(values, absolute tolerance 1e-9) and prints one `OK` line per file. The `config.json` files change (commit, date).
+Depending on the versions of numpy and pandas, the last digit of some floating-point values in the CSV files may also
+change (differences of the order of 1e-16, far below the tolerance); on 26/11/2026 the check gave 28 `OK` lines.
 
 ### 6.3 Supplementary tables and the tables of E7 over 20 splits, SA1-SA4 and E8
 
@@ -258,6 +270,10 @@ files and columns in its first comment lines. The repository copy is the author'
 derived files of the authors) is not used here. `EXPECTED_SHA256_SUPPLEMENT.txt` holds the checksums of 25 of the 30
 table files and of `numbers_supplement.json` as used in the manuscript. On
 Windows, strip the trailing carriage returns before checking (`sed 's/\r$//'`).
+All these checksums match with numpy 2.5.3 and pandas 3.0.5 (checked on 26/11/2026). With the versions of
+`requirements-kaggle.txt` (numpy 2.1.3, pandas 2.3.3) every table file has the same checksum, and
+`numbers_supplement.json` differs only in the field `kstar_reconstruction_max_abs_deviation`, a floating-point check
+of the order of 1e-14 or below.
 Tables S5-S9 written from a clean clone have the same rows and marks as Online Resource 1; their caption is the long caption of
 make_tables.py and their note is the one-line note of this script, so these five files have no checksum.
 

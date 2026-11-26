@@ -1,0 +1,36 @@
+cff-version: 1.2.0
+message: "If you use this software or these result files, please cite them as below. Please also cite the paper once it is published."
+title: "Efficient, Stable and Transferable Gene Selection under a Panel Budget: code, splits and per-fold results"
+type: software
+authors:
+  - given-names: Thu
+    family-names: Nguyen
+    orcid: "https://orcid.org/0000-0002-0571-2117"
+  - given-names: Luan
+    family-names: Nguyen
+    orcid: "https://orcid.org/0009-0004-8652-6333"
+  - given-names: Khoa Tan
+    family-names: Vo
+    orcid: "https://orcid.org/0000-0002-5343-1686"
+  - given-names: Phuc
+    family-names: Nguyen
+    orcid: "https://orcid.org/0000-0002-6577-0159"
+  - given-names: Hong-Tri
+    family-names: Nguyen
+    orcid: "https://orcid.org/0000-0001-6483-0829"
+  - given-names: Tu-Anh
+    family-names: Nguyen-Hoang
+    orcid: "https://orcid.org/0000-0001-9283-769X"
+repository-code: "https://github.com/datachain-uit/RNA-Seq-FS-Survey"
+license:
+  - MIT
+  - CC-BY-4.0
+version: survey-v3-dmkd.4
+keywords:
+  - gene selection
+  - feature selection
+  - panel budget
+  - stability
+  - transfer learning
+  - lung cancer
+  - gene expression

@@ -1,110 +1,122 @@
-> **Readers of the paper (Data Mining and Knowledge Discovery submission).** The tag `survey-v3-dmkd.4` holds the code,
-> result files and splits of the survey *Efficient, Stable and Transferable Gene Selection under a Panel
-> Budget*. Start with [REPRODUCE.md](REPRODUCE.md) (English): contents of the tag, result files, and the commands that
-> regenerate the tables. Licences: [LICENSE](LICENSE) (MIT, code) and
-> [LICENSE-DATA.md](LICENSE-DATA.md) (CC BY 4.0, results and splits). The rest of this README is the
-> internal working note of the project, in Vietnamese. Its note that data and results are kept outside Git does not
-> apply to this tag, which contains `results/`, `splits/` and `paper_scripts/`.
+# RNA-Seq-FS-Survey
 
-# RNA-Seq FS Survey – chọn gen có ràng buộc ngân sách cho dữ liệu biểu hiện gen ung thư phổi
+Code, patient-level splits and per-fold results of the study "Efficient, Stable and Transferable Gene Selection under
+a Panel Budget: A Survey and Empirical Evaluation in Lung Cancer Histology Diagnosis" (submitted to Data Mining and
+Knowledge Discovery).
 
-Mã nguồn khóa luận: chọn/trích xuất đặc trưng, phân loại, permutation test (bài toán phụ: giai đoạn sớm/muộn) và RQ0′–RQ4 (bài toán chính: LUAD vs LUSC, chuyển giao TCGA → cohort GEO).
+The benchmark compares thirteen gene selectors from four families (filter, embedded, constrained, wrapper) and five
+reference panels on the classification of lung adenocarcinoma (LUAD) against lung squamous cell carcinoma (LUSC). Every
+selector must return a panel of exactly k genes, k ∈ {1, 2, 3, 4, 5, 10, 25, 50}. The cohorts are TCGA-LUAD/LUSC
+(RNA-seq, 1,016 patients) and four microarray series of the Gene Expression Omnibus (GSE10245, GSE30219, GSE37745,
+GSE42127). The experiments E0 to E8 and the sensitivity analyses SA1 to SA4 measure performance, cost, stability, the
+few-shot regime and transfer from TCGA to the microarray cohorts.
 
-**Kho này là nơi duy nhất chứa code.** Dữ liệu và kết quả nằm ở thư mục dữ liệu riêng (vd. `D:\KLTN`), không đưa lên Git. Mọi kết quả phải sinh từ một commit đã push, để commit hash ghi trong `config.json` kiểm chứng được trên GitHub (Review 20/10/2026, O3, §7.7).
+Tag `survey-v3-dmkd.4` of branch `dmkd-revision` marks the state cited in the paper. [REPRODUCE.md](REPRODUCE.md)
+describes the result files and gives the commands that regenerate the tables of the paper.
 
-## Cấu trúc
+## Repository layout
 
-```
-RNA-Seq-FS-Survey/
-├── scripts/                     code chạy trên máy (Python)
-│   ├── provenance.py            ghi nguồn gốc mỗi lần chạy; dừng nếu không truy vết được
-│   ├── run_rq0_prime.py         RQ0′: trần hiệu năng trên 4 cohort GEO (CV 5×5)
-│   ├── build_rq0_prime_workbook.py
-│   ├── rebuild_gse30219_r5.py   dựng lại GSE30219 sau khi sửa nhãn (R5): 85 LUAD / 61 LUSC
-│   ├── build_perm_test_data.py  dữ liệu cho permutation test v3
-│   ├── patch_v2_tcga_stage.py   vá nhãn giai đoạn TCGA v2 từ GDC
-│   ├── aggregate_phase0_v3.py, aggregate_phase1_results.py, stage_split_metrics.py, organize_fs_phase1.py
-│   ├── build_review_completion_artifacts.py, build_review_documents.py
-│   ├── run_survey_e1.py, run_survey_e1_wrappers.py, run_survey_e2_e3_timing.py, run_survey_e4_e5_stability.py
-│   ├── make_survey_tables.py, run_p0_perm_v3.py, aggregate_p0_decision.py, run_sanity_auroc.py
-│   ├── smoke_test_survey_v2.py  chạy thử toàn bộ chuỗi survey trên dữ liệu giả
-│   ├── PHASE1_REPRODUCTION.md
-│   └── _archive/                script cũ, không dùng
-├── survey_v2/                   gói Python của bộ thực nghiệm survey v2 (E1–E6, P0, sanity) — xem docs/survey_v2/
-├── tests/                       python -m pytest tests
-├── notebooks/
-│   ├── phase_0/                 dữ liệu v1/v2/GEO, FS/FE và phân loại Phase 0, permutation v3, B0 v3
-│   ├── phase_1/                 benchmark Phase 1 (LUAD vs LUSC) – ĐÓNG BĂNG (O13)
-│   └── _archive/                notebook cũ, không dùng
-├── docs/notebook_manifest.md    trạng thái từng notebook: đang dùng / đóng băng / cũ
-└── docs/survey_v2/HUONG-DAN-DOI-CODE.md   hướng dẫn đội code cho survey v2 (thiết kế, lệnh, tiêu chí chấp nhận)
-```
-
-## Cài đặt
-
-```powershell
-git clone https://github.com/datachain-uit/RNA-Seq-FS-Survey.git
-cd RNA-Seq-FS-Survey
-pip install -r requirements.txt
-$env:KLTN_DATA_ROOT = "D:\KLTN"     # thư mục chứa experiment-data*/, results/ ...
-```
-
-`KLTN_DATA_ROOT` cho script biết dữ liệu ở đâu. Thiếu biến này, script tìm dữ liệu ngay trong thư mục kho.
-
-## Quy trình mỗi lần chạy
-
-1. Sửa code trong kho → `git commit` → `git push`.
-2. Chạy script từ thư mục kho, ví dụ `python scripts/run_rq0_prime.py`.
-3. Script gọi `provenance()` trước khi tính toán:
-   - **dừng** nếu thư mục không phải git clone hoặc còn file đã theo dõi bị sửa mà chưa commit;
-   - ghi vào `config.json`/`provenance.json` cạnh kết quả: commit hash, script và tham số, phiên bản thư viện, máy, SHA-256 của dữ liệu đầu vào.
-
-Chỉ trong trường hợp bất khả kháng mới chạy với `$env:KLTN_ALLOW_UNTRACKED = "1"`; kết quả khi đó ghi `commit_hash: null` và không được trích vào survey hay luận văn.
-
-Notebook chạy trên Kaggle/Colab: clone kho ở đúng commit rồi dùng `scripts/provenance.py` (ô mẫu ở `docs/notebook_manifest.md`, mục 4).
-
-## Dữ liệu (ở `KLTN_DATA_ROOT`, không có trong kho)
-
-| Thư mục | Nội dung |
+| Path | Content |
 |---|---|
-| `experiment-data-v2/` | TCGA LUAD/LUSC (1.018 bệnh nhân), GSE68465 chỉ mẫu u, sanity Normal vs u; có `DATA_CARD.md` |
-| `experiment-data-geo-target/` | cohort đích GSE10245, GSE30219 (`gse30219_r5_fixed`), GSE37745, GSE42127 |
-| `experiment-data-perm/` | dữ liệu permutation test v3 |
-| `results/` | kết quả theo phase |
+| `survey_v2/` | Python package of the benchmark: data access, the thirteen selectors and the reference panels, resampling, classifier, metrics, stability, provenance |
+| `scripts/` | Command-line runners of the experiments, split builders, quality control of the cohorts, table builder of the result files |
+| `scripts/r/` | R script of the two transfer methods with a model of the source (ptLasso, Trans-GLM) |
+| `paper_scripts/` | Scripts that write the tables of the paper from `results/`, the expected checksums, and `NUMBERING.md` (sections, tables and figures of the manuscript with their source files) |
+| `notebooks/kaggle/` | Kaggle notebooks that ran the experiments, one per experiment, generated by `scripts/make_kaggle_notebooks.py` from the common runner `notebooks/kaggle_survey_v3_runner.ipynb`; each notebook selects a job of `scripts/kaggle_jobs.py` |
+| `notebooks/kaggle_r/` | Kaggle notebook of ptLasso and Trans-GLM in E7 (installs R) |
+| `notebooks/kaggle_e7_k2_evidence.ipynb` | Kaggle notebook of the gene-level analysis of the zero-shot rule at k = 2 |
+| `notebooks/phase_0/00_data/` | Notebooks that downloaded and built the TCGA and GEO cohort files |
+| `tests/` | Unit tests and end-to-end tests on synthetic data |
+| `results/survey_v2/` | Outputs of every experiment, one folder per experiment and cohort, each with a `config.json` |
+| `results/run_info_*.json`, `results/logs/` | Session information and logs of the Kaggle jobs, including `pip freeze` |
+| `splits/` | Patient-level split files, sample metadata, exclusion lists, quality-control files and data cards of the cohorts |
+| `docs/RECORDS_GLOSSARY.md` | English translation of the Vietnamese strings that occur in the result files, logs and quality-control files |
+| `requirements-kaggle.txt` | Package versions of the environment that produced every reported number (Python 3.13.15) |
+| `requirements.txt` | Package versions for running the scripts and tests on a local machine |
 
-## Survey v3.1 (E0–E7, dùng chung với RQ1 khoá luận) — 29/10/2026 (QĐ15, QĐ18–QĐ20)
+## Names used in the code
 
-v3.1 = gói v3 (26/10) ghép lên HEAD `2508a2a` của đội code: giữ `dataset_path()`, `dataset_seed_id()`, `build_v3_splits.py`
-(phần few-shot sửa thành 4 tập con lồng nhau), layout Kaggle `experiment-data-geo-target/gse30219`; thêm `KLTN_STRICT_N`.
-Chi tiết và việc phải làm trước: mục "v3.1" đầu `docs/survey_v2/HUONG-DAN-DOI-CODE.md`.
-v3.1.6 (31/10/2026, QĐ25–QĐ28, sau đợt 1): SVM-RFE có `random_state` (chọn lại bằng `--redo-methods svm_rfe`, việc `redo_svm_rfe_A/B`);
-abess bỏ cột hằng; đo thời gian E2/E3 không tracemalloc và bộ nhớ tiến trình con bằng VmHWM (E2/E3 chạy lại); `requires` cho E4/E5;
-`merge-e2e3` bỏ qua CSV rỗng. Mục "v3.1.6" đầu HUONG-DAN-DOI-CODE.md.
-v3.1.7 (02/11/2026, QĐ30–QĐ32, sau bổ sung đợt 1): seed bootstrap của `make_survey_tables.py` tái lập (CRC32 của khoá, không `hash()`),
-cờ chuyển giao E7 theo Wilcoxon + Holm; bảng ablation IHC (`e1_ablation_noihc*`); việc `panels` cho Girard 2016 / Wilkerson 2013;
-`restore_from` = thứ tự giải nén (mới nhất cuối) và `requires_cfg` chặn khôi phục sai bản; nối CSV theo tiêu đề (`append_csv_aligned`).
-Mục "v3.1.7" đầu HUONG-DAN-DOI-CODE.md.
+| Paper | Code and result files |
+|---|---|
+| F-test, MI, mRMR, ReliefF | `f_test`, `mutual_info`, `mrmr`, `relieff` |
+| L1-LR, Elastic Net, RF importance, SVM-RFE | `l1_lr`, `elastic_net`, `rf_importance`, `svm_rfe` |
+| abess, stability selection, k-TSP | `abess`, `stability_selection`, `ktsp` |
+| GA, BPSO | `ga`, `bpso` |
+| B0, random-k | `b0`, `random_k` |
+| IHC-2, IHC-4, Girard 2016, Wilkerson 2013 | `ihc_2`, `ihc_4`, `panel_girard2016`, `panel_wilkerson2013` |
+| TCGA-LUAD/LUSC, GSE10245, GSE30219, GSE37745, GSE42127 | `tcga_luad_lusc_primary_tumor`, `gse10245`, `gse30219`, `gse37745`, `gse42127` |
+| E8 (EGFR mutation; TCGA-LUAD, GSE31210) | folders with prefix `B7_` or suffix `_b7`; data sets `tcga_luad_egfr`, `gse31210_egfr` |
+| SA1, SA2, SA3, SA4 | folders `B4_*`, `B5_*`, `B2_*`, `B3_*` |
+| E7 and E1b over 20 test/pool splits | folders `B1_*` |
+| ptLasso and Trans-GLM in E7 | folders `B6_*` |
 
-Bài survey theo cùng bài toán với khoá luận (LUAD vs LUSC; nguồn TCGA + 4 cohort GEO). Bộ thực nghiệm nằm trong `survey_v2/`
-và `scripts/`; hướng dẫn đầy đủ (mục đích từng thí nghiệm, lệnh, đầu ra, tiêu chí chấp nhận, bàn giao) ở
-[`docs/survey_v2/HUONG-DAN-DOI-CODE.md`](docs/survey_v2/HUONG-DAN-DOI-CODE.md). Bài toán giai đoạn (P0, GSE68465) không còn thuộc survey.
+The package keeps the name `survey_v2` of its first version; it holds the benchmark of the paper. The environment
+variables have the prefix `KLTN_`: `KLTN_DATA_ROOT` names the data folder, `KLTN_STRICT_N=1`
+stops a run when the sample counts of a cohort differ from the expected counts, and `KLTN_ALLOW_UNPUSHED=1` allows a
+local test run from code that is not pushed (such a run is marked as not traceable).
 
-```powershell
-python -m pytest tests -q                              # kiểm tra đơn vị + 7 test đầu-cuối trên dữ liệu giả
-python scripts/smoke_test_survey_v2.py --n-jobs 4      # chạy thử toàn bộ chuỗi E0–E7 (≈ 10–20 phút, dữ liệu giả)
-python scripts/build_e1_repeated_splits.py             # bản chia 5×5 theo bệnh nhân cho 5 bộ
-python scripts/build_fewshot_splits.py                 # bản chia few-shot (5 split × 4 tập con × n_T) cho 4 cohort GEO
-python scripts/run_sanity_auroc.py                     # Y10: đối chứng dương
-python scripts/run_survey_e0_signal_check.py           # E0: hoán vị + random-k cho 5 bộ
-python scripts/run_e1_feature_selection.py             # E1 pha A: 11 phương pháp + panel IHC, 5 bộ, k ∈ {1..50}
-python scripts/run_e1_wrappers_all_cohorts.py          # E1 pha A: GA, BPSO (3 cohort GPL570, 3×5, k ∈ {5,10,50})
-python scripts/run_e1_classification.py --secondary    # E1 pha B: LR-L2 (+ RF, SVM ở k ∈ {5,25}), B0, random-k
-python scripts/run_survey_e1b_learning_curve.py        # E1b: đường cong học few-shot (= nhánh target-only của RQ2)
-python scripts/run_survey_e7_transfer_naive.py         # E7: source-only / select-on-source / pooled (= baseline D3 của RQ2)
-python scripts/run_survey_e2_e3_timing.py --wrappers   # E2 + E3 (TCGA, một máy cố định)
-python scripts/run_survey_e4_e5_stability.py           # E4 (TCGA, GSE37745) + E5 (GSE37745)
-python scripts/make_survey_tables.py                   # bảng, hình, k* gộp (QĐ11), E6, manifest truy vết
-```
+## Data
 
-Kết quả vào `$KLTN_DATA_ROOT/results/survey_v2/<E>/...`, mỗi thư mục có `config.json` (commit hash, SHA-256 dữ liệu và bản chia,
-`traceable`, `gene_space`). Script dừng nếu chưa commit + push (Y13); `KLTN_ALLOW_UNPUSHED=1` chỉ để chạy thử.
+The expression data are public and are not redistributed here. TCGA-LUAD and TCGA-LUSC come from the Genomic Data
+Commons (https://portal.gdc.cancer.gov/), and GSE10245, GSE30219, GSE37745, GSE42127 and GSE31210 from the Gene
+Expression Omnibus (https://www.ncbi.nlm.nih.gov/geo/). `splits/` holds the sample identifiers, labels, sample metadata
+and split files of every cohort. The data card of each cohort (`splits/<cohort>/DATA_CARD.md`) gives the source files,
+the quality-control decisions and the SHA-256 of the cohort files used for the paper. Section 5 of `REPRODUCE.md`
+describes how the cohort files are rebuilt and where the runners read them.
+
+## Quick start
+
+The experiments ran on Kaggle with Python 3.13.15 and the package versions of `requirements-kaggle.txt`.
+
+    pip install -r requirements-kaggle.txt
+    python -m pytest tests -q
+
+On Windows, set `PYTHONUTF8=1` before running the tests.
+
+The tables of the paper are regenerated from the result files without rerunning any experiment (numpy and pandas
+only):
+
+    python paper_scripts/make_tables.py --results results/survey_v2/tables --e0-configs results/survey_v2/E0 --qc splits/qc --out out/Tables
+    (cd out/Tables && sha256sum -c --ignore-missing ../../paper_scripts/EXPECTED_SHA256.txt)
+
+Sections 4 and 6 of `REPRODUCE.md` give the commands for the other tables, and Section 5 the commands that rerun the
+experiments.
+
+## Provenance
+
+Every run refused to start from a working tree with uncommitted or unpushed changes and wrote a `config.json` with
+the commit of the code, the SHA-256 of its input files and the package versions. The commits that produced the result
+files are listed in Section 2 of `REPRODUCE.md`; all of them are in the history of `dmkd-revision`, the only branch of
+the repository. The commit messages
+and the earlier tags are partly written in Vietnamese, the working language of the authors.
+
+The code comments and the records written during the runs (`config.json` notes, logs, the reason columns of the
+exclusion lists) are also partly in Vietnamese. The records are kept byte for byte as produced, since the
+`config.json` files and the split manifests record the SHA-256 of many of them. The program of the benchmark is the
+same as at commit `d916062`: the code of this tag differs from it only in comments, docstrings, the text of one
+generated notebook, four notes that the runs write into `config.json`, the names of three tests and the branch that
+the Kaggle notebooks clone (`dmkd-revision`). `docs/RECORDS_GLOSSARY.md` translates the strings that occur in the records
+and the codes of the authors' working log that the comments cite.
+
+## Tags
+
+The paper cites `survey-v3-dmkd.4`. The earlier tags are kept unchanged.
+
+| Tag | Commit | Content |
+|---|---|---|
+| `survey-v3-submission` | `06ba993` | Code of the main benchmark (E0 to E7) |
+| `survey-v3-dmkd` | `b97a091` | The same code with the result files, the splits and the first table scripts |
+| `survey-v3-dmkd.1` | `97f95db` | Adds `REPRODUCE.md` and the licences |
+| `survey-v3-dmkd.2` | `9ed315a` | Adds the sensitivity analyses and the second task (folders `B1_*` to `B7_*`) |
+| `survey-v3-dmkd.3` | `8a30f77` | Regenerates `B1_tables/` and `B6_tables/` from the stored runs (no experiment rerun); adds the scripts of the supplementary tables |
+| `survey-v3-dmkd.4` | this tag | Set on 25 November 2026 at `d916062`, which removed the figure scripts; moved on 26 November 2026 to the next commit, which brings the documentation and the data cards in English and removes the notebooks, scripts and notes that the paper does not use. The program of the benchmark, the result files and the split files did not change |
+
+## Licence
+
+The source code is licensed under the MIT licence (`LICENSE`). The result files and splits are licensed under CC BY
+4.0 (`LICENSE-DATA.md`). The source data remain under the terms of the GDC and GEO.
+
+## Citation
+
+See `CITATION.cff`. Please cite the paper when you reuse the benchmark; the reference will be added here after
+publication.

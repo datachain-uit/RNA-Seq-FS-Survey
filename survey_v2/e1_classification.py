@@ -118,7 +118,7 @@ def build_estimator(model: str, params: dict, seed: int):
 
 
 def parameter_grid(model: str, *, quick: bool = False) -> list[dict]:
-    """Predeclared grids adapted from the phase_1 classification notebooks."""
+    """Predeclared hyperparameter grids of the classifiers."""
     grids = {
         "knn": {"n_neighbors": [5, 11] if quick else [3, 5, 7, 11, 15, 21], "weights": ["distance"] if quick else ["uniform", "distance"]},
         "gaussian_nb": {"var_smoothing": [1e-9, 1e-3] if quick else [1e-9, 1e-7, 1e-5, 1e-3, 1e-2, 1e-1]},

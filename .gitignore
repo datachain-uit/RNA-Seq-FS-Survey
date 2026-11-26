@@ -1,5 +1,5 @@
-# Dữ liệu và kết quả lớn nằm ở thư mục dữ liệu (KLTN_DATA_ROOT, vd. D:\KLTN), không đưa lên Git.
-# Kết quả nhỏ (< 50 MB) nếu cần commit thì thêm bằng: git add -f <đường dẫn>
+# Data and large results stay in the data folder ($KLTN_DATA_ROOT) and are not committed.
+# The result files of the paper in results/ and splits/ were added with: git add -f <path>
 experiment-data*/
 Dataset/
 dataset*/
@@ -8,11 +8,9 @@ selected_features*/
 geo_target_work/
 results/
 outputs/
-paper/
-review-9-10/
-Nop-GVHD-*/
+out/
 
-# Định dạng dữ liệu/nhị phân
+# Data and binary formats
 *.h5
 *.hdf5
 *.zip
@@ -34,15 +32,13 @@ __pycache__/
 venv/
 *.egg-info/
 
-# Công cụ, tệp tạm, khóa Office
-node_modules/
-.artifact_node_modules/
-.claude/
+# Temporary and editor files
 tmp*/
 .tmp*/
-artifact_build_*/
 ~$*
 *.tmp
 .DS_Store
 Thumbs.db
 desktop.ini
+.idea/
+.vscode/

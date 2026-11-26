@@ -1,26 +1,24 @@
-# Môi trường cho scripts/ và tests/ (chạy trên máy). Python 3.14.6.
-# Phiên bản lấy từ provenance của lần chạy RQ0′ ngày 24/10/2026 tại commit 01c0867
-# (D:\KLTN\results\phase 1\rq0_prime\config.json).
-# Notebook chạy trên Kaggle/Colab dùng môi trường của nền tảng; phiên bản thực tế được ghi
-# trong config.json/provenance.json của từng lần chạy (scripts/provenance.py).
+# Environment for running scripts/ and tests/ on a local machine (Python 3.14.6 at the time).
+# The versions were taken from the provenance record of a local run of 24/10/2026 at commit 01c0867.
+# The Kaggle notebooks use the environment of the platform; the versions of each run are recorded in its
+# config.json (scripts/provenance.py, survey_v2/runlog.py). To reproduce the reported numbers, use
+# requirements-kaggle.txt, the environment of every run of the paper.
 numpy==2.5.0
 pandas==3.0.3
 scipy==1.18.1
 scikit-learn==1.9.0
-tables==3.11.1       # PyTables, đọc/ghi .h5
-openpyxl==3.1.5      # build_rq0_prime_workbook.py
-requests==2.34.2     # patch_v2_tcga_stage.py (GDC API)
-# Chưa ghi nhận phiên bản cụ thể — chốt bằng: pip show python-docx pytest
-python-docx>=1.1     # build_review_documents.py
+tables==3.11.1       # PyTables, reads and writes .h5
+openpyxl==3.1.5      # its version is recorded by scripts/provenance.py
+requests==2.34.2     # GDC API and GEO downloads (patch_v2_tcga_stage.py, geo_sample_qc.py, build_b7_egfr_datasets.py)
 pytest>=8
 
-# --- survey v2 (survey_v2/ + scripts/run_survey_*.py), thêm 25/10/2026 ---
-joblib>=1.3          # Parallel(return_as="generator") trong các script survey
-threadpoolctl>=3.1   # giới hạn BLAS 1 luồng/fold (E1–E4) và khi đo thời gian (E2–E3)
-skrebate>=0.8        # ReliefF (Urbanowicz et al. 2018); nếu lỗi trên Python 3.14: pip install --no-deps skrebate
-psutil>=5.9          # machine_config.json của E2–E3
-matplotlib>=3.8      # make_survey_tables.py (hình E1, E3, E4, E5c, E6)
+# --- benchmark (survey_v2/ and scripts/run_*.py) ---
+joblib>=1.3          # Parallel(return_as="generator") in the runners
+threadpoolctl>=3.1   # one BLAS thread per fold (E1-E4) and during the timing runs (E2-E3)
+skrebate>=0.8        # ReliefF (Urbanowicz et al. 2018); if it fails on Python 3.14: pip install --no-deps skrebate
+psutil>=5.9          # machine_config.json of E2-E3
+matplotlib>=3.8      # make_survey_tables.py (figures of E1, E3, E4, E5c, E6)
 xgboost>=2.1         # classifier E1 phase B
 lightgbm>=4.5        # classifier E1 phase B
-codecarbon>=2.8      # optional energy estimate (OFF by default, --track-emissions; descriptive only, Y16)
-# abess>=0.4         # L0 / best-subset (survey v3 method 'abess'); install separately: pip install abess (no wheel on some Python versions -> method skipped)
+codecarbon>=2.8      # optional energy estimate (OFF by default, --track-emissions; descriptive only)
+# abess>=0.4         # L0 best-subset selection (selector 'abess'); install separately: pip install abess (no wheel on some Python versions -> selector skipped)

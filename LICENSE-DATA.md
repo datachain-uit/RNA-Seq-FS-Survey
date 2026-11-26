@@ -10,7 +10,7 @@ All other files of the repository (source code, notebooks, tests, documentation)
 ## Third-party material
 
 * Source data. The files are derived from public data: TCGA-LUAD and TCGA-LUSC from the Genomic Data Commons
-  (https://portal.gdc.cancer.gov/) and the Gene Expression Omnibus series GSE10245, GSE30219, GSE37745 and GSE42127
-  (https://www.ncbi.nlm.nih.gov/geo/). The original data remain under the terms of these sources. No expression matrix is
+  (https://portal.gdc.cancer.gov/), including the open-access somatic mutation files of TCGA-LUAD, and the Gene
+  Expression Omnibus series GSE10245, GSE30219, GSE37745, GSE42127 and GSE31210 (https://www.ncbi.nlm.nih.gov/geo/). The original data remain under the terms of these sources. No expression matrix is
   redistributed here; `splits/` lists sample identifiers, labels and the sample metadata used for the splits and for
   quality control.

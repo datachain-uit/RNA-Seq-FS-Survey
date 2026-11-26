@@ -1,8 +1,7 @@
-"""survey_v2 — bộ thực nghiệm E1–E6 của bài survey v2 (QĐ13, Review 24/10/2026).
+"""survey_v2: the benchmark of the survey (experiments E0 to E8 and the sensitivity analyses).
 
-Bài toán phụ: giai đoạn sớm (I) vs muộn (II–IV), chỉ mẫu u, ba bộ dữ liệu trong
-``experiment-data-perm/``. Mọi bước chọn gen, chuẩn hóa và tuning nằm trong fold.
-Xem ``docs/survey_v2/HUONG-DAN-DOI-CODE.md`` để biết cách chạy và tiêu chí nghiệm thu.
+Task: LUAD versus LUSC. Every step that reads the labels (gene selection, standardisation, tuning)
+runs inside the training part of a fold. See README.md and REPRODUCE.md.
 """
 
 __version__ = "0.1.0"

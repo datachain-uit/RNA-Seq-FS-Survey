@@ -1,55 +1,95 @@
-# Data card GSE42127
+# Data card: GSE42127
 
-## Cập nhật 02/11/2026 — code J, sàng trùng, độ phủ gen panel (G-02, G-04; Review 31/10)
+This card is the English version of the data card kept by the authors while the cohort was built. The original,
+in Vietnamese, is at the same path in commit `d916062` of this repository. The record files named here (`excluded_samples_*.csv`,
+`qc/*.csv`) keep the wording of that time; `docs/RECORDS_GLOSSARY.md` translates it. The rules are named there by
+the numbers of the authors' decision log: QĐ21 (near-duplicate pair of GSE37745), QĐ22 (two-axis sex check of the
+GEO cohorts) and QĐ22b (per-gene Y vote of TCGA).
 
-### Kiểm tra chéo nhãn với series matrix gốc (code J)
+## Update of 2 November 2026: label cross-check, duplicate screen, coverage of the panel genes
 
-- **Cách làm:** `scripts/check_label_crosscheck.py` đọc `GSE42127_series_matrix.txt.gz` (thư mục `geo_target_work/raw/GSE42127/`), lấy trường `histology` trong `!Sample_characteristics_ch1` theo khoá (không theo vị trí cột), ánh xạ bằng khớp chính xác chuỗi theo `label_mapping.json`, không regex: `histology: Adenocarcinoma` → 0; `histology: Squamous` → 1.
-- **Kết quả: ĐẠT.** Series matrix 176 mẫu → LUAD/LUSC 133/43 (trùng `n_samples` trong `label_mapping.json`) → trừ 9 mẫu trong `excluded_samples_gse42127.csv` → **126/41** = `DATASET_EXPECTED_N` 126/41. Tập mẫu trùng hoàn toàn với `metadata.csv` (không mẫu nào chỉ có ở một bên); nhãn trùng 100 % (0 mẫu lệch).
-- **Tệp:** `qc/label_crosscheck_gse42127.csv` (từng mẫu của series matrix: giá trị gốc, nhãn suy ra, trạng thái giu / cach_ly_QC / khong_thuoc_bai_toan, nhãn trong metadata, cột `match`); tóm tắt `qc/label_crosscheck_summary.csv`. Ngày chạy 02/11/2026.
+### Cross-check of the labels against the original series matrix
 
-### Sàng mẫu trùng (r_z, 29/10/2026)
+- Method: `scripts/check_label_crosscheck.py` reads `GSE42127_series_matrix.txt.gz` (folder
+  `geo_target_work/raw/GSE42127/`), takes the field `histology` of `!Sample_characteristics_ch1` by its key (not by
+  its column position) and maps it by exact string match through `label_mapping.json`, without regular expressions:
+  `histology: Adenocarcinoma` → 0; `histology: Squamous` → 1.
+- Result: passed. Series matrix 176 samples → LUAD/LUSC 133/43 (equal to `n_samples` in `label_mapping.json`) → minus
+  the 9 samples of `excluded_samples_gse42127.csv` → 126/41, equal to `DATASET_EXPECTED_N` 126/41. The set of samples
+  is identical to `metadata.csv` (no sample on one side only) and the labels agree for 100 % of the samples
+  (0 mismatch).
+- Files: `qc/label_crosscheck_gse42127.csv` (one row per sample of the series matrix: original value, derived label,
+  status `giu` = kept / `cach_ly_QC` = excluded by quality control / `khong_thuoc_bai_toan` = not part of the task,
+  label in the metadata, column `match`); summary in `qc/label_crosscheck_summary.csv`. Run on 2 November 2026.
 
-- `scripts/geo_sample_qc.py` (cấu hình `qc/rz_screen_config.json`, commit `5facab3`, chạy 29/10 trên bản trước QC): r_z = Pearson giữa hai mẫu sau khi chuẩn hoá z từng gen trong cohort; ngưỡng r_z ≥ 0,90, kèm r thô ≥ 0,99.
-- **Trong cohort:** 15.400 cặp trên 19.405 gen; r_z lớn nhất 0,5770, phân vị 99,9 % 0,4366; **0 cặp r_z ≥ 0,90**; r thô lớn nhất 0,9662 (0 cặp r ≥ 0,99).
-- **Giữa cohort** (17.062 gen chung của 4 cohort): r_z lớn nhất 0,4579 (với GSE30219); 0 cặp r_z ≥ 0,90 với mọi cohort khác.
+### Duplicate-sample screen (r_z, 29 October 2026)
 
-### patient_id (O15)
+- `scripts/geo_sample_qc.py` (configuration `qc/rz_screen_config.json`, commit `5facab3`, run on 29 October on the
+  cohort before quality control): r_z is the Pearson correlation of two samples after z-scoring each gene within the
+  cohort; threshold r_z ≥ 0.90, together with raw r ≥ 0.99.
+- Within the cohort: 15,400 pairs on 19,405 genes; largest r_z 0.5770, 99.9th percentile 0.4366; 0 pairs with
+  r_z ≥ 0.90; largest raw r 0.9662 (0 pairs with r ≥ 0.99).
+- Between cohorts (17,062 genes shared by the four GEO cohorts): largest r_z 0.4579 (with GSE30219); 0 pairs with
+  r_z ≥ 0.90 with any other cohort.
 
-- `metadata.csv` có cột `patient_id` (= `sample_id`), nên `load_dataset` ghi `patient_id_assumed_from_sample_id = false`. Căn cứ để coi mỗi mẫu là một bệnh nhân: title ghi mã mẫu ("… sample 250-T"); bỏ hậu tố -T/-T1/-T2/-Tx thì 176/176 mã khác nhau trên toàn series; sàng r_z không thấy cặp trùng; QC giới tính đã cách ly mẫu không xác minh được danh tính. Chia fold theo nhóm `patient_id` vì vậy tương đương chia theo mẫu.
+### patient_id
 
-### Độ phủ gen của panel tham chiếu
+- `metadata.csv` has a column `patient_id` (= `sample_id`), so `load_dataset` records
+  `patient_id_assumed_from_sample_id = false`. Each sample is taken as one patient because the titles give a sample
+  code ("… sample 250-T") and, after removing the suffixes -T/-T1/-T2/-Tx, the 176 codes are distinct across the whole
+  series; the r_z screen found no duplicate pair, and the sex check excluded the samples whose identity could not be
+  verified. Folds grouped by `patient_id` are therefore equivalent to folds by sample.
 
-Nền tảng GPL6884. Không gian E1/E1b = gen của cohort giao với gen TCGA (`load_dataset(gene_space="reference")`). Panel được đánh giá với phần gen còn lại; `config.json` của E1 ghi danh sách thiếu và cờ `complete = false` (`qc/panel_gene_coverage.csv`, `scripts/check_panel_coverage.py`).
+### Coverage of the genes of the reference panels
 
-| Panel | Có / tổng (gen gốc của nền tảng) | Có / tổng (không gian E1/E1b) | Gen thiếu |
+Platform GPL6884. The gene space of E1 and E1b is the set of genes of the cohort that are also TCGA genes
+(`load_dataset(gene_space="reference")`). A panel is evaluated with its genes that are present; the `config.json` of E1
+lists the missing genes and sets `complete = false` (`qc/panel_gene_coverage.csv`, `scripts/check_panel_coverage.py`).
+
+| Panel | Present / total (genes of the platform) | Present / total (gene space of E1/E1b) | Missing genes |
 |---|---|---|---|
 | IHC-2 | 2/2 | 2/2 | — |
 | IHC-4 | 4/4 | 4/4 | — |
-| Girard 2016 (42 gen) | 41/42 | 41/42 | PNCK |
-| Wilkerson 2013 (52 gen) | 52/52 | 52/52 | — |
+| Girard 2016 (42 genes) | 41/42 | 41/42 | PNCK |
+| Wilkerson 2013 (52 genes) | 52/52 | 52/52 | — |
 
-Ghi chú ký hiệu (03/11/2026): Wilkerson 2013 (Table 1) ghi TUBA1; khảo sát dùng TUBA4A theo HGNC (HGNC:12407, previous symbol TUBA1; tra 03/11/2026), không đối chiếu theo mồi PCR của bài gốc.
+Note on gene symbols (3 November 2026): Wilkerson et al. (2013, Table 1) list TUBA1. The benchmark uses TUBA4A,
+following HGNC (HGNC:12407, previous symbol TUBA1; looked up on 3 November 2026), without a check against the PCR
+primers of the original article.
 
 ---
 
-## Cập nhật 29/10/2026 — QC mẫu (QĐ21, QĐ22, QĐ22b) — **số mẫu chính thức cho survey v3**
+## Update of 29 October 2026: sample quality control (sample counts used in the paper)
 
-- **n trước → sau:** 176 (133/43) → **167 (126/41)** LUAD/LUSC; `DATASET_EXPECTED_N` = (126, 41) (commit `380d01f`, "QĐ21+QĐ22").
-- **Dựng lại tệp cohort:** `scripts/geo_sample_qc.py rebuild` tại commit `380d01f` (2026-10-29T13:24:03+07:00); chỉ bỏ các mẫu trong `excluded_samples_gse42127.csv` và thêm cột `sex`; mọi giá trị còn lại giữ nguyên (script kiểm tra bằng assert). Bản cũ: `_backup_20261029-132403/`.
-- **SHA-256 mới:** `expression.h5` `6595946619c4a39def08b957725a2883358bbc8228ff0626799444ceb91532c8`; `metadata.csv` `8b18fd7f004f6fdfacbb4fbc8b93f89def8384152f559cdaad1c388570fe3d55`.
-- **Bản chia (build_v3_splits.py --force, commit `380d01f`):** `repeated_splits.csv` `6a0f194aa586b94f3836019b273d12ac2bc8abbdfe0151e612c876be073fd959` (4175 dòng); `fewshot_splits.csv` `5cfec85ebf3b88981ba081114fdd2777ff6d65dc9085dac31859ecaeb34a5f01` (n_T: 5, 10, 20, pool; 5 split × 4 tập con).
-- **Nguồn GEO (Mục 7.2.3):** GSE42127 — "Expression data for non-small-cell lung cancer"; nộp 07/11/2012, cập nhật lần cuối 22/06/2020 (theo `!Series_*` của series matrix); bài gốc PMID 23357979 (series còn liệt kê 32512502); series matrix tải về `geo_target_work/raw/GSE42127/` ngày 17/10/2026 09:21 (UTC+7) (thời điểm ghi tệp trên máy).
-- **Nguồn giới tính:** trường `gender:` trong `!Sample_characteristics_ch1` của series matrix, đọc theo khoá (đã kiểm tra trực tiếp series matrix: không lệch cột).
-- **Quy tắc (QĐ22, chế độ hai trục):** XIST và trung bình 5 gen Y (RPS4Y1, DDX3Y, KDM5D, UTY, EIF1AY), mỗi trục chia hai cụm k-means trên chính cohort. opposite (cả hai trục trái metadata) và inconsistent (XIST và gen Y cùng cao) → cách ly; inconclusive (both-low, chỉ một trục trái, hoặc trục không phân biệt) → giữ, ghi cờ.
-- **Ngưỡng:** XIST 7.07; trục Y 5.80 (log2).
-- **Kết quả:** match 161, inconclusive 6, opposite 7, inconsistent 2.
+- n before → after: 176 (133/43) → 167 (126/41) LUAD/LUSC; `DATASET_EXPECTED_N` = (126, 41) (commit `380d01f`).
+- Rebuild of the cohort files: `scripts/geo_sample_qc.py rebuild` at commit `380d01f`
+  (2026-10-29T13:24:03+07:00). The rebuild only removes the samples of `excluded_samples_gse42127.csv` and adds the
+  column `sex`; every other value is unchanged (checked by assertions in the script). Previous version:
+  `_backup_20261029-132403/` (not in this repository).
+- New SHA-256: `expression.h5` `6595946619c4a39def08b957725a2883358bbc8228ff0626799444ceb91532c8`; `metadata.csv`
+  `8b18fd7f004f6fdfacbb4fbc8b93f89def8384152f559cdaad1c388570fe3d55`.
+- Splits (`build_v3_splits.py --force`, commit `380d01f`): `repeated_splits.csv`
+  `6a0f194aa586b94f3836019b273d12ac2bc8abbdfe0151e612c876be073fd959` (4175 rows); `fewshot_splits.csv`
+  `5cfec85ebf3b88981ba081114fdd2777ff6d65dc9085dac31859ecaeb34a5f01` (n_T: 5, 10, 20, pool; 5 splits × 4 subsets).
+- GEO source: GSE42127, "Expression data for non-small-cell lung cancer"; submitted 07/11/2012, last updated
+  22/06/2020 (fields `!Series_*` of the series matrix); original article PMID 23357979 (the series also lists
+  32512502); series matrix downloaded to `geo_target_work/raw/GSE42127/` on 17/10/2026 09:21 (UTC+7) (file time on
+  the authors' machine).
+- Source of sex: the field `gender:` of `!Sample_characteristics_ch1` in the series matrix, read by its key (checked
+  directly in the series matrix: no column shift).
+- Rule (QĐ22, two axes): XIST and the mean of five Y genes (RPS4Y1, DDX3Y, KDM5D, UTY, EIF1AY); each axis is split
+  into two k-means clusters within the cohort. Opposite (both axes contradict the metadata) and inconsistent (XIST and
+  the Y genes both high) → excluded; inconclusive (both low, only one axis contradicts, or an axis does not separate)
+  → kept and flagged.
+- Thresholds: XIST 7.07; Y axis 5.80 (log2).
+- Result: match 161, inconclusive 6, opposite 7, inconsistent 2.
 
-### Mẫu cách ly (9)
+### Excluded samples (9)
 
-QĐ22 — QC giới tính (opposite: giới tính trái metadata, nhãn mô học cùng dòng metadata nên không tin được; inconsistent: không xác minh được danh tính mẫu):
+Sex check (QĐ22). Opposite: the sex contradicts the metadata, and the histology label comes from the same metadata
+row, so it cannot be trusted. Inconsistent: the identity of the sample cannot be verified.
 
-| Mẫu | Lớp | Giới (metadata) | XIST | trục Y (TB 5 gen) | category | verdict |
+| Sample | Class | Sex (metadata) | XIST | Y axis (mean of 5 genes) | category | verdict |
 |---|---|---|---|---|---|---|
 | GSM1032890 | LUSC | male | 7.91 | 8.20 | both-high | inconsistent |
 | GSM1032894 | LUAD | male | 9.29 | 4.21 | F-like | opposite |
@@ -61,11 +101,12 @@ QĐ22 — QC giới tính (opposite: giới tính trái metadata, nhãn mô họ
 | GSM1032956 | LUAD | female | 5.13 | 7.89 | M-like | opposite |
 | GSM1033051 | LUAD | female | 4.60 | 7.87 | M-like | opposite |
 
-**Ghi riêng cho phần hạn chế (QĐ22b):** GSE42127 mất 9/176 mẫu (5,1 %) — 7 opposite, 2 inconsistent; danh sách và giá trị ở bảng trên.
+Note for the limitations: GSE42127 loses 9 of its 176 samples (5.1 %), 7 opposite and 2 inconsistent; the list and
+the values are in the table above.
 
-### Mẫu giữ nhưng ghi cờ — inconclusive (6)
+### Samples kept and flagged as inconclusive (6)
 
-| Mẫu | Lớp | Giới (metadata) | XIST | trục Y (TB 5 gen) | category | verdict |
+| Sample | Class | Sex (metadata) | XIST | Y axis (mean of 5 genes) | category | verdict |
 |---|---|---|---|---|---|---|
 | GSM1032926 | LUSC | male | 4.98 | 5.14 | both-low | inconclusive |
 | GSM1032940 | LUAD | male | 5.51 | 5.38 | both-low | inconclusive |
@@ -76,14 +117,20 @@ QĐ22 — QC giới tính (opposite: giới tính trái metadata, nhãn mô họ
 
 ---
 
-*Phần dưới là data card trước QC 29/10 (giữ để truy vết; số mẫu và SHA-256 ở dưới là của bản cũ).*
+*The card before the quality control of 29 October follows (kept for traceability; its sample counts and SHA-256
+are those of the previous version).*
 
-- Role: secondary-platform GPL6884 target cohort for LUAD versus LUSC; report separately from the GPL570 pooled k-star analysis.
+- Role: secondary-platform GPL6884 target cohort for LUAD versus LUSC; report separately from the GPL570 pooled
+  k-star analysis.
 - Source: GEO GSE42127 series matrix; platform GPL6884.
 - Included samples: 176 (LUAD 133, LUSC 43); one sample per patient, with `patient_id = sample_id`.
-- Expression: 19,405 gene-symbol columns. The source series matrix states MBCB background correction and quality control; 17,235 genes intersect TCGA. NKX2-1, NAPSA, TP63 and KRT5 are present.
+- Expression: 19,405 gene-symbol columns. The source series matrix states MBCB background correction and quality
+  control; 17,235 genes intersect TCGA. NKX2-1, NAPSA, TP63 and KRT5 are present.
 - Label source: `Sample_characteristics_ch1_7`; the explicit mapping is in `label_mapping.json`.
-- Input SHA-256: `expression.h5` `c86ae8d9d308b28b12c3731af8111c25d136e00383c2ddaac4f59755cb99f8f5`; `metadata.csv` `0149812c5474539d0f619f8836d034d3769b3243beac1471bb2c57e3ae540d91`.
-- Audit 2026-10-27: metadata IDs match expression IDs and the 176 source GEO IDs; no shared sample ID with the other target cohorts.
+- Input SHA-256: `expression.h5` `c86ae8d9d308b28b12c3731af8111c25d136e00383c2ddaac4f59755cb99f8f5`; `metadata.csv`
+  `0149812c5474539d0f619f8836d034d3769b3243beac1471bb2c57e3ae540d91`.
+- Audit 2026-10-27: metadata IDs match expression IDs and the 176 source GEO IDs; no shared sample ID with the other
+  target cohorts.
 
-The historical fold files are not v3 splits. Official v3 splits: see the 29/10 update above.
+The historical fold files are not the splits of the benchmark. The splits used in the paper are those of the update
+of 29 October above.

@@ -11,8 +11,8 @@ Với mỗi cohort:
 Đầu ra (trong --out): ``label_crosscheck_<cohort>.csv`` (từng mẫu của series matrix) và ``label_crosscheck_summary.csv``.
 Mã thoát 0 khi cả 4 cohort đạt.
 
-    python check_label_crosscheck.py --raw D:/KLTN/geo_target_work/raw \
-        --data D:/KLTN/_kaggle_upload/experiment-data-v3/experiment-data-geo-target --out <data_root>/qc
+    python check_label_crosscheck.py --raw <geo_workdir>/raw \
+        --data <data_root>/experiment-data-geo-target --out <data_root>/qc
 """
 from __future__ import annotations
 

@@ -1,5 +1,5 @@
-# B6 (QĐ176): ptLasso giai đoạn 1, 2 và Trans-GLM trong E7 của survey. Chép nguyên scripts/r/e7_r_baselines.R của kho
-# datachain-uit/CN-23520899-LuanNT tại 7f097da (QĐ68 bài 2); chỉ đổi chú thích tên tệp. Không đổi phép tính nào.
+# B6 (QĐ176): ptLasso (stages 1 and 2) and Trans-GLM in E7. Copied unchanged from an earlier code base of the authors
+# (commit 7f097da); only the comments that name files differ. No computation is changed.
 #
 # Script CHỈ fit mô hình và ghi hệ số; mọi quy tắc chọn (α theo biên 0,01, β_eff, panel k gen, bổ sung F-test, cờ suy biến) và đánh giá
 # nằm ở scripts/run_e7_r_eval.py để test được bằng Python. Đầu vào do scripts/export_e7_r_inputs.py ghi.

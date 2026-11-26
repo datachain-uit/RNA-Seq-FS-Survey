@@ -1,17 +1,16 @@
-"""B6 (QĐ176, đặc tả 12/11): đầu vào cho ptLasso và Trans-GLM trong E7 — chép từ scripts/export_rq2_inputs.py của kho
-datachain-uit/CN-23520899-LuanNT tại commit 7f097da (mã R đã chạy STAGE = all, QĐ68 bài 2), giữ nguyên mọi quy tắc. Khác bản gốc:
-tên tệp; `inner_splits` chép từ survey_v2/mvp.py của kho đó (kho survey không có MVP); thêm --splits-file (B1: 20 lần chia);
-thư mục ra mặc định B6_r_inputs.
+"""B6 (QĐ176, specification of 12/11): inputs of ptLasso and Trans-GLM in E7, copied from an earlier code base of the
+authors (commit 7f097da; the R code ran with STAGE = all) with every rule unchanged. Differences: file names;
+`inner_splits` is copied into this file; --splits-file is added (B1: 20 splits); default output folder B6_r_inputs.
 
 Ghi ra CSV những gì scripts/r/e7_r_baselines.R cần.
 
-Cho mỗi cohort đích (cùng cách dựng với scripts/run_rq2_mvp.py nên cùng gen, cùng lần chạy, cùng fold với MVP):
+For each target cohort (built as in the reference run, so with the same genes, runs and folds):
   * không gian gen G = gen chung của đích và TCGA (survey_v2.transfer.common_genes), lọc 5.000 gen phương sai lớn nhất trên nguồn
-    (variance_prefilter, = TransferContext.pre của MVP). Các cohort có cùng danh sách 5.000 gen dùng chung một thư mục space_<mã>;
+    (variance_prefilter). Cohorts with the same list of 5,000 genes share one folder space_<code>;
   * nguồn: z-score theo thống kê của nguồn (M7, ddof = 0), nhãn, foldid 10 fold phân tầng cố định cho cv.glmnet giai đoạn 1;
   * đích: biểu hiện log2 GỐC trên 5.000 gen (R z-score theo L_T của từng lần chạy, M7), nhãn;
   * từng lần chạy của fewshot_splits.csv: mẫu train/test, foldid trong L_T = lần lặp đầu của inner_splits với
-    seed_for(cid, seed, subset, n_t, 9) (đúng fold của đường γ của MVP), seed R = seed_for(cid, seed, subset, n_t, 13).
+    seed_for(cid, seed, subset, n_t, 9) (the folds of the reference run), R seed = seed_for(cid, seed, subset, n_t, 13).
 
     python scripts/export_e7_r_inputs.py --n-t 5 10 20                       # 5 lần chia đã công bố (cổng bằng nhau)
     python scripts/export_e7_r_inputs.py --n-t 5 10 20 --splits-root <B1_splits> --splits-file fewshot_splits_20.csv --out B6_r_inputs_20
@@ -41,9 +40,9 @@ from survey_v2.methods import zscore_apply, zscore_fit  # noqa: E402
 from survey_v2.runlog import all_versions, results_dir, start_run, write_config  # noqa: E402
 from scripts.build_fewshot_splits import fewshot_path  # noqa: E402
 
-INNER_FOLDS = 5                # = survey_v2/mvp.py (7f097da) của kho bài 2
+INNER_FOLDS = 5                # as in the earlier code base (7f097da)
 INNER_REPEATS_LARGE_N = 3
-GAMMA_SEED_TAG = 9            # = run_rq2_mvp.GAMMA_SEED_TAG: fold trong L_T của đường γ
+GAMMA_SEED_TAG = 9            # seed tag of the folds within L_T (as in the earlier code base)
 R_SEED_TAG = 13               # seed R của từng lần chạy (glmtrans)
 STAGE1_FOLDS = 10
 STAGE1_SEED = C.seed_for(0, 0, 0, 11)     # foldid của cv.glmnet giai đoạn 1, chung cho mọi không gian gen
@@ -63,7 +62,7 @@ def parse_args(argv=None):
 
 
 def inner_splits(y: np.ndarray, seed: int) -> list:
-    """Chép nguyên survey_v2/mvp.py::inner_splits (7f097da): n_T ≤ 10 mỗi lớp 5 fold một lần, lớn hơn 5 fold lặp 3 lần."""
+    """Copied unchanged from the earlier code base (7f097da): 5 folds once when n_T ≤ 10 per class, else 5 folds × 3."""
     n_min = int(min(np.sum(y == 0), np.sum(y == 1)))
     repeats = 1 if n_min <= C.SMALL_N_T_MAX else INNER_REPEATS_LARGE_N
     splits = []
@@ -85,7 +84,7 @@ def stage1_foldid(y: np.ndarray, n_folds: int = STAGE1_FOLDS, seed: int = STAGE1
 
 
 def lt_foldid(y_train: np.ndarray, seed: int) -> np.ndarray:
-    """foldid 1..F của lần lặp ĐẦU của inner_splits (như đường γ của MVP), theo thứ tự mẫu train."""
+    """foldid 1..F of the FIRST repetition of inner_splits (as in the reference run), in the order of the training samples."""
     splits = inner_splits(y_train, seed)
     n_folds = min(INNER_FOLDS, int(min(np.sum(y_train == 0), np.sum(y_train == 1))))
     fold = np.zeros(len(y_train), dtype=int)
@@ -154,7 +153,7 @@ def main(argv=None, script=__file__) -> int:
         path = fewshot_path(ds, args.splits_root, args.splits_file)
         cohorts[name] = export_cohort(source, ds, args.prefilter, path, args.n_t, out, spaces)
         print(f"[{name}] {cohorts[name]}", flush=True)
-    cfg = {"experiment": "B6_r_inputs", "copied_from": "CN-23520899-LuanNT@7f097da scripts/export_rq2_inputs.py", "source": args.source, "prefilter": args.prefilter, "spaces": spaces, "cohorts": cohorts,
+    cfg = {"experiment": "B6_r_inputs", "copied_from": "earlier code base of the authors, commit 7f097da, scripts/export_rq2_inputs.py", "source": args.source, "prefilter": args.prefilter, "spaces": spaces, "cohorts": cohorts,
            "stage1_folds": STAGE1_FOLDS, "stage1_seed": STAGE1_SEED, "lt_fold_rule": f"inner_splits lần lặp đầu, seed_for(cid, seed, subset, n_t, {GAMMA_SEED_TAG})",
            "r_seed_rule": f"seed_for(cid, seed, subset, n_t, {R_SEED_TAG})", "source_scaling": "z-score theo nguồn (ddof = 0)",
            "target_values": "log2 gốc; R z-score theo L_T (ddof = 0, sd = 0 -> 1)", "float_format": FLOAT_FORMAT,

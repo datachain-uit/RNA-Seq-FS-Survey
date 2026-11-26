@@ -1,4 +1,4 @@
-"""E1b — đường cong học few-shot của các phương pháp chọn gen HIỆN CÓ (survey v3; = nhánh target-only của RQ2).
+"""E1b — đường cong học few-shot của các phương pháp chọn gen HIỆN CÓ (survey v3).
 
 Giao thức (KBTN v2 Mục 6; bản chia từ scripts/build_fewshot_splits.py): mỗi cohort GEO, 5 lần chia test_T / pool_T,
 4 tập con mỗi mức n_T ∈ {5, 10, 20, 40, pool} mỗi lớp (lồng nhau), k ∈ FEWSHOT_K_GRID = {2, 3, 4, 5, 10}.

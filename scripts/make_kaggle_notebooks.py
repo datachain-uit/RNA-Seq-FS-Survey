@@ -40,7 +40,7 @@ class Experiment:
     intro: str          # mục đích, đầu ra, nghiệm thu (markdown)
     jobs: list          # theo thứ tự chạy
     order: str          # hướng dẫn thứ tự phiên (markdown)
-    repo_branch: str = "survey-v2-code"
+    repo_branch: str = "dmkd-revision"
 
 
 EXPERIMENTS = [
@@ -133,7 +133,7 @@ EXPERIMENTS = [
     Experiment(
         "kaggle_ablation_no_IHC.ipynb", "Ablation — bỏ 4 gen IHC (NKX2-1, TP63, NAPSA, KRT5)",
         "Lặp lại pha A + pha B E1 khi loại 4 gen IHC → `E1_feature_selection_noIHC/`, `E1_classification_noIHC/`. "
-        "Phục vụ khoá luận (ưu tiên 2), hạn 10/11.",
+        "Ưu tiên 2, hạn 10/11.",
         ["ablation_phaseA_geo", "ablation_phaseA_tcga", "ablation_phaseB"],
         "1. `ablation_phaseA_geo` và `ablation_phaseA_tcga` (2 phiên song song; TCGA có thể quá 12 giờ → chạy lại cùng JOB).\n"
         "2. `ablation_phaseB` — khôi phục output cả hai phiên pha A."),
@@ -223,7 +223,7 @@ def build(exp: Experiment, runner: dict, jobs) -> dict:
     allowed = ", ".join(repr(n) for n in exp.jobs)
     cfg[i:i + 1] = [f"JOBS_IN_NOTEBOOK = [{allowed}]",
                     f"JOB = {exp.jobs[0]!r}" + "  # chọn một trong JOBS_IN_NOTEBOOK (bảng ở đầu notebook)"]
-    cfg = [line.replace("REPO_BRANCH = 'survey-v2-code'", f"REPO_BRANCH = {exp.repo_branch!r}") for line in cfg]
+    cfg = [line.replace("REPO_BRANCH = 'dmkd-revision'", f"REPO_BRANCH = {exp.repo_branch!r}") for line in cfg]
     cfg.append("assert JOB in JOBS_IN_NOTEBOOK, f'{JOB} không thuộc notebook này — dùng notebook của thí nghiệm tương ứng'")
     cells[1]["source"] = _lines("\n".join(cfg))
     for c in cells:

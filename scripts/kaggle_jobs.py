@@ -213,7 +213,7 @@ def build_jobs() -> dict[str, Job]:
                  requires_cfg=[(f"E1_feature_selection/{d}/config.json", "redo_methods", "svm_rfe") for d in C.MAIN_DATASETS]
                  + [(f"E1_classification/{d}/config.json", "redo_methods", "svm_rfe") for d in C.MAIN_DATASETS],
                  restore_from=["redo_svm_rfe_B"], parallel=4, hours="<0,5"))
-    # ----------------------------------------------------------------- Ablation loại 4 gen IHC (09–10/11, khoá luận)
+    # ----------------------------------------------------------------- Ablation without the 4 IHC genes (09–10/11)
     J.append(Job("ablation_phaseA_geo", "4 · 10/11", "Ablation không IHC: pha A 4 cohort GEO", [_fs("--datasets", d, *abl) for d in GEO],
                  [f"E1_feature_selection_noIHC/{d}" for d in GEO], hours="3–6"))
     J.append(Job("ablation_phaseA_tcga", "4 · 10/11", "Ablation không IHC: pha A TCGA (5 lần lặp, 4 tiến trình)",

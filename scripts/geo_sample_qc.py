@@ -27,8 +27,8 @@ Các lệnh con (QĐ21 + QĐ22), theo thứ tự dùng:
     python scripts/check_sex_consistency.py
     python scripts/geo_sample_qc.py apply-sex-qc
     python scripts/geo_sample_qc.py rebuild --cohorts gse10245 gse30219 gse37745 gse42127 tcga_luad_lusc_primary_tumor
-    python scripts/geo_sample_qc.py sex-check --out D:/KLTN/Nop-GVHD-2026-10-29/04_Du-lieu/_kiem_tra
-    python scripts/geo_sample_qc.py rz-screen --out D:/KLTN/Nop-GVHD-2026-10-29/04_Du-lieu/_kiem_tra
+    python scripts/geo_sample_qc.py sex-check --out <output folder>
+    python scripts/geo_sample_qc.py rz-screen --out <output folder>
 
 Dữ liệu: $KLTN_DATA_ROOT (hoặc --data-root). ``rebuild`` dừng nếu script chưa commit + push (truy vết, Y13) trừ khi
 đặt KLTN_ALLOW_UNPUSHED=1 (chỉ để thử). Chạy ``rebuild`` lại lần hai không đổi gì (idempotent): mẫu đã bỏ thì bỏ qua,

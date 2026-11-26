@@ -84,7 +84,7 @@ def make_dataset(root: Path, name: str, n: int = 120, p: int = 600, n_informativ
 def make_geo_target(root: Path, name: str, source_genes: np.ndarray, informative_genes, n: int = 80, effect: float = 1.0,
                     seed: int = 0, prevalence: float = 0.35, shared_fraction: float = 0.85, n_platform_only: int = 40,
                     shift: float = 1.0, class_names=("LUAD", "LUSC")) -> Path:
-    """Layout experiment-data-geo-target/<thư mục>/ (RQ0′): expression.h5 một node, metadata.csv có sample_id, label, class."""
+    """Layout experiment-data-geo-target/<folder>/: expression.h5 with one node, metadata.csv with sample_id, label, class."""
     rng = np.random.default_rng(seed)
     d = Path(root) / C.dataset_dir(name)
     d.mkdir(parents=True, exist_ok=True)

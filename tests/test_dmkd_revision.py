@@ -165,7 +165,7 @@ def test_kaggle_jobs_registry_has_revision_jobs_with_prepare_steps():
 
 def test_e7_config_note_moved_ptlasso_to_survey():
     src = (REPO / "scripts" / "run_survey_e7_transfer_naive.py").read_text(encoding="utf-8")
-    assert "ptLasso and Trans-GLM are reported in the survey (B6, QĐ176); MVP belongs to the method paper" in src
+    assert "ptLasso and Trans-GLM are evaluated separately (B6, QĐ176)" in src
     assert "no proposed method here" not in src
 
 

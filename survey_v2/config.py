@@ -1,7 +1,6 @@
 """Hằng số đặt trước của bộ thực nghiệm survey v3 (QĐ15, Review 26/10/2026; KBTN v2.1 M10–M13).
 
-Bài toán: LUAD (0) vs LUSC (1) — bài toán chính của khoá luận. Nguồn TCGA (RNA-seq) và bốn cohort GEO đích
-(3 GPL570 + GSE42127). E1 của survey ≡ RQ1 của khoá luận (một thí nghiệm, một bộ kết quả).
+Task: LUAD (0) vs LUSC (1). Source TCGA (RNA-seq) and four target GEO cohorts (3 GPL570 + GSE42127).
 
 Mọi thay đổi ở đây phải được ghi lý do và duyệt trước khi chạy (nguyên tắc đặt trước của KBTN).
 Các tên hằng số của bản v2 được giữ để script và runner Kaggle của đội code không hỏng.
@@ -30,14 +29,14 @@ DATASETS.update({
 })
 B7_DATASETS = ("tcga_luad_egfr", "gse31210_egfr")
 # Thư mục chứa từng bộ (tương đối với $KLTN_DATA_ROOT). Bộ perm/ v2 giữ định dạng cũ; cohort GEO dùng
-# experiment-data-geo-target/<thư mục> như RQ0′ (scripts/run_rq0_prime.py::cohort_data_dir).
+# experiment-data-geo-target/<folder>.
 PERM_DATA_DIR = "experiment-data-perm"
 GEO_TARGET_DIR = "experiment-data-geo-target"
 # B7 (QĐ188): hai bộ EGFR nằm trong thư mục riêng, ghi được trên Kaggle (hai thư mục trên là liên kết tới Input chỉ đọc) và
 # sau đó tải lên một Kaggle Input riêng, để năm bộ cũ giữ nguyên SHA-256.
 B7_DATA_DIR = "experiment-data-b7"
 # v3.1: thư mục chính = layout Kaggle Input "experiment-data-v3" của đội code (DATA_AUDIT 27/10: gse30219 đã là bản R5,
-# 146 mẫu). DATASET_DIR_ALTERNATIVES: tên thư mục thay thế được chấp nhận (layout RQ0′ trên máy cá nhân);
+# 146 mẫu). DATASET_DIR_ALTERNATIVES: other accepted folder names (earlier layout on a local machine);
 # survey_v2.data.resolve_dataset_dir() chọn thư mục đầu tiên tồn tại.
 DATASET_DIRS = {
     "tcga_luad_lusc_primary_tumor": f"{PERM_DATA_DIR}/tcga_luad_lusc_primary_tumor",
@@ -116,7 +115,7 @@ def cohort_id(name: str) -> int:
 
 
 # --- Giao thức E1 (= RQ1) ------------------------------------------------------------------------------
-REPEAT_SEEDS = (42, 43, 44, 45, 46)             # CV 5×5; trùng RQ0′; mọi phương pháp dùng chung lần chia
+REPEAT_SEEDS = (42, 43, 44, 45, 46)             # CV 5×5; every method uses the same splits
 N_FOLDS = 5
 WRAPPER_REPEATS = 3                             # wrapper chỉ 3 lần lặp đầu (3×5)
 K_GRID = (1, 2, 3, 4, 5, 10, 25, 50)            # ngân sách k (QĐ2 + M4); vùng chính k <= 10
@@ -185,7 +184,7 @@ BPSO_W_START, BPSO_W_END = 0.9, 0.4
 BPSO_C1, BPSO_C2 = 2.0, 2.0
 BPSO_V_MAX = 6.0
 
-# --- Few-shot (E1b, E7; giao thức RQ2 của KBTN v2) -------------------------------------------------------
+# --- Few-shot (E1b, E7) ----------------------------------------------------------------------------------
 FEWSHOT_SPLITS = 5                              # 5 lần chia test_T / pool_T, seed 42–46
 FEWSHOT_TEST_FRACTION = 1.0 / 3.0               # test_T ≈ 1/3, phân tầng
 FEWSHOT_SUBSETS = 4                             # 4 tập con mỗi mức n_T, lồng nhau theo n_T trong cùng (split, subset)

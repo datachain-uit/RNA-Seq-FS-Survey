@@ -1,4 +1,4 @@
-"""Bản chia few-shot dùng chung cho E1b, E7 (survey) và RQ2, RQ4 (bài phương pháp) — giao thức KBTN v2 Mục 6.
+"""Few-shot splits shared by E1b and E7 (protocol: KBTN v2, Section 6).
 
 Mỗi cohort GEO: FEWSHOT_SPLITS lần chia test_T / pool_T (≈ 1/3 : 2/3, phân tầng, seed 42–46); trong mỗi lần chia,
 FEWSHOT_SUBSETS tập con; tập con s ở mức n_T là n_T mẫu MỖI LỚP rút từ pool_T, **lồng nhau theo n_T** trong cùng

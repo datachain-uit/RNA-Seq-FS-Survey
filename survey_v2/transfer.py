@@ -1,6 +1,6 @@
 """E7 — ba chiến lược chuyển giao ĐƠN GIẢN nguồn (TCGA, RNA-seq) → đích (GEO microarray), KBTN v2 Mục 6 (baseline D3).
 
-Không có phương pháp đề xuất ở đây (MVP thuộc bài 2). Ba chiến lược + target-only để ghép cặp:
+No new method here. Three strategies and target-only for the paired comparison:
 * source_only  : chọn k gen trên nguồn (TRANSFER_SELECTOR), huấn luyện LR-L2 trên nguồn với chuẩn hoá mức panel φ,
                  áp thẳng lên test_T (zero-shot, không dùng nhãn đích; không phụ thuộc n_T).
 * select_on_source : panel chọn trên nguồn, bộ phân loại fit trên L_T (n_T mẫu/lớp) ở thang đo đích.
