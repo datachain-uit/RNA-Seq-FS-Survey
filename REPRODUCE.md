@@ -3,13 +3,14 @@
 This document describes the code and result files of the survey *Efficient, Stable and Transferable Gene Selection
 under a Panel Budget: A Survey and Empirical Evaluation in Lung Cancer Histology Diagnosis* (submitted to Data Mining
 and Knowledge Discovery). It applies to the tag `survey-v3-dmkd.4` of this repository (branch `dmkd-revision`). The tag was set
-on 25/11/2026 at commit d916062 and moved on 26/11/2026 to the next commit, which brings the documentation in English
-and removes material that the paper does not use.
+on 25/11/2026 at commit d7dcf9c and moved on 26/11/2026 to a later commit, which brings the documentation in English,
+removes material that the paper does not use and updates the commit identifiers after the history was rewritten
+(Section 2).
 
 The tag holds the code and result files of the main benchmark (E0-E7; the result files are those of tag
 `survey-v3-dmkd.1`, unchanged), the code and result files of the sensitivity analyses and the second task (SA1-SA4, E8;
 Section 6), and this documentation. `README.md` gives an overview of the repository and the names used in the code;
-this file is the reference for the result files and the commands. The program is that of commit d916062: once
+this file is the reference for the result files and the commands. The program is that of commit d7dcf9c: once
 their docstrings are removed, the Python files of `survey_v2/`, `scripts/` and `paper_scripts/` have the same syntax
 trees in the two commits, except for four notes that the runs write into `config.json` and the text of one generated
 notebook; in `tests/`, three tests are renamed and one assertion follows the new note; the Kaggle notebooks clone
@@ -31,6 +32,7 @@ branch `dmkd-revision`.
 | `splits/` | patient-level split files and quality-control files (Section 3) |
 | `paper_scripts/` | `make_tables.py`: the tables of the main benchmark from `results/` (Section 4); `make_supplementary_tables.py`: the tables of E7 over 20 splits, of Section 6 and of Online Resource 1 (Section 6.3); `NUMBERING.md`: numbers, titles, files and labels of the sections, tables and figures of the manuscript of 26/11/2026 |
 | `docs/RECORDS_GLOSSARY.md` | English translation of the Vietnamese strings that occur in the result files, logs, exclusion lists and quality-control files |
+| `docs/COMMIT_MAP.tsv` | for every commit identifier written in the records before 26/11/2026, the matching commit of the current history (Section 2) |
 | `requirements-kaggle.txt` | package versions of the environment that produced every reported number (Python 3.13.15) |
 
 ## 2. Result files (`results/survey_v2/`)
@@ -58,8 +60,33 @@ score), the decision threshold, the selected genes and the selection time. Per-s
 
 Every folder holds a `config.json` with the commit of the code that produced it, the SHA-256 of the input data and of
 the split file, the package versions and the machine. The result files of the main benchmark were produced at
-commits 9b2d6a5, 68e7c7d (E4 and E5), 6ea47e8, d870008, e15fb7c and 06ba993; those of Section 6 at commits
-c1828d2, c50647a and f22597c, and `B1_tables/`, `B6_tables/` were regenerated at 3fe6d99 (Section 6.1). The code at all these commits is in the history of this tag.
+commits c61eef5, 9e9c3f0 (E4 and E5), 772c310, c461ca7, fa15f5b and 1eca4d6; those of Section 6 at commits
+9bfe316, a0c490e and 3cacd5b, and `B1_tables/`, `B6_tables/` were regenerated at d88d428 (Section 6.1). The code at
+all these commits is in the history of this tag.
+
+On 26/11/2026 the history of the repository was rewritten to correct the authorship records of nine commits. Files,
+trees and dates did not change, but all commits except the first received new identifiers. The identifiers in this
+document are those of the current history. The `config.json` files, the split manifests and the other records keep the
+identifiers written at run time. `docs/COMMIT_MAP.tsv` lists every earlier identifier with the matching commit; for a
+recorded identifier, `grep ^<identifier> docs/COMMIT_MAP.tsv` gives the commit to check out. The commits named in this
+document are:
+
+| Recorded at run time | Current history | Use in this document |
+|---|---|---|
+| 9b2d6a5 | c61eef5 | main benchmark |
+| 68e7c7d | 9e9c3f0 | main benchmark (E4 and E5) |
+| 6ea47e8 | 772c310 | main benchmark |
+| d870008 | c461ca7 | main benchmark |
+| e15fb7c | fa15f5b | main benchmark |
+| 06ba993 | 1eca4d6 | main benchmark, tag `survey-v3-submission` |
+| c1828d2 | 9bfe316 | Section 6 |
+| c50647a | a0c490e | Section 6 |
+| f22597c | 3cacd5b | Section 6 |
+| 3fe6d99 | d88d428 | `B1_tables/`, `B6_tables/` (Section 6.1) |
+| 45b11a6 | 21c6138 | sample quality control (Section 5, data cards of `splits/`) |
+| 5facab3 | d7cb37a | sample quality control (Section 5, data cards of `splits/`) |
+| 380d01f | 75086ee | sample quality control and splits (Section 5, data cards of `splits/`) |
+| d916062 | d7dcf9c | program of this tag |
 
 ## 3. Splits and quality control (`splits/`)
 
@@ -70,7 +97,7 @@ c1828d2, c50647a and f22597c, and `B1_tables/`, `B6_tables/` were regenerated at
 | `<cohort>/fewshot_splits_20.csv` | Section 6 (B1): the same design with 20 splits (seeds 42-61); splits 0-4 are identical to `fewshot_splits.csv` |
 | `tcga_luad_egfr/`, `gse31210_egfr/` | Section 6 (E8, folder prefix B7): metadata with EGFR labels, 5 x 5 splits, exclusions and data cards of the two EGFR data sets |
 | `<cohort>/label_mapping.json`, `metadata.csv`, `class_stats.csv`, `excluded_samples_<cohort>.csv` | labels (LUAD = 0, LUSC = 1), sample metadata, class counts, samples removed by quality control |
-| `<cohort>/DATA_CARD.md` | data card of the cohort: source files, SHA-256, quality-control decisions (English version of the authors' card; the original, in Vietnamese, is at the same path in commit d916062) |
+| `<cohort>/DATA_CARD.md` | data card of the cohort: source files, SHA-256, quality-control decisions (English version of the authors' card; the original, in Vietnamese, is at the same path in commit d7dcf9c) |
 | `split_manifests/` | generator, commit, seeds and SHA-256 of every split file |
 | `qc/` | label cross-checks of the GEO cohorts, duplicate-sample screen, sex consistency checks, coverage of the panel genes |
 
@@ -155,7 +182,7 @@ checksum, so the script is kept unchanged. Its headings name the sections as the
       --output $KLTN_DATA_ROOT/experiment-data-geo-target/gse30219_r5_fixed` keeps only the exact histology values
       `ADC` and `SQC` (`SCC` is small-cell carcinoma in this series). The output (146 samples) replaced the
       notebook's `gse30219/`.
-   4. Sample quality control (29/10/2026, commits 45b11a6, 5facab3 and 380d01f), in this order:
+   4. Sample quality control (29/10/2026, commits 21c6138, d7cb37a and 75086ee), in this order:
 
       ```
       python scripts/geo_sample_qc.py fetch-tcga-sex
@@ -207,22 +234,22 @@ methods with a model of the source (ptLasso, Trans-GLM)". Table and figure numbe
 
 | Experiment | Folders in `results/survey_v2/` | Code (runner) | Kaggle job, commit | Equality gate (result) |
 |---|---|---|---|---|
-| B1, 20 few-shot splits for E1b and E7 | `B1_splits/`, `B1_E7_20/`, `B1_E1b_20/`, `B1_tables/` | `build_fewshot_splits.py --seeds 42 … 61`, `run_survey_e7_transfer_naive.py`, `run_survey_e1b_learning_curve.py --splits-file fewshot_splits_20.csv` | `b1`, c50647a (two sessions; the second resumed the first) | splits 0-4 equal `fewshot_splits.csv`; rows of splits 0-4 equal the published E1b and E7 (maximum absolute AUROC difference 0) |
-| B2, k-TSP with its voting rule | `B2_ktsp_vote/`, `B2_tables/` | `run_b2_ktsp_vote.py` | `b2_b3_b5`, c50647a | — (stored k-TSP pairs of E1, E1b; pairs selected on TCGA for E7) |
-| B3, two zero-shot variants | `B3_zero_shot/`, `B3_tables/` | `run_b3_zero_shot.py` | `b2_b3_b5`, c50647a | the recomputed E7 source-only rule equals the published one (difference 0); source panels equal |
-| B4, variants of the reference B0 | `B4_b0_variants/`, `B4_tables/` | `run_b4_b0_variants.py` | `b4`, c50647a | the original B0 rerun equals the published B0 (difference 0, 25 folds x 5 cohorts) |
-| B5, published signatures cut to 10 genes inside the fold | `B5_signatures10/`, `B5_tables/` | `run_b5_signatures10.py` | `b2_b3_b5`, c50647a | — |
-| B6, ptLasso and Trans-GLM in E7 | `B6_r_inputs/`, `B6_r_inputs_20/`, `B6_E7_gate5/`, `B6_gate/`, `B6_E7_principled/`, `B6_tables/` | `export_e7_r_inputs.py`, `r/e7_r_baselines.R`, `run_e7_r_eval.py` (copied unchanged from an earlier code base of the authors, commit 7f097da) | notebook `kaggle_B6_e7_r.ipynb`, c50647a | on seeds 42-46, panels and AUROC of every run equal the reference run (`B6_reference_rq2_r_7f097da/`; difference 0, 2,200 panels) |
-| B7, EGFR mutation in lung adenocarcinoma | `B7_data/`, `B7_gate/`, `E0_b7/`, `E1_feature_selection_b7/`, `E1_classification_b7/`, `E4_E5_b7/`, `B7_tables/` | `run_b7_step1.py`, `build_b7_egfr_datasets.py`, `b7_gate.py`, then the E1 and E4 runners | `b7_step1` (c1828d2); `b7_e1_phaseA`, `b7_e4`, `b7_e1_phaseB` (c50647a) | gates G1 and G2 passed on both data sets (`B7_gate/b7_gate_table.csv`); every later session checks the SHA-256 of the 20 data files against `B7_data/config.json` |
+| B1, 20 few-shot splits for E1b and E7 | `B1_splits/`, `B1_E7_20/`, `B1_E1b_20/`, `B1_tables/` | `build_fewshot_splits.py --seeds 42 … 61`, `run_survey_e7_transfer_naive.py`, `run_survey_e1b_learning_curve.py --splits-file fewshot_splits_20.csv` | `b1`, a0c490e (two sessions; the second resumed the first) | splits 0-4 equal `fewshot_splits.csv`; rows of splits 0-4 equal the published E1b and E7 (maximum absolute AUROC difference 0) |
+| B2, k-TSP with its voting rule | `B2_ktsp_vote/`, `B2_tables/` | `run_b2_ktsp_vote.py` | `b2_b3_b5`, a0c490e | — (stored k-TSP pairs of E1, E1b; pairs selected on TCGA for E7) |
+| B3, two zero-shot variants | `B3_zero_shot/`, `B3_tables/` | `run_b3_zero_shot.py` | `b2_b3_b5`, a0c490e | the recomputed E7 source-only rule equals the published one (difference 0); source panels equal |
+| B4, variants of the reference B0 | `B4_b0_variants/`, `B4_tables/` | `run_b4_b0_variants.py` | `b4`, a0c490e | the original B0 rerun equals the published B0 (difference 0, 25 folds x 5 cohorts) |
+| B5, published signatures cut to 10 genes inside the fold | `B5_signatures10/`, `B5_tables/` | `run_b5_signatures10.py` | `b2_b3_b5`, a0c490e | — |
+| B6, ptLasso and Trans-GLM in E7 | `B6_r_inputs/`, `B6_r_inputs_20/`, `B6_E7_gate5/`, `B6_gate/`, `B6_E7_principled/`, `B6_tables/` | `export_e7_r_inputs.py`, `r/e7_r_baselines.R`, `run_e7_r_eval.py` (copied unchanged from an earlier code base of the authors, commit 7f097da) | notebook `kaggle_B6_e7_r.ipynb`, a0c490e | on seeds 42-46, panels and AUROC of every run equal the reference run (`B6_reference_rq2_r_7f097da/`; difference 0, 2,200 panels) |
+| B7, EGFR mutation in lung adenocarcinoma | `B7_data/`, `B7_gate/`, `E0_b7/`, `E1_feature_selection_b7/`, `E1_classification_b7/`, `E4_E5_b7/`, `B7_tables/` | `run_b7_step1.py`, `build_b7_egfr_datasets.py`, `b7_gate.py`, then the E1 and E4 runners | `b7_step1` (9bfe316); `b7_e1_phaseA`, `b7_e4`, `b7_e1_phaseB` (a0c490e) | gates G1 and G2 passed on both data sets (`B7_gate/b7_gate_table.csv`); every later session checks the SHA-256 of the 20 data files against `B7_data/config.json` |
 
-`B6_tables/` and `B7_tables/` were written on a workstation from the result folders above (commits c50647a and
-f22597c; f22597c only changes the layout of `b7_kstar.csv`, which now lists every selector and both margins). The
+`B6_tables/` and `B7_tables/` were written on a workstation from the result folders above (commits a0c490e and
+3cacd5b; 3cacd5b only changes the layout of `b7_kstar.csv`, which now lists every selector and both margins). The
 two `expression.h5` files of B7 are not redistributed; their SHA-256 are in `DMKD2_EXCLUDED_DATA.tsv` and the files
 are rebuilt by `scripts/run_b7_step1.py` from the public GDC mutation files and GEO series GSE31210.
 The FILTER column of the TCGA-LUAD mutation files was not stored at step 0; the labels rest on the open Masked Somatic
 Mutation files as released by the GDC (`B7_data/experiment-data-b7/tcga_luad_egfr/data_card_tcga_luad_egfr_notes.md`).
 
-O49 (commit 3fe6d99): in `B1_tables/` and `B6_tables/` the Holm correction of the split-level labels now runs within
+O49 (commit d88d428): in `B1_tables/` and `B6_tables/` the Holm correction of the split-level labels now runs within
 each strategy over all its cells on the four cohorts, as the specification states (it previously ran within each
 strategy and cohort). The two folders were regenerated from that commit; no experiment was rerun. The confounder
 checks of B7 (tissue source site, sex, sex-chromosome genes and EGFR in the panels) are written by

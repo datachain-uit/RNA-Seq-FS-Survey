@@ -1,7 +1,7 @@
 # Data card: `tcga_luad_lusc_primary_tumor`
 
 This card is the English version of the data card kept by the authors while the cohort was built. The original,
-in Vietnamese, is at the same path in commit `d916062` of this repository. The record files named here
+in Vietnamese, is at the same path in commit `d7dcf9c` of this repository. The record files named here
 (`excluded_samples_*.csv`, `qc/*.csv`) keep the wording of that time; `docs/RECORDS_GLOSSARY.md` translates it. The
 rules are named there by the numbers of the authors' decision log: QĐ21 (near-duplicate pair of GSE37745), QĐ22
 (two-axis sex check of the GEO cohorts) and QĐ22b (per-gene Y vote of TCGA).
@@ -27,17 +27,17 @@ primers of the original article.
 
 ## Update of 29 October 2026: sample quality control (sample counts used in the paper)
 
-- n before → after: 1018 (517/501) → 1016 (515/501) LUAD/LUSC; `DATASET_EXPECTED_N` = (515, 501) (commit `380d01f`).
-- Rebuild of the cohort files: `scripts/geo_sample_qc.py rebuild` at commit `380d01f`
+- n before → after: 1018 (517/501) → 1016 (515/501) LUAD/LUSC; `DATASET_EXPECTED_N` = (515, 501) (commit `75086ee`).
+- Rebuild of the cohort files: `scripts/geo_sample_qc.py rebuild` at commit `75086ee`
   (2026-10-29T13:24:04+07:00). The rebuild only removes the samples of
   `excluded_samples_tcga_luad_lusc_primary_tumor.csv` and adds the column `sex`; every other value is unchanged
   (checked by assertions in the script). Previous version: `_backup_20261029-132404/` (not in this repository).
 - New SHA-256: `expression.h5` `41bf54bda90aae286eab2ceec7e705aeaa778cd77eb85587ab7ff8aaa75c2cff`; `metadata.csv`
   `ee65ea8b4075967867ce4f7fa8383122449d6ba2e10dd5e178a33b27b5ea7b26`.
-- Splits (`build_v3_splits.py --force`, commit `380d01f`): `repeated_splits.csv`
+- Splits (`build_v3_splits.py --force`, commit `75086ee`): `repeated_splits.csv`
   `ff909fd90415014e8dce4c1692346baa4873bee0e533932515880a5ed18cb6ce` (25400 rows).
 - Source of sex: GDC API `POST /cases`, field `demographic.sex_at_birth` (the field `gender` is empty in every
-  record), queried at 2026-10-29T11:52:39+07:00 (commit `45b11a6`); 1018/1018 patients, 610 male / 408 female; file
+  record), queried at 2026-10-29T11:52:39+07:00 (commit `21c6138`); 1018/1018 patients, 610 male / 408 female; file
   `sex_gdc.csv` (SHA-256 `72d16061e79f43081a3bc5210b075431ac6ad07fc354e0b583b141588ef1518c`).
 - Rule (QĐ22b, one axis; the TCGA build holds protein-coding genes only and has no XIST): vote of each Y gene; the
   threshold of each gene is the midpoint between the 95th percentile of the samples recorded as female and the 5th

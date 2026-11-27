@@ -1,7 +1,7 @@
 # Data card: GSE10245
 
 This card is the English version of the data card kept by the authors while the cohort was built. The original,
-in Vietnamese, is at the same path in commit `d916062` of this repository. The record files named here (`excluded_samples_*.csv`,
+in Vietnamese, is at the same path in commit `d7dcf9c` of this repository. The record files named here (`excluded_samples_*.csv`,
 `qc/*.csv`) keep the wording of that time; `docs/RECORDS_GLOSSARY.md` translates it. The rules are named there by
 the numbers of the authors' decision log: QĐ21 (near-duplicate pair of GSE37745), QĐ22 (two-axis sex check of the
 GEO cohorts) and QĐ22b (per-gene Y vote of TCGA).
@@ -23,7 +23,7 @@ GEO cohorts) and QĐ22b (per-gene Y vote of TCGA).
 
 ### Duplicate-sample screen (r_z, 29 October 2026)
 
-- `scripts/geo_sample_qc.py` (configuration `qc/rz_screen_config.json`, commit `5facab3`, run on 29 October on the
+- `scripts/geo_sample_qc.py` (configuration `qc/rz_screen_config.json`, commit `d7cb37a`, run on 29 October on the
   cohort before quality control): r_z is the Pearson correlation of two samples after z-scoring each gene within the
   cohort; threshold r_z ≥ 0.90, together with raw r ≥ 0.99.
 - Within the cohort: 1,653 pairs on 20,848 genes; largest r_z 0.4795, 99.9th percentile 0.4522; 0 pairs with
@@ -62,14 +62,14 @@ the build and was not traced back to the probes. The build was not changed to re
 
 ## Update of 29 October 2026: sample quality control (sample counts used in the paper)
 
-- n before → after: 58 (40/18) → 55 (37/18) LUAD/LUSC; `DATASET_EXPECTED_N` = (37, 18) (commit `380d01f`).
-- Rebuild of the cohort files: `scripts/geo_sample_qc.py rebuild` at commit `380d01f`
+- n before → after: 58 (40/18) → 55 (37/18) LUAD/LUSC; `DATASET_EXPECTED_N` = (37, 18) (commit `75086ee`).
+- Rebuild of the cohort files: `scripts/geo_sample_qc.py rebuild` at commit `75086ee`
   (2026-10-29T13:24:02+07:00). The rebuild only removes the samples of `excluded_samples_gse10245.csv` and adds the
   column `sex`; every other value is unchanged (checked by assertions in the script). Previous version:
   `_backup_20261029-132402/` (not in this repository).
 - New SHA-256: `expression.h5` `7cb29e07d6c1489dbd90ad81ebfa9675548bac729289f70cf04766f2119226ea`; `metadata.csv`
   `571f9d0ce2fc78275f41d09aa57a71f7a49ac3c6f1814c5b6f5b0002c12c2e26`.
-- Splits (`build_v3_splits.py --force`, commit `380d01f`): `repeated_splits.csv`
+- Splits (`build_v3_splits.py --force`, commit `75086ee`): `repeated_splits.csv`
   `823637702262a5fea795a52e9d2972f7857d9b75156d0667b1f7cac769496d5e` (1375 rows); `fewshot_splits.csv`
   `b31efa81e03b21454e23d455d58e05100234fd1fd09029e1d655cff22d5b30d5` (n_T: 5, 10, pool; 5 splits × 4 subsets).
 - GEO source: GSE10245, "Gene expression differences between adenocarcinoma and squamous cell carcinoma in human

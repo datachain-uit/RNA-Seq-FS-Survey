@@ -31,6 +31,7 @@ describes the result files and gives the commands that regenerate the tables of 
 | `results/run_info_*.json`, `results/logs/` | Session information and logs of the Kaggle jobs, including `pip freeze` |
 | `splits/` | Patient-level split files, sample metadata, exclusion lists, quality-control files and data cards of the cohorts |
 | `docs/RECORDS_GLOSSARY.md` | English translation of the Vietnamese strings that occur in the result files, logs and quality-control files |
+| `docs/COMMIT_MAP.tsv` | For every commit identifier written in the records before 26 November 2026, the matching commit of the current history |
 | `requirements-kaggle.txt` | Package versions of the environment that produced every reported number (Python 3.13.15) |
 | `requirements.txt` | Package versions for running the scripts and tests on a local machine |
 
@@ -87,29 +88,36 @@ experiments.
 Every run refused to start from a working tree with uncommitted or unpushed changes and wrote a `config.json` with
 the commit of the code, the SHA-256 of its input files and the package versions. The commits that produced the result
 files are listed in Section 2 of `REPRODUCE.md`; all of them are in the history of `dmkd-revision`, the only branch of
-the repository. The commit messages
-and the earlier tags are partly written in Vietnamese, the working language of the authors.
+the repository. The commit messages and the earlier tags are partly written in Vietnamese, the working language of the
+authors.
+
+On 26 November 2026 the history of the repository was rewritten to correct the authorship records of nine commits.
+The files and the dates of every commit did not change, but all commits except the first received new identifiers.
+The identifiers in this file and in `REPRODUCE.md` are those of the current history. The `config.json` files and the
+other records keep the identifiers written at run time; `docs/COMMIT_MAP.tsv` gives the matching commit of the current
+history for each of them.
 
 The code comments and the records written during the runs (`config.json` notes, logs, the reason columns of the
 exclusion lists) are also partly in Vietnamese. The records are kept byte for byte as produced, since the
 `config.json` files and the split manifests record the SHA-256 of many of them. The program of the benchmark is the
-same as at commit `d916062`: the code of this tag differs from it only in comments, docstrings, the text of one
+same as at commit `d7dcf9c`: the code of this tag differs from it only in comments, docstrings, the text of one
 generated notebook, four notes that the runs write into `config.json`, the names of three tests and the branch that
 the Kaggle notebooks clone (`dmkd-revision`). `docs/RECORDS_GLOSSARY.md` translates the strings that occur in the records
 and the codes of the authors' working log that the comments cite.
 
 ## Tags
 
-The paper cites `survey-v3-dmkd.4`. The earlier tags are kept unchanged.
+The paper cites `survey-v3-dmkd.4`. The earlier tags keep their content. Since 26 November 2026 they point to the
+rewritten commits, and the commit identifiers quoted in their messages follow the current history.
 
 | Tag | Commit | Content |
 |---|---|---|
-| `survey-v3-submission` | `06ba993` | Code of the main benchmark (E0 to E7) |
-| `survey-v3-dmkd` | `b97a091` | The same code with the result files, the splits and the first table scripts |
-| `survey-v3-dmkd.1` | `97f95db` | Adds `REPRODUCE.md` and the licences |
-| `survey-v3-dmkd.2` | `9ed315a` | Adds the sensitivity analyses and the second task (folders `B1_*` to `B7_*`) |
-| `survey-v3-dmkd.3` | `8a30f77` | Regenerates `B1_tables/` and `B6_tables/` from the stored runs (no experiment rerun); adds the scripts of the supplementary tables |
-| `survey-v3-dmkd.4` | this tag | Set on 25 November 2026 at `d916062`, which removed the figure scripts; moved on 26 November 2026 to the next commit, which brings the documentation and the data cards in English and removes the notebooks, scripts and notes that the paper does not use. The program of the benchmark, the result files and the split files did not change |
+| `survey-v3-submission` | `1eca4d6` | Code of the main benchmark (E0 to E7) |
+| `survey-v3-dmkd` | `63395c9` | The same code with the result files, the splits and the first table scripts |
+| `survey-v3-dmkd.1` | `5915bb5` | Adds `REPRODUCE.md` and the licences |
+| `survey-v3-dmkd.2` | `2b9865a` | Adds the sensitivity analyses and the second task (folders `B1_*` to `B7_*`) |
+| `survey-v3-dmkd.3` | `0c4ad52` | Regenerates `B1_tables/` and `B6_tables/` from the stored runs (no experiment rerun); adds the scripts of the supplementary tables |
+| `survey-v3-dmkd.4` | this tag | Set on 25 November 2026 at `d7dcf9c`, which removed the figure scripts. Moved on 26 November 2026 to a later commit: `21454b3` brings the documentation and the data cards in English and removes the notebooks, scripts and notes that the paper does not use, and the tagged commit adds `docs/COMMIT_MAP.tsv` and updates the commit identifiers of the documentation. The program of the benchmark, the result files and the split files did not change |
 
 ## Licence
 

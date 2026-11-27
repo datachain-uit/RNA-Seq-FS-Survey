@@ -1,7 +1,7 @@
 # Data card: GSE30219
 
 This card is the English version of the data card kept by the authors while the cohort was built. The original,
-in Vietnamese, is at the same path in commit `d916062` of this repository. The record files named here (`excluded_samples_*.csv`,
+in Vietnamese, is at the same path in commit `d7dcf9c` of this repository. The record files named here (`excluded_samples_*.csv`,
 `qc/*.csv`) keep the wording of that time; `docs/RECORDS_GLOSSARY.md` translates it. The rules are named there by
 the numbers of the authors' decision log: QĐ21 (near-duplicate pair of GSE37745), QĐ22 (two-axis sex check of the
 GEO cohorts) and QĐ22b (per-gene Y vote of TCGA).
@@ -26,7 +26,7 @@ GEO cohorts) and QĐ22b (per-gene Y vote of TCGA).
 
 ### Duplicate-sample screen (r_z, 29 October 2026)
 
-- `scripts/geo_sample_qc.py` (configuration `qc/rz_screen_config.json`, commit `5facab3`, run on 29 October on the
+- `scripts/geo_sample_qc.py` (configuration `qc/rz_screen_config.json`, commit `d7cb37a`, run on 29 October on the
   cohort before quality control): r_z is the Pearson correlation of two samples after z-scoring each gene within the
   cohort; threshold r_z ≥ 0.90, together with raw r ≥ 0.99.
 - Within the cohort: 10,585 pairs on 20,848 genes; largest r_z 0.5721, 99.9th percentile 0.4824; 0 pairs with
@@ -75,14 +75,14 @@ the build and was not traced back to the probes. The build was not changed to re
 
 ## Update of 29 October 2026: sample quality control (sample counts used in the paper)
 
-- n before → after: 146 (85/61) → 141 (81/60) LUAD/LUSC; `DATASET_EXPECTED_N` = (81, 60) (commit `380d01f`).
-- Rebuild of the cohort files: `scripts/geo_sample_qc.py rebuild` at commit `380d01f`
+- n before → after: 146 (85/61) → 141 (81/60) LUAD/LUSC; `DATASET_EXPECTED_N` = (81, 60) (commit `75086ee`).
+- Rebuild of the cohort files: `scripts/geo_sample_qc.py rebuild` at commit `75086ee`
   (2026-10-29T13:24:02+07:00). The rebuild only removes the samples of `excluded_samples_gse30219.csv` and adds the
   column `sex`; every other value is unchanged (checked by assertions in the script). Previous version:
   `_backup_20261029-132402/` (not in this repository).
 - New SHA-256: `expression.h5` `6c2f7377ad802a7df3d804473884ad64fa08beadfa44ecb5232343801230e2d9`; `metadata.csv`
   `570923f3f20216def97dfc47ca06a2e78f30669f4b7829f59b6426d7a32501bc`.
-- Splits (`build_v3_splits.py --force`, commit `380d01f`): `repeated_splits.csv`
+- Splits (`build_v3_splits.py --force`, commit `75086ee`): `repeated_splits.csv`
   `de92722bd27a853fef77abe4fda22bcd64886ef2724c298ac386b0bfd9b979bc` (3525 rows); `fewshot_splits.csv`
   `88667258ebb2d5150a45971e121bbd8d36b2a722f4986a9d2d48dc3ae48aeb7b` (n_T: 5, 10, 20, 40, pool; 5 splits × 4 subsets).
 - GEO source: GSE30219, ""Off-context" gene expression in lung cancer identifies a group of metastatic-prone tumors";
